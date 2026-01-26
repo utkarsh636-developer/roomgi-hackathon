@@ -21,7 +21,7 @@ const Navbar = () => {
 
             {/* Left: Logo */}
             <Link to="/" className="text-2xl font-bold text-gray-800">
-              RoomGi
+              Room Saathi
             </Link>
 
             {/* Center: Nav Links */}
