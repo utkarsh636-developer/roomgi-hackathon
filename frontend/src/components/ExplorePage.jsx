@@ -9,7 +9,8 @@ const properties = [
     price: 8500,
     deposit: 15000,
     sharing: 'Double Sharing',
-    imageUrl: '/images/room1.jpg' // Assuming you have images in public/images
+    gender: 'Girls',
+    imageUrl: '/images/girls-room.jpg' // Assuming you have images in public/images
   },
   {
     id: 2,
@@ -18,7 +19,8 @@ const properties = [
     price: 7000,
     deposit: 10000,
     sharing: 'Triple Sharing',
-    imageUrl: '/images/room2.jpg'
+    gender: 'Boys',
+    imageUrl: '/images/pg-room.avif'
   },
   {
     id: 3,
@@ -27,6 +29,7 @@ const properties = [
     price: 12000,
     deposit: 25000,
     sharing: 'Single Room',
+    gender: 'Both',
     imageUrl: '/images/room3.jpg'
   },
   {
@@ -36,6 +39,7 @@ const properties = [
     price: 6500,
     deposit: 10000,
     sharing: 'Double Sharing',
+    gender: 'Girls',
     imageUrl: '/images/room4.jpg'
   }
 ];
@@ -43,10 +47,17 @@ const properties = [
 // --- Sub-components for clarity ---
 
 const PropertyCard = ({ property }) => (
-  <div className="bg-white rounded-lg shadow-md overflow-hidden mb-6 border border-gray-200">
+  <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
     <img src={property.imageUrl} alt={property.name} className="w-full h-48 object-cover" />
     <div className="p-4">
-      <h3 className="text-xl font-bold font-montserrat text-gray-800">{property.name}</h3>
+      <div className="flex justify-between items-center mb-2">
+        <h3 className="text-xl font-bold font-montserrat text-gray-800">{property.name}</h3>
+        {property.gender && (
+          <span className="text-xs font-semibold px-2 py-1 rounded-full bg-indigo-100 text-indigo-800">
+            {property.gender}
+          </span>
+        )}
+      </div>
       <p className="text-sm text-gray-500 mt-1">{property.location}</p>
       <div className="mt-4 flex justify-between items-center">
         <div>
@@ -87,18 +98,18 @@ const ExplorePage = () => {
   return (
     <div className="bg-gray-50 min-h-screen pt-28">
       <div className="max-w-screen-xl mx-auto px-8 py-12 md:py-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="flex flex-col md:flex-row md:gap-8">
 
           {/* Left Column: Listings */}
-          <div className="md:col-span-3">
+          <div className="md:w-3/4">
             <h2 className="text-3xl font-bold mb-6 text-gray-900">Rooms & PGs</h2>
-            <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {properties.map(prop => <PropertyCard key={prop.id} property={prop} />)}
             </div>
           </div>
 
           {/* Right Column: Filters */}
-          <div className="md:col-span-1">
+          <div className="md:w-1/4 md:h-screen md:overflow-y-auto">
             <div className="bg-white p-6 rounded-lg shadow-md sticky top-28">
               <h3 className="text-2xl font-bold mb-4 border-b pb-4">Filters</h3>
 
@@ -124,6 +135,7 @@ const ExplorePage = () => {
               <FilterSection title="Available For">
                 <Checkbox label="Girls" />
                 <Checkbox label="Boys" />
+                <Checkbox label="Both" />
                 <Checkbox label="College Students" />
                 <Checkbox label="Working Professionals" />
               </FilterSection>
