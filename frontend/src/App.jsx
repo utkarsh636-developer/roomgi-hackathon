@@ -20,19 +20,23 @@ function App() {
         return <RegisterPage onShowLogin={showLoginPage} />;
       case 'app':
         return (
-          <>
+          <div className="flex flex-col min-h-screen">
             <Navbar onShowHome={showApp} onShowExplore={showExplorePage} />
-            <Landing />
+            <main className="flex-grow">
+              <Landing />
+            </main>
             <Footer />
-          </>
+          </div>
         );
       case 'explore':
         return (
-          <>
+          <div className="flex flex-col min-h-screen">
             <Navbar onShowHome={showApp} onShowExplore={showExplorePage} />
-            <ExplorePage />
+            <main className="flex-grow">
+              <ExplorePage />
+            </main>
             <Footer />
-          </>
+          </div>
         );
       case 'login':
       default:

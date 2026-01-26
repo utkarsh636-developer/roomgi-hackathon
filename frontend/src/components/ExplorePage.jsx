@@ -94,71 +94,91 @@ const Checkbox = ({ label }) => (
 
 const ExplorePage = () => {
   const [budget, setBudget] = useState(15000);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  const FilterContent = () => (
+    <div className="bg-white p-6 rounded-lg shadow-md">
+      <h3 className="text-2xl font-bold mb-4 border-b pb-4">Filters</h3>
+      <FilterSection title="Budget">
+        <div className="relative">
+          <input 
+            type="range" 
+            min="5000" 
+            max="25000" 
+            step="500"
+            value={budget}
+            onChange={(e) => setBudget(e.target.value)}
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer range-indigo" 
+          />
+          <div className="flex justify-between text-sm text-gray-500 mt-2">
+              <span>₹5k</span>
+              <span className="font-semibold text-indigo-600">₹{Number(budget).toLocaleString()}</span>
+              <span>₹25k+</span>
+          </div>
+        </div>
+      </FilterSection>
+      <FilterSection title="Available For">
+        <Checkbox label="Girls" />
+        <Checkbox label="Boys" />
+        <Checkbox label="Both" />
+        <Checkbox label="College Students" />
+        <Checkbox label="Working Professionals" />
+      </FilterSection>
+      <FilterSection title="Sharing">
+        <Checkbox label="Single" />
+        <Checkbox label="Double" />
+        <Checkbox label="Triple" />
+      </FilterSection>
+      <FilterSection title="Amenities">
+        <Checkbox label="Wi-Fi" />
+        <Checkbox label="AC" />
+        <Checkbox label="Laundry" />
+        <Checkbox label="Parking" />
+      </FilterSection>
+      <FilterSection title="Furnishing Status">
+        <Checkbox label="Fully Furnished" />
+        <Checkbox label="Semi-Furnished" />
+        <Checkbox label="Unfurnished" />
+      </FilterSection>
+    </div>
+  );
 
   return (
     <div className="bg-gray-50 min-h-screen pt-28">
       <div className="max-w-screen-xl mx-auto px-8 py-12 md:py-8">
+        
+        {/* Mobile Filter Button */}
+        <div className="md:hidden mb-6">
+          <button 
+            onClick={() => setIsFilterOpen(!isFilterOpen)}
+            className="w-full flex justify-between items-center p-4 bg-white rounded-lg shadow-md"
+          >
+            <span className="text-lg font-bold">Filters</span>
+            <svg className={`w-6 h-6 transition-transform ${isFilterOpen ? 'transform rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          {isFilterOpen && (
+            <div className="mt-4">
+              <FilterContent />
+            </div>
+          )}
+        </div>
+
         <div className="flex flex-col md:flex-row md:gap-8">
 
-          {/* Left Column: Listings */}
-          <div className="md:w-3/4">
-            <h2 className="text-3xl font-bold mb-6 text-gray-900">Rooms & PGs</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {properties.map(prop => <PropertyCard key={prop.id} property={prop} />)}
+          {/* Right Column: Filters (for Desktop) */}
+          <div className="hidden md:block md:w-1/4">
+            <div className="sticky top-28">
+              <FilterContent />
             </div>
           </div>
 
-          {/* Right Column: Filters */}
-          <div className="md:w-1/4 md:h-screen md:overflow-y-auto">
-            <div className="bg-white p-6 rounded-lg shadow-md sticky top-28">
-              <h3 className="text-2xl font-bold mb-4 border-b pb-4">Filters</h3>
-
-              <FilterSection title="Budget">
-                <div className="relative">
-                  <input 
-                    type="range" 
-                    min="5000" 
-                    max="25000" 
-                    step="500"
-                    value={budget}
-                    onChange={(e) => setBudget(e.target.value)}
-                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer range-indigo" 
-                  />
-                  <div className="flex justify-between text-sm text-gray-500 mt-2">
-                      <span>₹5k</span>
-                      <span className="font-semibold text-indigo-600">₹{Number(budget).toLocaleString()}</span>
-                      <span>₹25k+</span>
-                  </div>
-                </div>
-              </FilterSection>
-
-              <FilterSection title="Available For">
-                <Checkbox label="Girls" />
-                <Checkbox label="Boys" />
-                <Checkbox label="Both" />
-                <Checkbox label="College Students" />
-                <Checkbox label="Working Professionals" />
-              </FilterSection>
-              
-              <FilterSection title="Sharing">
-                <Checkbox label="Single" />
-                <Checkbox label="Double" />
-                <Checkbox label="Triple" />
-              </FilterSection>
-
-              <FilterSection title="Amenities">
-                <Checkbox label="Wi-Fi" />
-                <Checkbox label="AC" />
-                <Checkbox label="Laundry" />
-                <Checkbox label="Parking" />
-              </FilterSection>
-              
-              <FilterSection title="Furnishing Status">
-                <Checkbox label="Fully Furnished" />
-                <Checkbox label="Semi-Furnished" />
-                <Checkbox label="Unfurnished" />
-              </FilterSection>
-
+          {/* Left Column: Listings */}
+          <div className="md:w-3/4">
+            <h2 className="text-3xl font-bold mb-6 text-gray-900 hidden md:block">Rooms & PGs</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {properties.map(prop => <PropertyCard key={prop.id} property={prop} />)}
             </div>
           </div>
 
