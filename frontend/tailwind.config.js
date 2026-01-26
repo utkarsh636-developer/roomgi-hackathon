@@ -9,7 +9,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        Montserrat: ['Montserrat', 'sans-serif'],
+        montserrat: ['Montserrat', ...defaultTheme.fontFamily.sans],
       },
     },
   },
