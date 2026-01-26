@@ -6,7 +6,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="font-Montserrat absolute top-6 left-0 w-full z-50">
+    <nav className="font-montserrat absolute top-6 left-0 w-full z-50">
       <div className="max-w-screen-xl mx-auto px-6 sm:px-8 lg:px-12">
         <div
           className="

@@ -15,10 +15,10 @@ const Landing = () => {
 
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center justify-center h-full text-white text-center px-4 pt-20">
-        <h1 className="text-5xl md:text-6xl font-bold font-archivo">
+        <h1 className="text-5xl md:text-6xl font-bold font-montserrat">
           Find Your Next Stay
         </h1>
-        <p className="mt-4 text-lg md:text-xl font-Monteserrat">
+        <p className="mt-4 text-lg md:text-xl font-montserrat">
           Discover the best rooms and PGs for students and professionals.
         </p>
         <button className="mt-8 px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg shadow-lg transition">
