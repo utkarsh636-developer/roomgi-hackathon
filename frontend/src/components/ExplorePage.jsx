@@ -86,7 +86,7 @@ const ExplorePage = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen pt-28">
-      <div className="container mx-auto px-8 py-12 md:py-8">
+      <div className="max-w-screen-xl mx-auto px-8 py-12 md:py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
 
           {/* Left Column: Listings */}
