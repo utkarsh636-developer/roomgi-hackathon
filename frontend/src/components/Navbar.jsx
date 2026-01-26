@@ -6,8 +6,8 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="font-Montserrat sticky top-4 z-50">
-      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className="font-Montserrat absolute top-6 left-0 w-full z-50">
+      <div className="max-w-screen-xl mx-auto px-6 sm:px-8 lg:px-12">
         <div
           className="
             bg-white/70 backdrop-blur-lg
