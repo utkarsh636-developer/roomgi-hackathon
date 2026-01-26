@@ -4,13 +4,15 @@ import Landing from './components/Landing';
 import Footer from './components/Footer';
 import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
+import ExplorePage from './components/ExplorePage';
 
 function App() {
-  const [currentView, setCurrentView] = useState('login'); // 'login', 'register', 'app'
+  const [currentView, setCurrentView] = useState('login'); // 'login', 'register', 'app', 'explore'
 
   const showRegisterPage = () => setCurrentView('register');
   const showLoginPage = () => setCurrentView('login');
   const showApp = () => setCurrentView('app');
+  const showExplorePage = () => setCurrentView('explore');
 
   const renderContent = () => {
     switch (currentView) {
@@ -19,8 +21,16 @@ function App() {
       case 'app':
         return (
           <>
-            <Navbar />
+            <Navbar onShowHome={showApp} onShowExplore={showExplorePage} />
             <Landing />
+            <Footer />
+          </>
+        );
+      case 'explore':
+        return (
+          <>
+            <Navbar onShowHome={showApp} onShowExplore={showExplorePage} />
+            <ExplorePage />
             <Footer />
           </>
         );

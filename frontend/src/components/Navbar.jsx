@@ -2,8 +2,16 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { UserCircle } from 'lucide-react';
 
-const Navbar = () => {
+const Navbar = ({ onShowHome, onShowExplore }) => {
   const [isOpen, setIsOpen] = useState(false);
+
+  // Helper to create nav items, switching between Link and onClick
+  const navItems = [
+    { name: 'Home', handler: onShowHome, to: '/' },
+    { name: 'Explore', handler: onShowExplore, to: '/explore' },
+    { name: 'About', to: '/about' },
+    { name: 'Help', to: '/help' },
+  ];
 
   return (
     <nav className="font-montserrat absolute top-6 left-0 w-full z-50">
@@ -20,20 +28,30 @@ const Navbar = () => {
           <div className="flex items-center justify-between h-16">
 
             {/* Left: Logo */}
-            <Link to="/" className="text-2xl font-bold text-gray-800">
+            <div onClick={onShowHome} className="text-2xl font-bold text-gray-800 cursor-pointer">
               Room Saathi
-            </Link>
+            </div>
 
             {/* Center: Nav Links */}
             <div className="hidden md:flex items-center space-x-10">
-              {['Home', 'Explore', 'About', 'Help'].map((item) => (
-                <Link
-                  key={item}
-                  to={item === 'Home' ? '/' : `/${item.toLowerCase()}`}
-                  className="text-gray-700 hover:text-indigo-600 text-base font-medium transition"
-                >
-                  {item}
-                </Link>
+              {navItems.map((item) => (
+                item.handler ? (
+                  <div
+                    key={item.name}
+                    onClick={item.handler}
+                    className="text-gray-700 hover:text-indigo-600 text-base font-medium transition cursor-pointer"
+                  >
+                    {item.name}
+                  </div>
+                ) : (
+                  <Link
+                    key={item.name}
+                    to={item.to}
+                    className="text-gray-700 hover:text-indigo-600 text-base font-medium transition"
+                  >
+                    {item.name}
+                  </Link>
+                )
               ))}
             </div>
 
@@ -97,8 +115,8 @@ const Navbar = () => {
             "
           >
             <div className="space-y-3">
-              <Link className="block text-lg font-medium text-gray-700" to="/">Home</Link>
-              <Link className="block text-lg font-medium text-gray-700" to="/explore">Explore</Link>
+              <div onClick={onShowHome} className="block text-lg font-medium text-gray-700 cursor-pointer">Home</div>
+              <div onClick={onShowExplore} className="block text-lg font-medium text-gray-700 cursor-pointer">Explore</div>
               <Link className="block text-lg font-medium text-gray-700" to="/about">About</Link>
               <Link className="block text-lg font-medium text-gray-700" to="/help">Help</Link>
               <Link className="block text-lg font-medium text-gray-700" to="/profile">Profile</Link>
