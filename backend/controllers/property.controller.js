@@ -2,22 +2,10 @@ import { asyncHandler } from "../utils/asyncHandler.js"
 import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { Property } from "../models/property.model.js"
-import { asyncHandler } from "../utils/asyncHandler.js"
-import { ApiError } from "../utils/ApiError.js"
-import { ApiResponse } from "../utils/ApiResponse.js"
-import { Property } from "../models/property.model.js"
 import { uploadOnCloudinary } from "../utils/cloudinary.js"
 import { AMENITIES } from "../utils/constants.js"
 
-import { asyncHandler } from "../utils/asyncHandler.js";
-import { ApiError } from "../utils/ApiError.js";
-import { ApiResponse } from "../utils/ApiResponse.js";
-import { Property } from "../models/property.model.js";
-import { User } from "../models/user.model.js";
-import { uploadOnCloudinary, cloudinary } from "../utils/cloudinary.js";
-import { AMENITIES } from "../utils/constants.js";
-
-const addProperty = asyncHandler(async (req, res) => {
+const createProperty = asyncHandler(async (req, res) => {
     const {
         type,
         address,
@@ -54,7 +42,7 @@ const addProperty = asyncHandler(async (req, res) => {
     // Upload images to Cloudinary
     const uploadedImages = [];
     for (const file of imageFiles) {
-        const uploaded = await uploadOnCloudinary(file.buffer);
+        const uploaded = await uploadOnCloudinary(file.path);
         if (!uploaded?.secure_url) throw new ApiError(500, "Image upload failed");
         uploadedImages.push({ url: uploaded.secure_url, publicId: uploaded.public_id });
     }
@@ -131,7 +119,7 @@ const updateProperty = asyncHandler(async (req, res) => {
     // Upload new images
     const uploadedImages = await Promise.all(
         imageFiles.map(async file => {
-            const uploaded = await uploadOnCloudinary(file.buffer);
+            const uploaded = await uploadOnCloudinary(file.path);
             if (!uploaded?.secure_url) throw new ApiError(500, "Image upload failed");
             return { url: uploaded.secure_url, publicId: uploaded.public_id };
         })
@@ -244,7 +232,7 @@ const verifyPropertyRequest = asyncHandler(async (req, res) => {
     const uploadedDocuments = []
 
     for (let i = 0; i < documentFiles.length; i++) {
-        const uploaded = await uploadOnCloudinary(documentFiles[i].buffer)
+        const uploaded = await uploadOnCloudinary(documentFiles[i].path)
 
         if (!uploaded?.secure_url) {
             throw new ApiError(500, "Document upload failed")
@@ -332,7 +320,7 @@ const editPropertyDocument = asyncHandler(async (req, res) => {
     const newDocuments = []
 
     for (let i = 0; i < documentFiles.length; i++) {
-        const uploaded = await uploadOnCloudinary(documentFiles[i].buffer)
+        const uploaded = await uploadOnCloudinary(documentFiles[i].path)
 
         if (!uploaded?.secure_url) {
             throw new ApiError(500, "Document upload failed")
@@ -561,8 +549,7 @@ export {
     deleteProperty,
     getPropertiesByQueries,
     getReviews,
-    getRatingScore,
     verifyPropertyRequest,
-    editPropertyDocument,
-    
+    editPropertyDocument
+
 }  

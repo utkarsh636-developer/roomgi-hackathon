@@ -3,7 +3,6 @@ import { AMENITIES } from "../utils/constants.js";
 
 
 
-import mongoose, { Schema } from "mongoose";
 
 const propertySchema = new Schema(
   {
@@ -145,6 +144,13 @@ const propertySchema = new Schema(
           type: Date,
           default: Date.now
         }
+      }
+    ],
+
+    reports: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Report"
       }
     ],
 

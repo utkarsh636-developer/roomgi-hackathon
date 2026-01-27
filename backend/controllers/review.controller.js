@@ -266,7 +266,7 @@ const getReviewsByUserId = asyncHandler(async (req, res) => {
 });
 
 export {
-    addReview,
+    createReview,
     deleteReview,
     updateReview,
     getReviewsByUserId

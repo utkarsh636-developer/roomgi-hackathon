@@ -44,9 +44,53 @@ const userSchema = new Schema(
                 ref: "Booking"
             }
         ],
-        isVerified_byAdmin: {
-            type: Boolean,
-            default: false
+        /* ================= VERIFICATION ================= */
+        documents: [
+            {
+                type: {
+                    type: String,
+                    enum: [
+                        "aadhaar",
+                        "pan_card",
+                        "voter_id",
+                        "driving_license",
+                        "passport",
+                        "other"
+                    ],
+                    required: true
+                },
+                url: {
+                    type: String,
+                    required: true
+                },
+                publicId: {
+                    type: String,
+                    required: true
+                },
+                uploadedAt: {
+                    type: Date,
+                    default: Date.now
+                }
+            }
+        ],
+
+        verification: {
+            status: {
+                type: String,
+                enum: ["pending", "approved", "rejected"],
+                default: "pending",
+                index: true
+            },
+            verifiedBy: {
+                type: Schema.Types.ObjectId,
+                ref: "User" // admin
+            },
+            verifiedAt: {
+                type: Date
+            },
+            rejectionReason: {
+                type: String
+            }
         },
         isBlocked: {
             type: Boolean,
@@ -64,6 +108,12 @@ const userSchema = new Schema(
                 ref: "Property"
             }
         ],
+        reports: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: "Report"
+            }
+        ],
         password: {
             type: String,
             required: [true, 'Password is required']
@@ -78,11 +128,10 @@ const userSchema = new Schema(
     }
 )
 
-userSchema.pre("save", async function (next) {
-    if (!this.isModified("password")) return next();
+userSchema.pre("save", async function () {
+    if (!this.isModified("password")) return;
 
     this.password = await bcrypt.hash(this.password, 10)
-    next()
 })
 
 userSchema.methods.isPasswordCorrect = async function (password) {
