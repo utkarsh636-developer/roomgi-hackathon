@@ -37,16 +37,10 @@ const VerificationReview = () => {
                         </p>
                     </div>
                 </div>
-                <div className="flex gap-3">
-                    <button className="px-4 py-2 bg-white border border-gray-300 rounded-lg font-bold text-gray-700 hover:bg-gray-50">
-                        Request More Info
-                    </button>
-                    <button onClick={() => handleAction('reject')} className="px-4 py-2 bg-red-50 border border-red-200 text-red-700 rounded-lg font-bold hover:bg-red-100 flex items-center gap-2">
-                        <XCircle size={18} /> Reject
-                    </button>
-                    <button onClick={() => handleAction('approve')} className="px-4 py-2 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700 shadow-lg shadow-green-600/20 flex items-center gap-2">
-                        <ShieldCheck size={18} /> Approve & Verify
-                    </button>
+                <div>
+                    <span className="px-3 py-1 bg-gray-100 text-gray-500 rounded-full text-xs font-bold border border-gray-200 uppercase tracking-wide">
+                        Admin View
+                    </span>
                 </div>
             </div>
 
@@ -81,9 +75,9 @@ const VerificationReview = () => {
                     </div>
                 </div>
 
-                {/* Right: Data Checklist */}
-                <div className="w-96 bg-white border-l border-gray-200 overflow-y-auto">
-                    <div className="p-6">
+                {/* Right: Data Checklist & Actions */}
+                <div className="w-96 bg-white border-l border-gray-200 overflow-y-auto flex flex-col">
+                    <div className="p-6 flex-grow">
                         <h3 className="font-bold text-gray-900 mb-6">Applicant Data</h3>
 
                         <div className="space-y-6">
@@ -133,7 +127,23 @@ const VerificationReview = () => {
                                     placeholder="Add notes for other admins..."
                                 ></textarea>
                             </div>
+                        </div>
+                    </div>
 
+                    {/* Fixed Bottom Action Panel */}
+                    <div className="p-6 border-t border-gray-200 bg-gray-50 sticky bottom-0">
+                        <div className="flex flex-col gap-3">
+                            <div className="grid grid-cols-2 gap-3">
+                                <button className="px-4 py-2 bg-white border border-gray-300 rounded-lg font-bold text-gray-700 hover:bg-gray-100 text-sm">
+                                    Request Info
+                                </button>
+                                <button onClick={() => handleAction('reject')} className="px-4 py-2 bg-white border border-red-200 text-red-600 rounded-lg font-bold hover:bg-red-50 flex items-center justify-center gap-2 text-sm">
+                                    <XCircle size={16} /> Reject
+                                </button>
+                            </div>
+                            <button onClick={() => handleAction('approve')} className="w-full px-4 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2 transition-all">
+                                <ShieldCheck size={20} /> Approve & Verify
+                            </button>
                         </div>
                     </div>
                 </div>
