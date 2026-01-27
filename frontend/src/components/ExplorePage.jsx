@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import PropertyCard from './PropertyCard';
+import { Map, List, Filter, Search } from 'lucide-react';
 
 // Dummy data for property listings
 const properties = [
@@ -8,9 +10,10 @@ const properties = [
     location: 'Koramangala, Bangalore',
     price: 8500,
     deposit: 15000,
-    sharing: 'Double Sharing',
+    sharing: 'Double',
     gender: 'Girls',
-    imageUrl: '/images/girls-room.jpg' // Assuming you have images in public/images
+    imageUrl: '/images/girls-room.jpg',
+    isVerified: true
   },
   {
     id: 2,
@@ -18,9 +21,10 @@ const properties = [
     location: 'HSR Layout, Bangalore',
     price: 7000,
     deposit: 10000,
-    sharing: 'Triple Sharing',
+    sharing: 'Triple',
     gender: 'Boys',
-    imageUrl: '/images/pg-room.avif'
+    imageUrl: '/images/pg-room.avif',
+    isVerified: true
   },
   {
     id: 3,
@@ -28,9 +32,10 @@ const properties = [
     location: 'Indiranagar, Bangalore',
     price: 12000,
     deposit: 25000,
-    sharing: 'Single Room',
+    sharing: 'Single',
     gender: 'Both',
-    imageUrl: '/images/room3.jpg'
+    imageUrl: '/images/room3.jpg',
+    isVerified: false
   },
   {
     id: 4,
@@ -38,148 +43,187 @@ const properties = [
     location: 'Marathahalli, Bangalore',
     price: 6500,
     deposit: 10000,
-    sharing: 'Double Sharing',
+    sharing: 'Double',
     gender: 'Girls',
-    imageUrl: '/images/room4.jpg'
+    imageUrl: '/images/room4.jpg',
+    isVerified: true
   }
 ];
 
-// --- Sub-components for clarity ---
-
-const PropertyCard = ({ property }) => (
-  <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
-    <img src={property.imageUrl} alt={property.name} className="w-full h-48 object-cover" />
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-2">
-        <h3 className="text-xl font-bold font-montserrat text-gray-800">{property.name}</h3>
-        {property.gender && (
-          <span className="text-xs font-semibold px-2 py-1 rounded-full bg-indigo-100 text-indigo-800">
-            {property.gender}
-          </span>
-        )}
-      </div>
-      <p className="text-sm text-gray-500 mt-1">{property.location}</p>
-      <div className="mt-4 flex justify-between items-center">
-        <div>
-          <p className="text-lg font-semibold text-gray-900">₹{property.price.toLocaleString()}<span className="text-sm font-normal text-gray-500">/bed</span></p>
-          <p className="text-xs text-gray-500">Deposit: ₹{property.deposit.toLocaleString()}</p>
-        </div>
-        <p className="text-sm bg-gray-200 text-gray-700 px-2 py-1 rounded-full">{property.sharing}</p>
-      </div>
-      <button className="mt-4 w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition">
-        Contact Now
-      </button>
-    </div>
-  </div>
-);
-
 const FilterSection = ({ title, children }) => (
-  <div className="py-4 border-b border-gray-200">
-    <h4 className="font-semibold mb-3 text-gray-800">{title}</h4>
-    <div className="space-y-2">
+  <div className="py-5 border-b border-gray-100 last:border-0">
+    <h4 className="font-bold mb-4 text-gray-800 text-sm tracking-wide uppercase">{title}</h4>
+    <div className="space-y-3">
       {children}
     </div>
   </div>
 );
 
 const Checkbox = ({ label }) => (
-  <label className="flex items-center text-gray-600">
-    <input type="checkbox" className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" />
-    <span className="ml-2">{label}</span>
+  <label className="flex items-center text-gray-600 cursor-pointer hover:text-indigo-600 transition-colors">
+    <div className="relative flex items-center">
+      <input type="checkbox" className="peer h-5 w-5 text-indigo-600 border-2 border-gray-300 rounded focus:ring-indigo-500 checked:bg-indigo-600 checked:border-indigo-600 transition-all" />
+      <svg className="absolute w-3.5 h-3.5 text-white hidden peer-checked:block left-1 top-1 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
+    </div>
+    <span className="ml-3 text-sm font-medium">{label}</span>
   </label>
 );
-
-
-// --- Main Explore Page Component ---
 
 const ExplorePage = () => {
   const [budget, setBudget] = useState(15000);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [showMap, setShowMap] = useState(false);
 
   const FilterContent = () => (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h3 className="text-2xl font-bold mb-4 border-b pb-4">Filters</h3>
-      <FilterSection title="Budget">
-        <div className="relative">
-          <input 
-            type="range" 
-            min="5000" 
-            max="25000" 
+    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-full">
+      <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
+        <h3 className="text-xl font-bold text-gray-900 font-montserrat">Filters</h3>
+        <button className="text-sm text-indigo-600 font-semibold hover:text-indigo-800">Reset</button>
+      </div>
+
+      <FilterSection title="Budget Range">
+        <div className="relative pt-2">
+          <input
+            type="range"
+            min="5000"
+            max="25000"
             step="500"
             value={budget}
             onChange={(e) => setBudget(e.target.value)}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer range-indigo" 
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer range-indigo focus:outline-none"
           />
-          <div className="flex justify-between text-sm text-gray-500 mt-2">
-              <span>₹5k</span>
-              <span className="font-semibold text-indigo-600">₹{Number(budget).toLocaleString()}</span>
-              <span>₹25k+</span>
+          <div className="flex justify-between text-sm text-gray-500 mt-3 font-medium">
+            <span>₹5k</span>
+            <span className="text-indigo-600 bg-indigo-50 px-2 py-1 rounded">₹{Number(budget).toLocaleString()}</span>
+            <span>₹25k+</span>
           </div>
         </div>
       </FilterSection>
+
       <FilterSection title="Available For">
         <Checkbox label="Girls" />
         <Checkbox label="Boys" />
-        <Checkbox label="Both" />
-        <Checkbox label="College Students" />
-        <Checkbox label="Working Professionals" />
+        <Checkbox label="Co-ed (Unisex)" />
       </FilterSection>
-      <FilterSection title="Sharing">
-        <Checkbox label="Single" />
-        <Checkbox label="Double" />
-        <Checkbox label="Triple" />
+
+      <FilterSection title="Sharing Type">
+        <Checkbox label="Private Room" />
+        <Checkbox label="Double Sharing" />
+        <Checkbox label="Triple Sharing" />
       </FilterSection>
+
       <FilterSection title="Amenities">
         <Checkbox label="Wi-Fi" />
-        <Checkbox label="AC" />
-        <Checkbox label="Laundry" />
-        <Checkbox label="Parking" />
-      </FilterSection>
-      <FilterSection title="Furnishing Status">
-        <Checkbox label="Fully Furnished" />
-        <Checkbox label="Semi-Furnished" />
-        <Checkbox label="Unfurnished" />
+        <Checkbox label="Air Conditioning" />
+        <Checkbox label="Power Backup" />
+        <Checkbox label="Food Included" />
       </FilterSection>
     </div>
   );
 
   return (
-    <div className="bg-gray-50 min-h-screen pt-28">
-      <div className="max-w-screen-xl mx-auto px-8 py-12 md:py-8">
-        
-        {/* Mobile Filter Button */}
-        <div className="md:hidden mb-6">
-          <button 
-            onClick={() => setIsFilterOpen(!isFilterOpen)}
-            className="w-full flex justify-between items-center p-4 bg-white rounded-lg shadow-md"
-          >
-            <span className="text-lg font-bold">Filters</span>
-            <svg className={`w-6 h-6 transition-transform ${isFilterOpen ? 'transform rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-          {isFilterOpen && (
-            <div className="mt-4">
-              <FilterContent />
+    <div className="bg-slate-50 min-h-screen pt-24 font-sans">
+      <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        {/* Page Header & Controls */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 font-montserrat">
+              Explore
+              <span className="text-indigo-600 ml-2">Stays</span>
+            </h1>
+            <p className="text-gray-500 mt-2">Found {properties.length} verified properties in Bangalore</p>
+          </div>
+
+          <div className="flex gap-3 w-full md:w-auto">
+            {/* Search Bar */}
+            <div className="relative flex-grow md:w-80">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search by area, college..."
+                className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 transition-all outline-none"
+              />
             </div>
-          )}
+
+            {/* Map Toggle (Desktop) */}
+            <div className="bg-white p-1 rounded-xl border border-gray-200 hidden md:flex">
+              <button
+                onClick={() => setShowMap(false)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${!showMap ? 'bg-indigo-600 text-white shadow-md' : 'text-gray-500 hover:bg-gray-50'}`}
+              >
+                <List className="w-4 h-4" /> List
+              </button>
+              <button
+                onClick={() => setShowMap(true)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${showMap ? 'bg-indigo-600 text-white shadow-md' : 'text-gray-500 hover:bg-gray-50'}`}
+              >
+                <Map className="w-4 h-4" /> Map
+              </button>
+            </div>
+
+            {/* Mobile Filter Toggle */}
+            <button
+              onClick={() => setIsFilterOpen(!isFilterOpen)}
+              className="md:hidden flex items-center justify-center p-3 bg-white border border-gray-200 rounded-xl text-gray-700"
+            >
+              <Filter className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
-        <div className="flex flex-col md:flex-row md:gap-8">
+        {/* Mobile Filter Drawer (Conditional) */}
+        {isFilterOpen && (
+          <div className="md:hidden mb-6 animate-in slide-in-from-top-2 duration-200">
+            <FilterContent />
+          </div>
+        )}
 
-          {/* Right Column: Filters (for Desktop) */}
-          <div className="hidden md:block md:w-1/4">
+        <div className="flex flex-col lg:flex-row gap-8">
+
+          {/* Sidebar Filters */}
+          <div className="hidden lg:block w-72 flex-shrink-0">
             <div className="sticky top-28">
               <FilterContent />
             </div>
           </div>
 
-          {/* Left Column: Listings */}
-          <div className="md:w-3/4">
-            <h2 className="text-3xl font-bold mb-6 text-gray-900 hidden md:block">Rooms & PGs</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {properties.map(prop => <PropertyCard key={prop.id} property={prop} />)}
-            </div>
+          {/* Main Content Area */}
+          <div className="flex-grow">
+            {properties.length > 0 ? (
+              showMap ? (
+                // Placeholder for Map View
+                <div className="bg-white rounded-2xl h-[600px] flex flex-col items-center justify-center border border-gray-200 p-8 text-center">
+                  <div className="bg-indigo-50 p-6 rounded-full mb-6">
+                    <Map className="w-12 h-12 text-indigo-600" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Map View Coming Soon</h3>
+                  <p className="text-gray-500 max-w-md mx-auto">
+                    We are integrating Google Maps to show you verified properties near your college or office.
+                  </p>
+                  <button
+                    onClick={() => setShowMap(false)}
+                    className="mt-6 px-6 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition"
+                  >
+                    Switch to List View
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {properties.map(prop => <PropertyCard key={prop.id} property={prop} />)}
+                </div>
+              )
+            ) : (
+              // Empty State
+              <div className="flex flex-col items-center justify-center py-20 text-center">
+                <img src="/images/no-results.svg" alt="No Data" className="w-64 h-64 mb-6 opacity-80" />
+                <h3 className="text-2xl font-bold text-gray-800">No Properties Found</h3>
+                <p className="text-gray-500 mt-2">Try adjusting your filters or search for a different area.</p>
+                <button onClick={() => setBudget(25000)} className="mt-6 text-indigo-600 font-semibold hover:underline">
+                  Clear Filters
+                </button>
+              </div>
+            )}
           </div>
 
         </div>

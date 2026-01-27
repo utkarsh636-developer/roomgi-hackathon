@@ -1,139 +1,119 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { UserCircle } from 'lucide-react';
+import { UserCircle, LogIn, Menu, X } from 'lucide-react';
 
 const Navbar = ({ onShowHome, onShowExplore }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
-  // Helper to create nav items, switching between Link and onClick
+  // Change navbar background on scroll
+  React.useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const navItems = [
     { name: 'Home', handler: onShowHome, to: '/' },
     { name: 'Explore', handler: onShowExplore, to: '/explore' },
     { name: 'About', to: '/about' },
-    { name: 'Help', to: '/help' },
   ];
 
   return (
-    <nav className="font-montserrat absolute top-6 left-0 w-full z-50">
+    <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 font-montserrat ${isScrolled ? 'bg-white/90 backdrop-blur-md shadow-sm py-3' : 'bg-transparent py-5'}`}>
       <div className="max-w-screen-xl mx-auto px-6 sm:px-8 lg:px-12">
-        <div
-          className="
-            bg-white/70 backdrop-blur-lg
-            border border-white/30
-            shadow-lg
-            rounded-2xl
-            px-6
-          "
-        >
-          <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between">
 
-            {/* Left: Logo */}
-            <div onClick={onShowHome} className="text-2xl font-bold text-gray-800 cursor-pointer">
-              Room Saathi
-            </div>
+          {/* Logo */}
+          <div onClick={onShowHome} className="flex items-center gap-2 cursor-pointer group">
+            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-xl group-hover:rotate-12 transition-transform">R</div>
+            <span className={`text-2xl font-bold tracking-tight ${isScrolled ? 'text-gray-900' : 'text-white'}`}>
+              Room<span className="text-indigo-600">Gi</span>
+            </span>
+          </div>
 
-            {/* Center: Nav Links */}
-            <div className="hidden md:flex items-center space-x-10">
-              {navItems.map((item) => (
-                item.handler ? (
-                  <div
-                    key={item.name}
-                    onClick={item.handler}
-                    className="text-gray-700 hover:text-indigo-600 text-base font-medium transition cursor-pointer"
-                  >
-                    {item.name}
-                  </div>
-                ) : (
-                  <Link
-                    key={item.name}
-                    to={item.to}
-                    className="text-gray-700 hover:text-indigo-600 text-base font-medium transition"
-                  >
-                    {item.name}
-                  </Link>
-                )
-              ))}
-            </div>
+          {/* Desktop Nav */}
+          <div className={`hidden md:flex items-center space-x-8 ${isScrolled ? 'text-gray-600' : 'text-gray-200'}`}>
+            {navItems.map((item) => (
+              item.handler ? (
+                <button
+                  key={item.name}
+                  onClick={item.handler}
+                  className="hover:text-indigo-500 font-medium transition-colors"
+                >
+                  {item.name}
+                </button>
+              ) : (
+                <Link
+                  key={item.name}
+                  to={item.to}
+                  className="hover:text-indigo-500 font-medium transition-colors"
+                >
+                  {item.name}
+                </Link>
+              )
+            ))}
+          </div>
 
-            {/* Right: Profile + List Property */}
-            <div className="hidden md:flex items-center space-x-8">
-              {/* Profile */}
-              <Link
-                to="/profile"
-                className="text-gray-600 hover:text-indigo-600 transition"
-                title="Profile"
-              >
-                <UserCircle size={30} />
-              </Link>
+          {/* Desktop Actions */}
+          <div className="hidden md:flex items-center space-x-4">
+            <Link
+              to="/login"
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-semibold transition-all ${isScrolled ? 'text-gray-900 hover:bg-gray-100' : 'text-white hover:bg-white/10'}`}
+            >
+              <LogIn size={18} />
+              Login
+            </Link>
 
-              {/* List Property */}
-              <Link
-                to="/list-property"
-                className="
-                  px-5 py-2
+            <Link
+              to="/list-property"
+              className="
+                  px-5 py-2.5
                   rounded-xl
-                  text-base font-semibold
+                  text-sm font-bold
                   text-white
                   bg-indigo-600 hover:bg-indigo-700
-                  transition
+                  active:scale-95
+                  shadow-lg shadow-indigo-600/20
+                  transition-all
                 "
-              >
-                List Property
-              </Link>
-            </div>
-
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden p-2 rounded-lg text-gray-600 hover:bg-white/60 transition"
             >
-              {!isOpen ? (
-                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              ) : (
-                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              )}
-            </button>
-
+              List Property
+            </Link>
           </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className={`md:hidden p-2 rounded-lg transition ${isScrolled ? 'text-gray-900' : 'text-white'}`}
+          >
+            {isOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
 
         {/* Mobile Menu */}
         {isOpen && (
-          <div
-            className="
-              mt-3
-              bg-white/70 backdrop-blur-lg
-              border border-white/30
-              rounded-2xl
-              shadow-lg
-              px-6 py-4
-              md:hidden
-            "
-          >
-            <div className="space-y-3">
-              <div onClick={onShowHome} className="block text-lg font-medium text-gray-700 cursor-pointer">Home</div>
-              <div onClick={onShowExplore} className="block text-lg font-medium text-gray-700 cursor-pointer">Explore</div>
-              <Link className="block text-lg font-medium text-gray-700" to="/about">About</Link>
-              <Link className="block text-lg font-medium text-gray-700" to="/help">Help</Link>
-              <Link className="block text-lg font-medium text-gray-700" to="/profile">Profile</Link>
-
-              <Link
-                to="/list-property"
-                className="
-                  block text-center mt-3
-                  px-4 py-2
-                  rounded-xl
-                  text-lg font-semibold
-                  text-white
-                  bg-indigo-600 hover:bg-indigo-700
-                "
-              >
-                List Property
-              </Link>
+          <div className="absolute top-full left-0 w-full bg-white border-b border-gray-100 shadow-xl p-6 md:hidden animate-in slide-in-from-top-2">
+            <div className="flex flex-col space-y-4">
+              {navItems.map((item) => (
+                item.handler ? (
+                  <button key={item.name} onClick={() => { item.handler(); setIsOpen(false); }} className="text-left text-lg font-medium text-gray-800 py-2 border-b border-gray-50">
+                    {item.name}
+                  </button>
+                ) : (
+                  <Link key={item.name} to={item.to} onClick={() => setIsOpen(false)} className="text-left text-lg font-medium text-gray-800 py-2 border-b border-gray-50">
+                    {item.name}
+                  </Link>
+                )
+              ))}
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <Link to="/login" className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-gray-700 bg-gray-100">
+                  Login
+                </Link>
+                <Link to="/list-property" className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-white bg-indigo-600 shadow-lg shadow-indigo-200">
+                  List Property
+                </Link>
+              </div>
             </div>
           </div>
         )}
