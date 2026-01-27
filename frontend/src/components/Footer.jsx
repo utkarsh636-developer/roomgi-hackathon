@@ -35,7 +35,7 @@ const Footer = () => {
               <li><Link to="/explore" className="hover:text-indigo-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></span>Explore Stays</Link></li>
               <li><Link to="/about" className="hover:text-indigo-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></span>About Us</Link></li>
               <li><Link to="/blog" className="hover:text-indigo-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></span>Blog</Link></li>
-              <li><Link to="/list-property" className="hover:text-indigo-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></span>List Property</Link></li>
+              <li><Link to="/become-host" className="hover:text-indigo-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></span>List Property</Link></li>
             </ul>
           </div>
 
