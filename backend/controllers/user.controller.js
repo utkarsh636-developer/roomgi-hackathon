@@ -3,22 +3,8 @@ import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { User } from "../models/user.model.js"
 import jwt from "jsonwebtoken"
-import { uploadOnCloudinary, cloudinary } from "../utils/cloudinary.js"
-const extractPublicId = (cloudinaryUrl) => {
-    if (!cloudinaryUrl) return null
+import { uploadOnCloudinary, cloudinary, extractPublicId } from "../utils/cloudinary.js"
 
-    const parts = cloudinaryUrl.split("/upload/")
-    if (parts.length < 2) return null
-
-    const publicIdWithVersion = parts[1]
-    const publicId = publicIdWithVersion
-        .split("/")
-        .slice(1)
-        .join("/")
-        .replace(/\.[^/.]+$/, "")
-
-    return publicId
-}
 const refreshAccessToken = asyncHandler(async (req, res) => {
     const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
 

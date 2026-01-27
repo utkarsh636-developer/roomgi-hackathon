@@ -2,8 +2,13 @@ import { asyncHandler } from "../utils/asyncHandler.js"
 import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { Property } from "../models/property.model.js"
-import { uploadOnCloudinary } from "../utils/cloudinary.js"
+import { uploadOnCloudinary ,cloudinary,extractPublicId} from "../utils/cloudinary.js"
 import { AMENITIES } from "../utils/constants.js"
+import { User } from "../models/user.model.js"
+import { Review } from "../models/review.model.js"
+import { Report } from "../models/report.model.js"
+import { Enquiry } from "../models/enquiry.model.js"
+
 
 const createProperty = asyncHandler(async (req, res) => {
     const {
@@ -12,13 +17,8 @@ const createProperty = asyncHandler(async (req, res) => {
         city,
         state,
         pincode,
-        rent,
-        securityDeposit,
-        amenities,
-        capacity,
         description,
-        preferences,
-        coordinates // expect { lng, lat } from frontend
+        preferences
     } = req.body;
 
     const owner = req.user?._id;
@@ -26,32 +26,64 @@ const createProperty = asyncHandler(async (req, res) => {
 
     if (role !== "owner") throw new ApiError(403, "Unauthorized");
 
-    // Validate coordinates
-    if (
-        !coordinates ||
-        typeof coordinates.lng !== "number" ||
-        typeof coordinates.lat !== "number"
-    ) {
+    /* -------- numbers -------- */
+    const rent = Number(req.body.rent);
+    const securityDeposit = Number(req.body.securityDeposit);
+
+    if (Number.isNaN(rent) || Number.isNaN(securityDeposit)) {
+        throw new ApiError(400, "Valid rent and securityDeposit are required");
+    }
+
+    /* -------- coordinates -------- */
+    const lng = parseFloat(req.body["coordinates.lng"]);
+    const lat = parseFloat(req.body["coordinates.lat"]);
+
+    if (Number.isNaN(lng) || Number.isNaN(lat)) {
         throw new ApiError(400, "Valid coordinates (lng, lat) are required");
     }
 
-    const imageFiles = req.files?.images;
-    if (!imageFiles || imageFiles.length === 0) throw new ApiError(400, "At least one image is required");
-    if (imageFiles.length > 4) throw new ApiError(400, "Maximum 4 images allowed");
+    /* -------- capacity -------- */
+    const capacityTotal = parseInt(req.body["capacity.total"]);
+    if (Number.isNaN(capacityTotal)) {
+        throw new ApiError(400, "Capacity total is required");
+    }
 
-    // Upload images to Cloudinary
+    const capacity = {
+        total: capacityTotal,
+        occupied: 0
+    };
+
+    /* -------- amenities -------- */
+    let amenities = req.body.amenities || [];
+    if (!Array.isArray(amenities)) amenities = [amenities];
+
+    const validAmenities = amenities.filter(a => AMENITIES.includes(a));
+    if (validAmenities.length !== amenities.length) {
+        throw new ApiError(400, "One or more invalid amenities provided");
+    }
+
+    /* -------- images -------- */
+    const imageFiles = req.files?.images;
+    if (!imageFiles || imageFiles.length === 0) {
+        throw new ApiError(400, "At least one image is required");
+    }
+    if (imageFiles.length > 4) {
+        throw new ApiError(400, "Maximum 4 images allowed");
+    }
+
     const uploadedImages = [];
     for (const file of imageFiles) {
         const uploaded = await uploadOnCloudinary(file.path);
-        if (!uploaded?.secure_url) throw new ApiError(500, "Image upload failed");
-        uploadedImages.push({ url: uploaded.secure_url, publicId: uploaded.public_id });
+        if (!uploaded?.secure_url) {
+            throw new ApiError(500, "Image upload failed");
+        }
+        uploadedImages.push({
+            url: uploaded.secure_url,
+            publicId: uploaded.public_id
+        });
     }
 
-    // Validate amenities
-    const validAmenities = amenities.filter(a => AMENITIES.includes(a));
-    if (validAmenities.length !== amenities.length) throw new ApiError(400, "One or more invalid amenities provided");
-
-    // Create property
+    /* -------- create -------- */
     const property = await Property.create({
         type,
         location: {
@@ -61,7 +93,7 @@ const createProperty = asyncHandler(async (req, res) => {
             pincode,
             coordinates: {
                 type: "Point",
-                coordinates: [coordinates.lng, coordinates.lat] // GeoJSON format
+                coordinates: [lng, lat]
             }
         },
         rent,
@@ -70,14 +102,17 @@ const createProperty = asyncHandler(async (req, res) => {
         images: uploadedImages,
         capacity,
         description,
-        preferences, // string
+        preferences,
         owner
     });
 
-    // Add property ID to owner's properties array
-    await User.findByIdAndUpdate(owner, { $push: { properties: property._id } });
+    await User.findByIdAndUpdate(owner, {
+        $push: { properties: property._id }
+    });
 
-    return res.status(201).json(new ApiResponse(201, property, "Property added successfully and linked to owner"));
+    return res.status(201).json(
+        new ApiResponse(201, property, "Property added successfully and linked to owner")
+    );
 });
 
 
