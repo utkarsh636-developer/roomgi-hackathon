@@ -7,7 +7,21 @@ cloudinary.config({
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET
 });
+export const extractPublicId = (cloudinaryUrl) => {
+    if (!cloudinaryUrl) return null
 
+    const parts = cloudinaryUrl.split("/upload/")
+    if (parts.length < 2) return null
+
+    const publicIdWithVersion = parts[1]
+    const publicId = publicIdWithVersion
+        .split("/")
+        .slice(1)
+        .join("/")
+        .replace(/\.[^/.]+$/, "")
+
+    return publicId
+}
 const uploadOnCloudinary = async (localFilePath) => {
     try {
         if (!localFilePath) return null

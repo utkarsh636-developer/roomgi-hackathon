@@ -1,5 +1,6 @@
 export const DB_NAME = "roomgi";
 
+
 export const AMENITIES = [
     // Basic Living
     "wifi",

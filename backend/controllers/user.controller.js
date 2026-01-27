@@ -4,8 +4,21 @@ import { ApiResponse } from "../utils/ApiResponse.js"
 import { User } from "../models/user.model.js"
 import jwt from "jsonwebtoken"
 import { uploadOnCloudinary, cloudinary } from "../utils/cloudinary.js"
+const extractPublicId = (cloudinaryUrl) => {
+    if (!cloudinaryUrl) return null
 
+    const parts = cloudinaryUrl.split("/upload/")
+    if (parts.length < 2) return null
 
+    const publicIdWithVersion = parts[1]
+    const publicId = publicIdWithVersion
+        .split("/")
+        .slice(1)
+        .join("/")
+        .replace(/\.[^/.]+$/, "")
+
+    return publicId
+}
 const refreshAccessToken = asyncHandler(async (req, res) => {
     const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
 
@@ -115,7 +128,9 @@ const registerUser = asyncHandler(async (req, res) => {
                         email: user.email,
                         role: user.role,
                         phoneNumber: user.phoneNumber
-                    }
+                    },
+                    accessToken,
+                    refreshToken
                 },
                 "User registered successfully"
             )
@@ -161,7 +176,9 @@ const loginUser = asyncHandler(async (req, res) => {
                         email: user.email,
                         role: user.role,
                         phoneNumber: user.phoneNumber
-                    }
+                    },
+                    accessToken,
+                    refreshToken
                 },
                 "User logged in successfully"
             )
@@ -213,6 +230,8 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 })
 
 const updateProfile = asyncHandler(async (req, res) => {
+    console.log("FUNCTION EXISTS:", typeof extractPublicId)
+
     const userId = req.user?._id
     if (!userId) {
         throw new ApiError(401, "Unauthorized")
@@ -260,6 +279,7 @@ const updateProfile = asyncHandler(async (req, res) => {
     }
 
     if (oldAvatarUrl) {
+        console.log(oldAvatarUrl)
         const publicId = extractPublicId(oldAvatarUrl)
         await cloudinary.uploader.destroy(publicId)
     }
@@ -383,7 +403,7 @@ const verifyUserRequest = asyncHandler(async (req, res) => {
     const uploadedDocuments = []
 
     for (let i = 0; i < documentFiles.length; i++) {
- 
+
         const file = documentFiles[i]
         const localFilePath = file.path
 
