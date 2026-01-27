@@ -6,7 +6,7 @@ const LoginPage = () => {
 
   const handleLogin = () => {
     // Add authentication logic here
-    navigate('/');
+    navigate('/home');
   };
 
   return (

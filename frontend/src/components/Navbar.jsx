@@ -6,7 +6,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
-  const showWhiteBg = isScrolled || location.pathname !== '/';
+  const showWhiteBg = isScrolled || (location.pathname !== '/' && location.pathname !== '/home');
 
   // Change navbar background on scroll
   React.useEffect(() => {
@@ -16,7 +16,7 @@ const Navbar = () => {
   }, []);
 
   const navItems = [
-    { name: 'Home', to: '/' },
+    { name: 'Home', to: '/home' },
     { name: 'Explore', to: '/explore' },
     { name: 'About', to: '/about' },
   ];
@@ -27,7 +27,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between">
 
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 cursor-pointer group">
+          <Link to="/home" className="flex items-center gap-2 cursor-pointer group">
             <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-xl group-hover:rotate-12 transition-transform">R</div>
             <span className={`text-2xl font-bold tracking-tight ${showWhiteBg ? 'text-gray-900' : 'text-white'}`}>
               Room<span className="text-indigo-600">Gi</span>

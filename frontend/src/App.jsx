@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Landing from './components/Landing';
 import Footer from './components/Footer';
@@ -14,12 +14,17 @@ import AdminDashboard from './components/AdminDashboard';
 import VerificationReview from './components/VerificationReview';
 
 function App() {
+  const location = useLocation();
+  // '/' is Login, '/register' is Register. Also handling '/login' just in case.
+  const isAuthPage = ['/', '/register', '/login'].includes(location.pathname);
+
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar />
+      {!isAuthPage && <Navbar />}
       <main className="flex-grow">
         <Routes>
-          <Route path="/" element={<Landing />} />
+          <Route path="/" element={<LoginPage />} />
+          <Route path="/home" element={<Landing />} />
           <Route path="/explore" element={<ExplorePage />} />
           <Route path="/property/:id" element={<PropertyDetailsPage />} />
           <Route path="/become-host" element={<OwnerLanding />} />
@@ -31,7 +36,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
         </Routes>
       </main>
-      <Footer />
+      {!isAuthPage && <Footer />}
     </div>
   );
 }

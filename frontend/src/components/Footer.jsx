@@ -10,7 +10,7 @@ const Footer = () => {
 
           {/* Brand Column */}
           <div className="space-y-4">
-            <Link to="/" className="flex items-center gap-2 group">
+            <Link to="/home" className="flex items-center gap-2 group">
               <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold text-2xl group-hover:rotate-12 transition-transform shadow-lg shadow-indigo-900/50">R</div>
               <span className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
                 Room<span className="text-indigo-500">Gi</span>
@@ -31,7 +31,7 @@ const Footer = () => {
           <div>
             <h3 className="text-white font-bold text-lg mb-6">Quick Links</h3>
             <ul className="space-y-3">
-              <li><Link to="/" className="hover:text-indigo-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></span>Home</Link></li>
+              <li><Link to="/home" className="hover:text-indigo-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></span>Home</Link></li>
               <li><Link to="/explore" className="hover:text-indigo-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></span>Explore Stays</Link></li>
               <li><Link to="/about" className="hover:text-indigo-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></span>About Us</Link></li>
               <li><Link to="/blog" className="hover:text-indigo-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></span>Blog</Link></li>
