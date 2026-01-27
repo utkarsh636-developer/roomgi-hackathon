@@ -1,43 +1,18 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import Landing from './components/Landing';
-import Footer from './components/Footer';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
-import ExplorePage from './components/ExplorePage';
-import PropertyDetailsPage from './components/PropertyDetailsPage';
-import OwnerLanding from './components/OwnerLanding';
-import OwnerDashboard from './components/OwnerDashboard';
-import AddPropertyWizard from './components/AddPropertyWizard';
-import AdminDashboard from './components/AdminDashboard';
-import VerificationReview from './components/VerificationReview';
+import Home from './components/Home';
+
 
 function App() {
-  const location = useLocation();
-  // '/' is Login, '/register' is Register. Also handling '/login' just in case.
-  const isAuthPage = ['/', '/register', '/login'].includes(location.pathname);
-
   return (
-    <div className="flex flex-col min-h-screen">
-      {!isAuthPage && <Navbar />}
-      <main className="flex-grow">
-        <Routes>
-          <Route path="/" element={<LoginPage />} />
-          <Route path="/home" element={<Landing />} />
-          <Route path="/explore" element={<ExplorePage />} />
-          <Route path="/property/:id" element={<PropertyDetailsPage />} />
-          <Route path="/become-host" element={<OwnerLanding />} />
-          <Route path="/owner-dashboard" element={<OwnerDashboard />} />
-          <Route path="/add-property" element={<AddPropertyWizard />} />
-          <Route path="/admin-dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/verify/:id" element={<VerificationReview />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-        </Routes>
-      </main>
-      {!isAuthPage && <Footer />}
-    </div>
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/home" element={<Home />} />
+      <Route path="/" element={<Navigate to="/login" replace />} />
+    </Routes>
   );
 }
 
