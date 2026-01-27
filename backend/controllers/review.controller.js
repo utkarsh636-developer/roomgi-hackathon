@@ -7,148 +7,250 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { cloudinary } from "../utils/cloudinary.js";
 
 const createReview = asyncHandler(async (req, res) => {
-    const { propertyId, rating, comment } = req.body;
-    const userId = req.user?._id;
-    const role = req.user?.role;
+    const { propertyId, rating, comment } = req.body
+    const userId = req.user?._id
+    const role = req.user?.role
 
-    if (role !== "tenant") throw new ApiError(403, "Unauthorized");
+    if (role !== "tenant") {
+        throw new ApiError(403, "Unauthorized")
+    }
 
-    // Ensure property exists
-    const property = await Property.findById(propertyId);
-    if (!property) throw new ApiError(404, "Property not found");
+    if (!rating || rating < 1 || rating > 5) {
+        throw new ApiError(400, "Rating must be between 1 and 5")
+    }
 
-    // Validate images
-    const imageFiles = req.files?.images || [];
+    const property = await Property.findById(propertyId)
+    if (!property) {
+        throw new ApiError(404, "Property not found")
+    }
+
+    /* ================= IMAGE VALIDATION ================= */
+
+    const imageFiles = req.files?.images || []
     if (imageFiles.length > 2) {
-        throw new ApiError(400, "Maximum 2 images allowed for a review");
+        throw new ApiError(400, "Maximum 2 images allowed for a review")
     }
 
-    // Upload images to Cloudinary
-    const uploadedImages = [];
+    const uploadedImages = []
     for (const file of imageFiles) {
-        const uploaded = await uploadOnCloudinary(file.buffer);
-        if (!uploaded?.secure_url) throw new ApiError(500, "Image upload failed");
-        uploadedImages.push({
-            url: uploaded.secure_url,
-            publicId: uploaded.public_id
-        });
+        const uploaded = await uploadOnCloudinary(file.buffer)
+        if (!uploaded?.secure_url) {
+            throw new ApiError(500, "Image upload failed")
+        }
+        uploadedImages.push(uploaded.secure_url)
     }
 
-    // Create the review
+    /* ================= CREATE REVIEW ================= */
+
     const review = await Review.create({
         property: propertyId,
         user: userId,
         rating,
         comment,
-        images: uploadedImages.map(img => img.url) // only store URLs
-    });
+        images: uploadedImages
+    })
 
-    // Add review ID to property's reviews array
-    property.reviews.push(review._id);
-    await property.save();
+    /* ================= LINK REVIEW ================= */
+
+    property.reviews.push(review._id)
+    await property.save()
+
+    /* ================= UPDATE RATING SCORE ================= */
+
+    const ratingStats = await Review.aggregate([
+        { $match: { property: property._id } },
+        {
+            $group: {
+                _id: "$property",
+                avgRating: { $avg: "$rating" }
+            }
+        }
+    ])
+
+    const avgRating = ratingStats.length
+        ? Number(ratingStats[0].avgRating.toFixed(1))
+        : 0
+
+    await Property.findByIdAndUpdate(propertyId, {
+        ratingScore: avgRating
+    })
 
     return res.status(201).json(
         new ApiResponse(
             201,
             review,
-            "Review added successfully and linked to property"
+            "Review added successfully and rating updated"
         )
-    );
-});
+    )
+})
 
 const deleteReview = asyncHandler(async (req, res) => {
-    const { reviewId } = req.params;
-    const userId = req.user?._id;
-    const role = req.user?.role;
+    const { reviewId } = req.params
+    const userId = req.user?._id
+    const role = req.user?.role
 
-    if (role !== "tenant") throw new ApiError(403, "Unauthorized");
+    if (role !== "tenant") {
+        throw new ApiError(403, "Unauthorized")
+    }
 
-    const review = await Review.findById(reviewId);
-    if (!review) throw new ApiError(404, "Review not found");
+    const review = await Review.findById(reviewId)
+    if (!review) {
+        throw new ApiError(404, "Review not found")
+    }
 
     if (review.user.toString() !== userId.toString()) {
-        throw new ApiError(403, "You can only delete your own reviews");
+        throw new ApiError(403, "You can only delete your own reviews")
     }
 
-    // Remove review ID from property's reviews array
-    await Property.findByIdAndUpdate(review.property, {
+    const propertyId = review.property
+
+    /* ================= REMOVE REVIEW FROM PROPERTY ================= */
+
+    await Property.findByIdAndUpdate(propertyId, {
         $pull: { reviews: review._id }
-    });
+    })
 
-    // Delete images from Cloudinary if needed
-    if (review.images && review.images.length > 0) {
+    /* ================= DELETE REVIEW IMAGES ================= */
+
+    if (review.images?.length) {
         await Promise.all(
-            review.images.map(async (imgUrl) => {
-                const publicId = imgUrl.split("/").pop().split(".")[0]; // simple extraction, works if no folder
-                await cloudinary.uploader.destroy(publicId);
+            review.images.map((imgUrl) => {
+                const publicId = imgUrl.split("/").pop().split(".")[0]
+                return cloudinary.uploader.destroy(publicId)
             })
-        );
+        )
     }
 
-    // Delete the review
-    await Review.findByIdAndDelete(reviewId);
+    /* ================= DELETE REVIEW ================= */
+
+    await Review.findByIdAndDelete(reviewId)
+
+    /* ================= RECALCULATE RATING ================= */
+
+    const ratingStats = await Review.aggregate([
+        { $match: { property: propertyId } },
+        {
+            $group: {
+                _id: "$property",
+                avgRating: { $avg: "$rating" }
+            }
+        }
+    ])
+
+    const avgRating = ratingStats.length
+        ? Number(ratingStats[0].avgRating.toFixed(1))
+        : 0
+
+    await Property.findByIdAndUpdate(propertyId, {
+        ratingScore: avgRating
+    })
 
     return res.status(200).json(
-        new ApiResponse(200, {}, "Review deleted successfully and removed from property")
-    );
-});
-
+        new ApiResponse(
+            200,
+            {},
+            "Review deleted and property rating updated"
+        )
+    )
+})
 const updateReview = asyncHandler(async (req, res) => {
-    const { reviewId } = req.params;
-    const userId = req.user?._id;
-    const role = req.user?.role;
+    const { reviewId } = req.params
+    const userId = req.user?._id
+    const role = req.user?.role
 
-    if (role !== "tenant") throw new ApiError(403, "Unauthorized");
+    if (role !== "tenant") {
+        throw new ApiError(403, "Unauthorized")
+    }
 
-    const review = await Review.findById(reviewId);
-    if (!review) throw new ApiError(404, "Review not found");
+    const review = await Review.findById(reviewId)
+    if (!review) {
+        throw new ApiError(404, "Review not found")
+    }
 
     if (review.user.toString() !== userId.toString()) {
-        throw new ApiError(403, "You can only update your own reviews");
+        throw new ApiError(403, "You can only update your own reviews")
     }
 
-    const { rating, comment } = req.body;
-    const imageFiles = req.files?.images || [];
+    const { rating, comment } = req.body
+    const imageFiles = req.files?.images || []
 
-    if (!rating && !comment && imageFiles.length === 0) {
-        throw new ApiError(400, "Nothing to update");
+    if (
+        rating === undefined &&
+        comment === undefined &&
+        imageFiles.length === 0
+    ) {
+        throw new ApiError(400, "Nothing to update")
     }
 
-    // Update rating and comment if provided
-    if (rating !== undefined) review.rating = rating;
-    if (comment !== undefined) review.comment = comment;
+    const ratingChanged = rating !== undefined && rating !== review.rating
 
-    // Handle images if new files provided
+    /* ================= UPDATE FIELDS ================= */
+
+    if (rating !== undefined) review.rating = rating
+    if (comment !== undefined) review.comment = comment
+
+    /* ================= HANDLE IMAGES ================= */
+
     if (imageFiles.length > 0) {
-        if (imageFiles.length > 2) throw new ApiError(400, "Maximum 2 images allowed");
+        if (imageFiles.length > 2) {
+            throw new ApiError(400, "Maximum 2 images allowed")
+        }
 
-        // Delete old images from Cloudinary
-        if (review.images && review.images.length > 0) {
+        // Delete old images
+        if (review.images?.length) {
             await Promise.all(
-                review.images.map(async (imgUrl) => {
-                    const publicId = imgUrl.split("/").pop().split(".")[0];
-                    await cloudinary.uploader.destroy(publicId);
+                review.images.map((imgUrl) => {
+                    const publicId = imgUrl.split("/").pop().split(".")[0]
+                    return cloudinary.uploader.destroy(publicId)
                 })
-            );
+            )
         }
 
         // Upload new images
-        const uploadedImages = [];
+        const uploadedImages = []
         for (const file of imageFiles) {
-            const uploaded = await uploadOnCloudinary(file.buffer);
-            if (!uploaded?.secure_url) throw new ApiError(500, "Image upload failed");
-            uploadedImages.push(uploaded.secure_url);
+            const uploaded = await uploadOnCloudinary(file.buffer)
+            if (!uploaded?.secure_url) {
+                throw new ApiError(500, "Image upload failed")
+            }
+            uploadedImages.push(uploaded.secure_url)
         }
 
-        review.images = uploadedImages;
+        review.images = uploadedImages
     }
 
-    await review.save();
+    await review.save()
+
+    /* ================= RECALCULATE RATING ================= */
+
+    if (ratingChanged) {
+        const ratingStats = await Review.aggregate([
+            { $match: { property: review.property } },
+            {
+                $group: {
+                    _id: "$property",
+                    avgRating: { $avg: "$rating" }
+                }
+            }
+        ])
+
+        const avgRating = ratingStats.length
+            ? Number(ratingStats[0].avgRating.toFixed(1))
+            : 0
+
+        await Property.findByIdAndUpdate(review.property, {
+            ratingScore: avgRating
+        })
+    }
 
     return res.status(200).json(
-        new ApiResponse(200, review, "Review updated successfully")
-    );
-});
+        new ApiResponse(
+            200,
+            review,
+            "Review updated successfully"
+        )
+    )
+})
 
 const getReviewsByUserId = asyncHandler(async (req, res) => {
     const { userId } = req.params;
@@ -162,3 +264,10 @@ const getReviewsByUserId = asyncHandler(async (req, res) => {
         new ApiResponse(200, reviews, "Reviews fetched successfully")
     );
 });
+
+export {
+    addReview,
+    deleteReview,
+    updateReview,
+    getReviewsByUserId
+}

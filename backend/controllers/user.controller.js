@@ -17,36 +17,36 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
             incomingRefreshToken,
             process.env.REFRESH_TOKEN_SECRET
         )
-    
+
         const user = await User.findById(decodedToken?._id)
-    
+
         if (!user) {
             throw new ApiError(401, "Invalid refresh token")
         }
-    
+
         if (incomingRefreshToken !== user?.refreshToken) {
             throw new ApiError(401, "Refresh token is expired or used")
-            
+
         }
-    
+
         const options = {
             httpOnly: true,
             secure: true
         }
-    
-        const {accessToken, newRefreshToken} = await generateAccessAndRefereshTokens(user._id)
-    
+
+        const { accessToken, newRefreshToken } = await generateAccessAndRefereshTokens(user._id)
+
         return res
-        .status(200)
-        .cookie("accessToken", accessToken, options)
-        .cookie("refreshToken", newRefreshToken, options)
-        .json(
-            new ApiResponse(
-                200, 
-                {accessToken, refreshToken: newRefreshToken},
-                "Access token refreshed"
+            .status(200)
+            .cookie("accessToken", accessToken, options)
+            .cookie("refreshToken", newRefreshToken, options)
+            .json(
+                new ApiResponse(
+                    200,
+                    { accessToken, refreshToken: newRefreshToken },
+                    "Access token refreshed"
+                )
             )
-        )
     } catch (error) {
         throw new ApiError(401, error?.message || "Invalid refresh token")
     }
@@ -54,7 +54,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 })
 
 
-const generateAccessAndRefereshTokens = async(userId) =>{
+const generateAccessAndRefereshTokens = async (userId) => {
     try {
         const user = await User.findById(userId)
         const accessToken = user.generateAccessToken()
@@ -63,7 +63,7 @@ const generateAccessAndRefereshTokens = async(userId) =>{
         user.refreshToken = refreshToken
         await user.save({ validateBeforeSave: false })
 
-        return {accessToken, refreshToken}
+        return { accessToken, refreshToken }
 
 
     } catch (error) {
@@ -72,9 +72,9 @@ const generateAccessAndRefereshTokens = async(userId) =>{
 }
 
 const registerUser = asyncHandler(async (req, res) => {
-    const { username, email, password, role } = req.body
+    const { username, email, password, role, phoneNumber } = req.body
 
-    if (!username || !email || !password) {
+    if (!username || !email || !password || !phoneNumber) {
         throw new ApiError(400, "All required fields must be provided")
     }
 
@@ -87,7 +87,8 @@ const registerUser = asyncHandler(async (req, res) => {
         username,
         email,
         password,
-        role
+        role,
+        phoneNumber
     })
 
     const { accessToken, refreshToken } =
@@ -111,7 +112,8 @@ const registerUser = asyncHandler(async (req, res) => {
                         _id: user._id,
                         username: user.username,
                         email: user.email,
-                        role: user.role
+                        role: user.role,
+                        phoneNumber: user.phoneNumber
                     }
                 },
                 "User registered successfully"
@@ -156,7 +158,8 @@ const loginUser = asyncHandler(async (req, res) => {
                         _id: user._id,
                         username: user.username,
                         email: user.email,
-                        role: user.role
+                        role: user.role,
+                        phoneNumber: user.phoneNumber
                     }
                 },
                 "User logged in successfully"
@@ -214,10 +217,10 @@ const updateProfile = asyncHandler(async (req, res) => {
         throw new ApiError(401, "Unauthorized")
     }
 
-    const { username, password } = req.body
+    const { username, password, phoneNumber } = req.body
     const profilePicture = req.file?.path
 
-    if (!username && !password && !profilePicture) {
+    if (!username && !password && !profilePicture && !phoneNumber) {
         throw new ApiError(400, "Nothing to update")
     }
 
@@ -228,6 +231,8 @@ const updateProfile = asyncHandler(async (req, res) => {
     if (password) {
         updateData.password = password
     }
+
+    if (phoneNumber) updateData.phoneNumber = phoneNumber
 
     let oldAvatarUrl
 
@@ -310,8 +315,8 @@ const getUserEnquiries = asyncHandler(async (req, res) => {
 
 const getFavouriteProperties = asyncHandler(async (req, res) => {
     const userId = req.user?._id
-    const role=req.user?.role
-    if(role!=="tenant"){
+    const role = req.user?.role
+    if (role !== "tenant") {
         throw new ApiError(403, "Unauthorized")
     }
     const user = await User.findById(userId)

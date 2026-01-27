@@ -17,167 +17,167 @@ import { User } from "../models/user.model.js";
 import { uploadOnCloudinary, cloudinary } from "../utils/cloudinary.js";
 import { AMENITIES } from "../utils/constants.js";
 
-export const addProperty = asyncHandler(async (req, res) => {
-  const {
-    type,
-    address,
-    city,
-    state,
-    pincode,
-    rent,
-    securityDeposit,
-    amenities,
-    capacity,
-    description,
-    preferences,
-    coordinates // expect { lng, lat } from frontend
-  } = req.body;
-
-  const owner = req.user?._id;
-  const role = req.user?.role;
-
-  if (role !== "owner") throw new ApiError(403, "Unauthorized");
-
-  // Validate coordinates
-  if (
-    !coordinates ||
-    typeof coordinates.lng !== "number" ||
-    typeof coordinates.lat !== "number"
-  ) {
-    throw new ApiError(400, "Valid coordinates (lng, lat) are required");
-  }
-
-  const imageFiles = req.files?.images;
-  if (!imageFiles || imageFiles.length === 0) throw new ApiError(400, "At least one image is required");
-  if (imageFiles.length > 4) throw new ApiError(400, "Maximum 4 images allowed");
-
-  // Upload images to Cloudinary
-  const uploadedImages = [];
-  for (const file of imageFiles) {
-    const uploaded = await uploadOnCloudinary(file.buffer);
-    if (!uploaded?.secure_url) throw new ApiError(500, "Image upload failed");
-    uploadedImages.push({ url: uploaded.secure_url, publicId: uploaded.public_id });
-  }
-
-  // Validate amenities
-  const validAmenities = amenities.filter(a => AMENITIES.includes(a));
-  if (validAmenities.length !== amenities.length) throw new ApiError(400, "One or more invalid amenities provided");
-
-  // Create property
-  const property = await Property.create({
-    type,
-    location: {
-      addressLine: address,
-      city,
-      state,
-      pincode,
-      coordinates: {
-        type: "Point",
-        coordinates: [coordinates.lng, coordinates.lat] // GeoJSON format
-      }
-    },
-    rent,
-    securityDeposit,
-    amenities: validAmenities,
-    images: uploadedImages,
-    capacity,
-    description,
-    preferences, // string
-    owner
-  });
-
-  // Add property ID to owner's properties array
-  await User.findByIdAndUpdate(owner, { $push: { properties: property._id } });
-
-  return res.status(201).json(new ApiResponse(201, property, "Property added successfully and linked to owner"));
-});
-
-
-export const updateProperty = asyncHandler(async (req, res) => {
-  const { propertyId } = req.params;
-  const {
-    type,
-    address,
-    city,
-    state,
-    pincode,
-    rent,
-    securityDeposit,
-    amenities,
-    capacity,
-    description,
-    preferences,
-    coordinates
-  } = req.body;
-
-  const userId = req.user?._id;
-  const role = req.user?.role;
-
-  if (role !== "owner") throw new ApiError(403, "Unauthorized");
-
-  const property = await Property.findById(propertyId);
-  if (!property) throw new ApiError(404, "Property not found");
-  if (property.owner.toString() !== userId.toString()) throw new ApiError(403, "Not your property");
-
-  const imageFiles = req.files?.images;
-  if (!imageFiles || imageFiles.length === 0) throw new ApiError(400, "Images are required");
-  if (imageFiles.length > 4) throw new ApiError(400, "Maximum 4 images allowed");
-
-  // Delete old images
-  await Promise.all(
-    property.images.map(img => cloudinary.uploader.destroy(img.publicId))
-  );
-
-  // Upload new images
-  const uploadedImages = await Promise.all(
-    imageFiles.map(async file => {
-      const uploaded = await uploadOnCloudinary(file.buffer);
-      if (!uploaded?.secure_url) throw new ApiError(500, "Image upload failed");
-      return { url: uploaded.secure_url, publicId: uploaded.public_id };
-    })
-  );
-
-  // Validate amenities
-  const validAmenities = amenities.filter(a => AMENITIES.includes(a));
-  if (validAmenities.length !== amenities.length) throw new ApiError(400, "One or more invalid amenities provided");
-
-  // Merge capacity safely
-  const updatedCapacity = {
-    total: capacity?.total ?? property.capacity.total,
-    occupied: property.capacity.occupied
-  };
-
-  // Validate coordinates
-  const updatedCoordinates =
-    coordinates &&
-    typeof coordinates.lng === "number" &&
-    typeof coordinates.lat === "number"
-      ? { type: "Point", coordinates: [coordinates.lng, coordinates.lat] }
-      : property.location.coordinates;
-
-  const updatedProperty = await Property.findByIdAndUpdate(
-    propertyId,
-    {
-      type,
-      location: {
-        addressLine: address,
+const addProperty = asyncHandler(async (req, res) => {
+    const {
+        type,
+        address,
         city,
         state,
         pincode,
-        coordinates: updatedCoordinates
-      },
-      rent,
-      securityDeposit,
-      amenities: validAmenities,
-      capacity: updatedCapacity,
-      description,
-      preferences,
-      images: uploadedImages
-    },
-    { new: true }
-  );
+        rent,
+        securityDeposit,
+        amenities,
+        capacity,
+        description,
+        preferences,
+        coordinates // expect { lng, lat } from frontend
+    } = req.body;
 
-  return res.status(200).json(new ApiResponse(200, updatedProperty, "Property updated successfully"));
+    const owner = req.user?._id;
+    const role = req.user?.role;
+
+    if (role !== "owner") throw new ApiError(403, "Unauthorized");
+
+    // Validate coordinates
+    if (
+        !coordinates ||
+        typeof coordinates.lng !== "number" ||
+        typeof coordinates.lat !== "number"
+    ) {
+        throw new ApiError(400, "Valid coordinates (lng, lat) are required");
+    }
+
+    const imageFiles = req.files?.images;
+    if (!imageFiles || imageFiles.length === 0) throw new ApiError(400, "At least one image is required");
+    if (imageFiles.length > 4) throw new ApiError(400, "Maximum 4 images allowed");
+
+    // Upload images to Cloudinary
+    const uploadedImages = [];
+    for (const file of imageFiles) {
+        const uploaded = await uploadOnCloudinary(file.buffer);
+        if (!uploaded?.secure_url) throw new ApiError(500, "Image upload failed");
+        uploadedImages.push({ url: uploaded.secure_url, publicId: uploaded.public_id });
+    }
+
+    // Validate amenities
+    const validAmenities = amenities.filter(a => AMENITIES.includes(a));
+    if (validAmenities.length !== amenities.length) throw new ApiError(400, "One or more invalid amenities provided");
+
+    // Create property
+    const property = await Property.create({
+        type,
+        location: {
+            addressLine: address,
+            city,
+            state,
+            pincode,
+            coordinates: {
+                type: "Point",
+                coordinates: [coordinates.lng, coordinates.lat] // GeoJSON format
+            }
+        },
+        rent,
+        securityDeposit,
+        amenities: validAmenities,
+        images: uploadedImages,
+        capacity,
+        description,
+        preferences, // string
+        owner
+    });
+
+    // Add property ID to owner's properties array
+    await User.findByIdAndUpdate(owner, { $push: { properties: property._id } });
+
+    return res.status(201).json(new ApiResponse(201, property, "Property added successfully and linked to owner"));
+});
+
+
+const updateProperty = asyncHandler(async (req, res) => {
+    const { propertyId } = req.params;
+    const {
+        type,
+        address,
+        city,
+        state,
+        pincode,
+        rent,
+        securityDeposit,
+        amenities,
+        capacity,
+        description,
+        preferences,
+        coordinates
+    } = req.body;
+
+    const userId = req.user?._id;
+    const role = req.user?.role;
+
+    if (role !== "owner") throw new ApiError(403, "Unauthorized");
+
+    const property = await Property.findById(propertyId);
+    if (!property) throw new ApiError(404, "Property not found");
+    if (property.owner.toString() !== userId.toString()) throw new ApiError(403, "Not your property");
+
+    const imageFiles = req.files?.images;
+    if (!imageFiles || imageFiles.length === 0) throw new ApiError(400, "Images are required");
+    if (imageFiles.length > 4) throw new ApiError(400, "Maximum 4 images allowed");
+
+    // Delete old images
+    await Promise.all(
+        property.images.map(img => cloudinary.uploader.destroy(img.publicId))
+    );
+
+    // Upload new images
+    const uploadedImages = await Promise.all(
+        imageFiles.map(async file => {
+            const uploaded = await uploadOnCloudinary(file.buffer);
+            if (!uploaded?.secure_url) throw new ApiError(500, "Image upload failed");
+            return { url: uploaded.secure_url, publicId: uploaded.public_id };
+        })
+    );
+
+    // Validate amenities
+    const validAmenities = amenities.filter(a => AMENITIES.includes(a));
+    if (validAmenities.length !== amenities.length) throw new ApiError(400, "One or more invalid amenities provided");
+
+    // Merge capacity safely
+    const updatedCapacity = {
+        total: capacity?.total ?? property.capacity.total,
+        occupied: property.capacity.occupied
+    };
+
+    // Validate coordinates
+    const updatedCoordinates =
+        coordinates &&
+            typeof coordinates.lng === "number" &&
+            typeof coordinates.lat === "number"
+            ? { type: "Point", coordinates: [coordinates.lng, coordinates.lat] }
+            : property.location.coordinates;
+
+    const updatedProperty = await Property.findByIdAndUpdate(
+        propertyId,
+        {
+            type,
+            location: {
+                addressLine: address,
+                city,
+                state,
+                pincode,
+                coordinates: updatedCoordinates
+            },
+            rent,
+            securityDeposit,
+            amenities: validAmenities,
+            capacity: updatedCapacity,
+            description,
+            preferences,
+            images: uploadedImages
+        },
+        { new: true }
+    );
+
+    return res.status(200).json(new ApiResponse(200, updatedProperty, "Property updated successfully"));
 });
 
 
@@ -193,37 +193,254 @@ const getPropertyById = asyncHandler(async (req, res) => {
     );
 });
 
-const verifyProperty = asyncHandler(async (req, res) => {
-    // will complete later
+const verifyPropertyRequest = asyncHandler(async (req, res) => {
+    const { propertyId } = req.params
+    const { documentTypes } = req.body
+
+    const userId = req.user?._id
+    const role = req.user?.role
+
+    if (role !== "owner") {
+        throw new ApiError(403, "Unauthorized")
+    }
+
+    const property = await Property.findById(propertyId)
+    if (!property) {
+        throw new ApiError(404, "Property not found")
+    }
+
+    if (property.owner.toString() !== userId.toString()) {
+        throw new ApiError(403, "Not your property")
+    }
+
+    if (property.verification.status === "approved") {
+        throw new ApiError(400, "Property is already verified")
+    }
+
+    const documentFiles = req.files?.documents || []
+
+    if (documentFiles.length < 4) {
+        throw new ApiError(400, "Minimum 4 documents are required")
+    }
+
+    // Business rule: compulsory documents
+    if (
+        !documentTypes.includes("ownership_proof") ||
+        !documentTypes.includes("government_id")
+    ) {
+        throw new ApiError(
+            400,
+            "ownership_proof and government_id are compulsory documents"
+        )
+    }
+
+    // Remove any previously uploaded documents (cleanup)
+    for (const doc of property.documents) {
+        if (doc.publicId) {
+            await deleteFromCloudinary(doc.publicId)
+        }
+    }
+
+    const uploadedDocuments = []
+
+    for (let i = 0; i < documentFiles.length; i++) {
+        const uploaded = await uploadOnCloudinary(documentFiles[i].buffer)
+
+        if (!uploaded?.secure_url) {
+            throw new ApiError(500, "Document upload failed")
+        }
+
+        uploadedDocuments.push({
+            type: documentTypes[i], // enum enforced by schema
+            url: uploaded.secure_url,
+            publicId: uploaded.public_id
+        })
+    }
+
+    // Replace documents and trigger verification
+    property.documents = uploadedDocuments
+    property.verification.status = "pending"
+    property.verification.rejectionReason = undefined
+    property.verification.verifiedBy = undefined
+    property.verification.verifiedAt = undefined
+
+    await property.save()
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            property,
+            "Verification request submitted successfully"
+        )
+    )
 })
+
+const editPropertyDocument = asyncHandler(async (req, res) => {
+    const { propertyId } = req.params
+    const { documentTypes } = req.body
+
+    const userId = req.user?._id
+    const role = req.user?.role
+
+    if (role !== "owner") {
+        throw new ApiError(403, "Unauthorized")
+    }
+
+    const property = await Property.findById(propertyId)
+    if (!property) {
+        throw new ApiError(404, "Property not found")
+    }
+
+    if (property.owner.toString() !== userId.toString()) {
+        throw new ApiError(403, "Not your property")
+    }
+
+    if (
+        property.verification.status !== "pending" &&
+        property.verification.status !== "rejected"
+    ) {
+        throw new ApiError(
+            400,
+            "Documents can only be edited when verification is pending or rejected"
+        )
+    }
+
+    const documentFiles = req.files?.documents || []
+
+    if (documentFiles.length < 4) {
+        throw new ApiError(400, "Minimum 4 documents are required")
+    }
+
+    // Mandatory document types (business rule, not schema rule)
+    if (
+        !documentTypes.includes("ownership_proof") ||
+        !documentTypes.includes("government_id")
+    ) {
+        throw new ApiError(
+            400,
+            "ownership_proof and government_id are compulsory"
+        )
+    }
+
+    // 🔥 Remove old documents (Cloudinary + DB replacement)
+    for (const doc of property.documents) {
+        if (doc.publicId) {
+            await deleteFromCloudinary(doc.publicId)
+        }
+    }
+
+    const newDocuments = []
+
+    for (let i = 0; i < documentFiles.length; i++) {
+        const uploaded = await uploadOnCloudinary(documentFiles[i].buffer)
+
+        if (!uploaded?.secure_url) {
+            throw new ApiError(500, "Document upload failed")
+        }
+
+        newDocuments.push({
+            type: documentTypes[i], // enum validated by schema
+            url: uploaded.secure_url,
+            publicId: uploaded.public_id
+        })
+    }
+
+    // Replace entire documents array
+    property.documents = newDocuments
+
+    // Re-trigger verification if previously rejected
+    if (property.verification.status === "rejected") {
+        property.verification.status = "pending"
+        property.verification.rejectionReason = undefined
+        property.verification.verifiedBy = undefined
+        property.verification.verifiedAt = undefined
+    }
+
+    await property.save()
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            property,
+            "Property documents updated successfully"
+        )
+    )
+})
+
+
 
 const deleteProperty = asyncHandler(async (req, res) => {
     const { propertyId } = req.params
     const userId = req.user?._id
     const role = req.user?.role
 
-    if (role !== "owner") throw new ApiError(403, "Unauthorized")
+    if (role !== "owner") {
+        throw new ApiError(403, "Unauthorized")
+    }
 
     const property = await Property.findById(propertyId)
-    if (!property) throw new ApiError(404, "Property not found")
-    if (property.owner.toString() !== userId.toString())
-        throw new ApiError(403, "Not your property")
+    if (!property) {
+        throw new ApiError(404, "Property not found")
+    }
 
-    await Promise.all(
-        property.images.map(async (img) => {
-            const publicId = img.publicId || img.url.split("/").pop().split(".")[0]
-            await cloudinary.uploader.destroy(publicId)
-        })
-    )
+    if (property.owner.toString() !== userId.toString()) {
+        throw new ApiError(403, "Not your property")
+    }
+
+
+    if (property.images?.length > 0) {
+        await Promise.all(
+            property.images.map(img =>
+                cloudinary.uploader.destroy(img.publicId)
+            )
+        )
+    }
+
+
+    if (property.documents?.length > 0) {
+        await Promise.all(
+            property.documents.map(doc =>
+                cloudinary.uploader.destroy(doc.publicId)
+            )
+        )
+    }
+
+
+    const reviews = await Review.find({ property: propertyId })
+
+    if (reviews.length > 0) {
+        await Promise.all(
+            reviews.map(async (review) => {
+                if (review.images?.length > 0) {
+                    await Promise.all(
+                        review.images.map(imgUrl => {
+                            const publicId = imgUrl.split("/").pop().split(".")[0]
+                            return cloudinary.uploader.destroy(publicId)
+                        })
+                    )
+                }
+                await Review.findByIdAndDelete(review._id)
+            })
+        )
+    }
+
+
+    await Enquiry.deleteMany({ property: propertyId })
+
 
     await Property.findByIdAndDelete(propertyId)
+
 
     await User.findByIdAndUpdate(userId, {
         $pull: { properties: propertyId }
     })
 
     return res.status(200).json(
-        new ApiResponse(200, {}, "Property deleted successfully and unlinked from owner")
+        new ApiResponse(
+            200,
+            {},
+            "Property, reviews, documents, enquiries and media deleted successfully"
+        )
     )
 })
 
@@ -255,43 +472,6 @@ const getReviews = asyncHandler(async (req, res) => {
             reviews,
             reviews.length ? "Reviews fetched successfully" : "No reviews found for this property"
         )
-    );
-});
-
-const getRatingScore = asyncHandler(async (req, res) => {
-    const { propertyId } = req.params;
-
-    if (!propertyId) {
-        throw new ApiError(400, "Property ID is required");
-    }
-
-    // Ensure property exists
-    const property = await Property.findById(propertyId);
-    if (!property) {
-        throw new ApiError(404, "Property not found");
-    }
-
-    // Aggregate reviews for average rating
-    const result = await Review.aggregate([
-        { $match: { property: property._id } },
-        {
-            $group: {
-                _id: "$property",
-                averageRating: { $avg: "$rating" },
-                totalReviews: { $sum: 1 }
-            }
-        }
-    ]);
-
-    const data = result.length
-        ? {
-              averageRating: Number(result[0].averageRating.toFixed(2)),
-              totalReviews: result[0].totalReviews
-          }
-        : { averageRating: 0, totalReviews: 0 };
-
-    return res.status(200).json(
-        new ApiResponse(200, data, "Rating score fetched successfully")
     );
 });
 
@@ -374,12 +554,15 @@ const getPropertiesByQueries = asyncHandler(async (req, res) => {
 });
 
 
-export { 
-    createProperty, 
-    updateProperty, 
-    getPropertyById, 
-    deleteProperty, 
-    getPropertiesByQueries, 
+export {
+    createProperty,
+    updateProperty,
+    getPropertyById,
+    deleteProperty,
+    getPropertiesByQueries,
     getReviews,
-    getRatingScore
+    getRatingScore,
+    verifyPropertyRequest,
+    editPropertyDocument,
+    
 }  

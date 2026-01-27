@@ -3,8 +3,12 @@ import { AMENITIES } from "../utils/constants.js";
 
 
 
+import mongoose, { Schema } from "mongoose";
+
 const propertySchema = new Schema(
   {
+    /* ================= BASIC INFO ================= */
+
     type: {
       type: String,
       enum: ["flat", "PG", "hostel"],
@@ -15,19 +19,45 @@ const propertySchema = new Schema(
     owner: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true
+      required: true,
+      index: true
     },
 
+    /* ================= LOCATION ================= */
+
     location: {
-      addressLine: { type: String, required: true },
-      city: { type: String, required: true, index: true },
-      state: { type: String, required: true },
-      pincode: { type: String, required: true },
+      addressLine: {
+        type: String,
+        required: true
+      },
+      city: {
+        type: String,
+        required: true,
+        index: true
+      },
+      state: {
+        type: String,
+        required: true
+      },
+      pincode: {
+        type: String,
+        required: true
+      },
       coordinates: {
-        type: { type: String, enum: ["Point"], default: "Point" },
-        coordinates: { type: [Number], required: true } // [lng, lat]
+        type: {
+          type: String,
+          enum: ["Point"],
+          default: "Point"
+        },
+        coordinates: {
+          type: [Number], // [lng, lat]
+          required: true,
+          index: "2dsphere"
+        }
       }
     },
+
+    /* ================= PRICING ================= */
 
     rent: {
       type: Number,
@@ -40,11 +70,13 @@ const propertySchema = new Schema(
       required: true
     },
 
+    /* ================= FEATURES ================= */
+
     amenities: [
       {
         type: String,
         enum: AMENITIES,
-        required: true
+        index: true
       }
     ],
 
@@ -65,7 +97,11 @@ const propertySchema = new Schema(
       required: true
     },
 
-    preferences: { type: String },
+    preferences: {
+      type: String
+    },
+
+    /* ================= REVIEWS ================= */
 
     reviews: [
       {
@@ -74,14 +110,69 @@ const propertySchema = new Schema(
       }
     ],
 
-    isVerifiedByAdmin: {
-      type: Boolean,
-      default: false
+    ratingScore: {
+      type: Number,
+      default: 0,
+      index: true
     },
+
+    /* ================= VERIFICATION ================= */
+
+    documents: [
+      {
+        type: {
+          type: String,
+          enum: [
+            "ownership_proof",
+            "rent_agreement",
+            "electricity_bill",
+            "water_bill",
+            "property_tax_receipt",
+            "government_id",
+            "other"
+          ],
+          required: true
+        },
+        url: {
+          type: String,
+          required: true
+        },
+        publicId: {
+          type: String,
+          required: true
+        },
+        uploadedAt: {
+          type: Date,
+          default: Date.now
+        }
+      }
+    ],
+
+    verification: {
+      status: {
+        type: String,
+        enum: ["pending", "approved", "rejected"],
+        default: "pending",
+        index: true
+      },
+      verifiedBy: {
+        type: Schema.Types.ObjectId,
+        ref: "User" // admin
+      },
+      verifiedAt: {
+        type: Date
+      },
+      rejectionReason: {
+        type: String
+      }
+    },
+
+    /* ================= MODERATION ================= */
 
     isBlocked: {
       type: Boolean,
-      default: false
+      default: false,
+      index: true
     },
 
     status: {
@@ -95,6 +186,8 @@ const propertySchema = new Schema(
     timestamps: true
   }
 );
+
+
 
 // Add 2dsphere index for geospatial queries
 propertySchema.index({ "location.coordinates": "2dsphere" });

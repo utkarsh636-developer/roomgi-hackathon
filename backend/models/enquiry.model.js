@@ -34,6 +34,10 @@ const enquirySchema = new Schema(
             type: String,
             enum: ["pending", "contacted", "rejected"],
             default: "pending"
+        },
+        reply: {
+            type: String,
+            default: ""
         }
     },
     {
