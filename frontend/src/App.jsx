@@ -9,6 +9,9 @@ import ExplorePage from './components/ExplorePage';
 import PropertyDetailsPage from './components/PropertyDetailsPage';
 import OwnerLanding from './components/OwnerLanding';
 import OwnerDashboard from './components/OwnerDashboard';
+import AddPropertyWizard from './components/AddPropertyWizard';
+import AdminDashboard from './components/AdminDashboard';
+import VerificationReview from './components/VerificationReview';
 
 function App() {
   return (
@@ -21,6 +24,9 @@ function App() {
           <Route path="/property/:id" element={<PropertyDetailsPage />} />
           <Route path="/become-host" element={<OwnerLanding />} />
           <Route path="/owner-dashboard" element={<OwnerDashboard />} />
+          <Route path="/add-property" element={<AddPropertyWizard />} />
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/verify/:id" element={<VerificationReview />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
         </Routes>
