@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import {
     MapPin, Wifi, Wind, Coffee, Share2, Heart, Star,
     CheckCircle, ArrowLeft, Calendar, User, ShieldCheck,
-    Bath, BedDouble, Home, Maximize, Phone
+    Bath, BedDouble, Home, Maximize, Phone, Utensils, Car, Thermometer, Camera, Dumbbell, Activity
 } from 'lucide-react';
 
 const PropertyDetailsPage = () => {
@@ -34,9 +34,15 @@ const PropertyDetailsPage = () => {
             { icon: Wifi, name: 'High-Speed Wifi' },
             { icon: Wind, name: 'Air Conditioning' },
             { icon: Coffee, name: 'Breakfast & Dinner' },
+            { icon: Utensils, name: 'Shared Kitchen' },
             { icon: Bath, name: 'Attached Washroom' },
+            { icon: Thermometer, name: 'Hot Water/Geyser' },
             { icon: Home, name: 'Daily Housekeeping' },
+            { icon: Camera, name: 'CCTV Surveillance' },
             { icon: User, name: '24/7 Security' },
+            { icon: Car, name: 'Parking Available' },
+            { icon: Dumbbell, name: 'Gym & Fitness' },
+            { icon: Activity, name: 'Sports Area' },
         ],
         highlights: [
             { label: 'Room Type', value: 'Double Sharing' },
