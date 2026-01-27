@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { UserCircle, LogIn, Menu, X } from 'lucide-react';
+import { UserCircle, LogIn, Menu, X, User } from 'lucide-react';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -47,31 +47,26 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Desktop Actions */}
+          {/* Action Buttons */}
           <div className="hidden md:flex items-center space-x-4">
             <Link
-              to="/login"
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-semibold transition-all ${showWhiteBg ? 'text-gray-900 hover:bg-gray-100' : 'text-white hover:bg-white/10'}`}
-            >
-              <LogIn size={18} />
-              Login
-            </Link>
-
-            <Link
-              to="/list-property"
-              className="
-                  px-5 py-2.5
-                  rounded-xl
-                  text-sm font-bold
-                  text-white
-                  bg-indigo-600 hover:bg-indigo-700
-                  active:scale-95
-                  shadow-lg shadow-indigo-600/20
-                  transition-all
-                "
+              to="/become-host"
+              className={`px-4 py-2 font-bold rounded-full transition-all border-2 ${showWhiteBg
+                ? 'border-indigo-600 text-indigo-600 hover:bg-indigo-50'
+                : 'border-white text-white hover:bg-white/10'
+                }`}
             >
               List Property
             </Link>
+            <button
+              className={`flex items-center gap-2 px-5 py-2 font-bold rounded-full shadow-lg transition-all ${showWhiteBg
+                ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-200'
+                : 'bg-white text-indigo-900 hover:bg-indigo-50'
+                }`}
+            >
+              <User size={18} />
+              <span>Login</span>
+            </button>
           </div>
 
           {/* Mobile Menu Button */}
