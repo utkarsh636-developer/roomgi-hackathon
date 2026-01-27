@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { Routes, Route, Outlet } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Landing from './components/Landing';
 import Footer from './components/Footer';
@@ -6,45 +7,34 @@ import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
 import ExplorePage from './components/ExplorePage';
 
+// Layout wrapper for pages that need Navbar and Footer
+const Layout = () => {
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+      <main className="flex-grow">
+        <Outlet />
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
 function App() {
-  const [currentView, setCurrentView] = useState('login'); // 'login', 'register', 'app', 'explore'
+  return (
+    <Routes>
+      {/* Auth Routes (no Navbar/Footer) */}
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
 
-  const showRegisterPage = () => setCurrentView('register');
-  const showLoginPage = () => setCurrentView('login');
-  const showApp = () => setCurrentView('app');
-  const showExplorePage = () => setCurrentView('explore');
-
-  const renderContent = () => {
-    switch (currentView) {
-      case 'register':
-        return <RegisterPage onShowLogin={showLoginPage} />;
-      case 'app':
-        return (
-          <div className="flex flex-col min-h-screen">
-            <Navbar onShowHome={showApp} onShowExplore={showExplorePage} />
-            <main className="flex-grow">
-              <Landing />
-            </main>
-            <Footer />
-          </div>
-        );
-      case 'explore':
-        return (
-          <div className="flex flex-col min-h-screen">
-            <Navbar onShowHome={showApp} onShowExplore={showExplorePage} />
-            <main className="flex-grow">
-              <ExplorePage />
-            </main>
-            <Footer />
-          </div>
-        );
-      case 'login':
-      default:
-        return <LoginPage onLogin={showApp} onShowRegister={showRegisterPage} />;
-    }
-  };
-
-  return <>{renderContent()}</>;
+      {/* Main App Routes (with Layout) */}
+      <Route path="/" element={<Layout />}>
+        <Route index element={<Landing />} />
+        <Route path="explore" element={<ExplorePage />} />
+        {/* Add other protected routes here later */}
+      </Route>
+    </Routes>
+  );
 }
 
 export default App;

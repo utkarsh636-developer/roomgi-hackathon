@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { ShieldCheck, Users, Star } from 'lucide-react';
 
 const Landing = () => {
@@ -31,12 +32,16 @@ const Landing = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="px-10 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-lg rounded-xl shadow-lg shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95">
-              Explore Now
-            </button>
-            <button className="px-10 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white font-bold text-lg rounded-xl transition-all hover:scale-105">
-              List Your Property
-            </button>
+            <Link to="/explore">
+              <button className="px-10 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-lg rounded-xl shadow-lg shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95">
+                Explore Now
+              </button>
+            </Link>
+            <Link to="/list-property">
+              <button className="px-10 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white font-bold text-lg rounded-xl transition-all hover:scale-105">
+                List Your Property
+              </button>
+            </Link>
           </div>
         </div>
       </div>
@@ -74,3 +79,5 @@ const Landing = () => {
     </div>
   );
 };
+
+export default Landing;
