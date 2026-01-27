@@ -1,6 +1,14 @@
 import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
-const RegisterPage = ({ onShowLogin }) => {
+const RegisterPage = () => {
+  const navigate = useNavigate();
+
+  const handleRegister = () => {
+    // Add registration logic here
+    navigate('/login');
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 font-montserrat">
       <div className="relative flex flex-col m-6 space-y-8 bg-white shadow-2xl rounded-2xl md:flex-row md:space-y-0">
@@ -50,20 +58,19 @@ const RegisterPage = ({ onShowLogin }) => {
             />
           </div>
           <button
-            onClick={onShowLogin} // Temporarily navigates to login on click
+            onClick={handleRegister}
             className="w-full bg-indigo-600 text-white p-2 rounded-lg mb-6 hover:bg-indigo-700"
           >
             Register
           </button>
           <div className="text-center text-gray-400">
             Already have an account?
-            <span
-              onClick={onShowLogin}
-              className="font-bold text-indigo-600 cursor-pointer"
+            <Link
+              to="/login"
+              className="font-bold text-indigo-600 cursor-pointer ml-1"
             >
-              {' '}
               Sign in
-            </span>
+            </Link>
           </div>
         </div>
       </div>
