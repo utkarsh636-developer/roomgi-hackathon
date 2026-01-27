@@ -7,6 +7,8 @@ import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
 import ExplorePage from './components/ExplorePage';
 
+import PropertyDetailsPage from './components/PropertyDetailsPage';
+
 // Layout wrapper for pages that need Navbar and Footer
 const Layout = () => {
   return (
@@ -31,6 +33,7 @@ function App() {
       <Route path="/" element={<Layout />}>
         <Route index element={<Landing />} />
         <Route path="explore" element={<ExplorePage />} />
+        <Route path="property/:id" element={<PropertyDetailsPage />} />
         {/* Add other protected routes here later */}
       </Route>
     </Routes>
