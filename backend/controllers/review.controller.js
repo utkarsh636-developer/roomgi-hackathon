@@ -4,7 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { Review } from "../models/review.model.js";
 import { Property } from "../models/property.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import { cloudinary } from "../utils/cloudinary.js";
+import { cloudinary , extractPublicId} from "../utils/cloudinary.js";
 
 const createReview = asyncHandler(async (req, res) => {
     const { propertyId, rating, comment } = req.body
@@ -33,7 +33,7 @@ const createReview = asyncHandler(async (req, res) => {
 
     const uploadedImages = []
     for (const file of imageFiles) {
-        const uploaded = await uploadOnCloudinary(file.buffer)
+        const uploaded = await uploadOnCloudinary(file.path)
         if (!uploaded?.secure_url) {
             throw new ApiError(500, "Image upload failed")
         }
@@ -200,7 +200,7 @@ const updateReview = asyncHandler(async (req, res) => {
         if (review.images?.length) {
             await Promise.all(
                 review.images.map((imgUrl) => {
-                    const publicId = imgUrl.split("/").pop().split(".")[0]
+                    const publicId = extractPublicId(imgUrl)
                     return cloudinary.uploader.destroy(publicId)
                 })
             )
@@ -209,7 +209,7 @@ const updateReview = asyncHandler(async (req, res) => {
         // Upload new images
         const uploadedImages = []
         for (const file of imageFiles) {
-            const uploaded = await uploadOnCloudinary(file.buffer)
+            const uploaded = await uploadOnCloudinary(file.path)
             if (!uploaded?.secure_url) {
                 throw new ApiError(500, "Image upload failed")
             }

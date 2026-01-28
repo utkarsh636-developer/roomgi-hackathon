@@ -4,6 +4,8 @@ import { ApiResponse } from "../utils/ApiResponse.js"
 import { User } from "../models/user.model.js"
 import jwt from "jsonwebtoken"
 import { uploadOnCloudinary, cloudinary, extractPublicId } from "../utils/cloudinary.js"
+import { Property } from "../models/property.model.js"
+
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
     const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken

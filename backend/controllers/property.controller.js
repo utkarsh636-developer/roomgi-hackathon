@@ -9,7 +9,6 @@ import { Review } from "../models/review.model.js"
 import { Report } from "../models/report.model.js"
 import { Enquiry } from "../models/enquiry.model.js"
 
-
 const createProperty = asyncHandler(async (req, res) => {
     const {
         type,
@@ -242,8 +241,8 @@ const verifyPropertyRequest = asyncHandler(async (req, res) => {
 
     const documentFiles = req.files?.documents || []
 
-    if (documentFiles.length < 4) {
-        throw new ApiError(400, "Minimum 4 documents are required")
+    if (documentFiles.length < 2) {
+        throw new ApiError(400, "Minimum 2 documents are required")
     }
 
     // Business rule: compulsory documents
@@ -258,10 +257,15 @@ const verifyPropertyRequest = asyncHandler(async (req, res) => {
     }
 
     // Remove any previously uploaded documents (cleanup)
-    for (const doc of property.documents) {
-        if (doc.publicId) {
-            await deleteFromCloudinary(doc.publicId)
-        }
+        if (property.documents && property.documents.length > 0) {
+        await Promise.all(
+            property.documents.map(doc => {
+                if (doc.publicId) {
+                    return cloudinary.uploader.destroy(doc.publicId);
+                }
+                return Promise.resolve();
+            })
+        );
     }
 
     const uploadedDocuments = []
@@ -330,8 +334,8 @@ const editPropertyDocument = asyncHandler(async (req, res) => {
 
     const documentFiles = req.files?.documents || []
 
-    if (documentFiles.length < 4) {
-        throw new ApiError(400, "Minimum 4 documents are required")
+    if (documentFiles.length < 2) {
+        throw new ApiError(400, "Minimum 2 documents are required")
     }
 
     // Mandatory document types (business rule, not schema rule)
@@ -346,10 +350,15 @@ const editPropertyDocument = asyncHandler(async (req, res) => {
     }
 
     // 🔥 Remove old documents (Cloudinary + DB replacement)
-    for (const doc of property.documents) {
-        if (doc.publicId) {
-            await deleteFromCloudinary(doc.publicId)
-        }
+    if (property.documents && property.documents.length > 0) {
+        await Promise.all(
+            property.documents.map(doc => {
+                if (doc.publicId) {
+                    return cloudinary.uploader.destroy(doc.publicId);
+                }
+                return Promise.resolve();
+            })
+        );
     }
 
     const newDocuments = []
@@ -549,17 +558,18 @@ const getPropertiesByQueries = asyncHandler(async (req, res) => {
     if (lat && lng && maxDistance) {
         // Use aggregation with $geoNear to include distance
         properties = await Property.aggregate([
-            {
-                $geoNear: {
-                    near: { type: "Point", coordinates: [Number(lng), Number(lat)] },
-                    distanceField: "distanceInMeters",
-                    maxDistance: Number(maxDistance) * 1000, // convert km to meters
-                    spherical: true,
-                    query: matchFilter
-                }
-            },
-            { $sort: { distanceInMeters: 1, rent: 1 } } // sort by distance first, then rent
-        ]);
+        {
+            $geoNear: {
+                near: { type: "Point", coordinates: [Number(lng), Number(lat)] },
+                distanceField: "distanceInMeters",
+                maxDistance: Number(maxDistance) * 1000,
+                spherical: true,
+                query: matchFilter,
+                key: "location.coordinates" // <--- Add the specific field name that has the index
+            }
+        },
+        { $sort: { distanceInMeters: 1, rent: 1 } }
+]);
 
         // Convert distance to km
         properties = properties.map(p => ({

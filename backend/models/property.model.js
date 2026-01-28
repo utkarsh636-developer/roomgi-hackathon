@@ -46,12 +46,10 @@ const propertySchema = new Schema(
         type: {
           type: String,
           enum: ["Point"],
-          default: "Point"
         },
         coordinates: {
           type: [Number], // [lng, lat]
           required: true,
-          index: "2dsphere"
         }
       }
     },
@@ -196,7 +194,9 @@ const propertySchema = new Schema(
 
 
 // Add 2dsphere index for geospatial queries
-propertySchema.index({ "location.coordinates": "2dsphere" });
+// Remove the 'index: "2dsphere"' from the individual field definition 
+// and define it at the schema level like this:
 
+propertySchema.index({ "location.coordinates": "2dsphere" });
 export const Property = mongoose.model("Property", propertySchema);
 
