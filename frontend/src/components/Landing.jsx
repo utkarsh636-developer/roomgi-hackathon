@@ -4,7 +4,11 @@ import { ShieldCheck, Users, Star, ArrowRight } from 'lucide-react';
 import Navbar from './Navbar';
 import Footer from './Footer';
 
+import authService from '../services/authService';
+
 const Landing = () => {
+  const user = authService.getCurrentUser();
+
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <Navbar />
@@ -35,11 +39,13 @@ const Landing = () => {
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
             </Link>
-            <Link to="/become-host">
-              <button className="px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold text-lg rounded-2xl transition-all hover:scale-105 backdrop-blur-sm">
-                List Property
-              </button>
-            </Link>
+            {!user && (
+              <Link to="/login">
+                <button className="px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold text-lg rounded-2xl transition-all hover:scale-105 backdrop-blur-sm">
+                  List Property
+                </button>
+              </Link>
+            )}
           </div>
 
           <div className="mt-8 mb-4 inline-flex items-center gap-3 bg-white/5 border border-white/10 p-3 rounded-xl backdrop-blur-sm self-start animate-fade-in-up">
