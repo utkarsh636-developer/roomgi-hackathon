@@ -13,7 +13,7 @@ import OwnerLanding from './components/OwnerLanding';
 const HomeRoute = () => {
   const user = authService.getCurrentUser();
   if (user && user.role === 'owner') {
-    return <OwnerLanding />;
+    return <Navigate to="/owner" replace />;
   }
   return <Landing />;
 };
@@ -24,6 +24,7 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/" element={<HomeRoute />} />
+      <Route path="/owner" element={<OwnerLanding />} />
       <Route
         path="/explore"
         element={

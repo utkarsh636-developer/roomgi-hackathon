@@ -37,7 +37,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between">
 
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 cursor-pointer group">
+          <Link to={user && user.role === 'owner' ? '/owner' : '/'} className="flex items-center gap-2 cursor-pointer group">
             <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-xl group-hover:rotate-12 transition-transform">R</div>
             <span className={`text-2xl font-bold tracking-tight ${showWhiteBg ? 'text-gray-900' : 'text-white'}`}>
               Room<span className="text-indigo-600">Gi</span>
@@ -46,15 +46,15 @@ const Navbar = () => {
 
           {/* Desktop Nav */}
           <div className={`hidden md:flex items-center space-x-8 ${showWhiteBg ? 'text-gray-600' : 'text-gray-200'}`}>
-            {navItems.map((item) => (
-              <Link
-                key={item.name}
-                to={item.to}
-                className="hover:text-indigo-500 font-medium transition-colors"
-              >
-                {item.name}
-              </Link>
-            ))}
+            <Link to={user && user.role === 'owner' ? '/owner' : '/'} className="hover:text-indigo-500 font-medium transition-colors">
+              Home
+            </Link>
+            <Link to="/explore" className="hover:text-indigo-500 font-medium transition-colors">
+              Explore
+            </Link>
+            <Link to="/about" className="hover:text-indigo-500 font-medium transition-colors">
+              About
+            </Link>
           </div>
 
           {/* Action Buttons */}
@@ -115,11 +115,15 @@ const Navbar = () => {
         {isOpen && (
           <div className="absolute top-full left-0 w-full bg-white border-b border-gray-100 shadow-xl p-6 md:hidden animate-in slide-in-from-top-2">
             <div className="flex flex-col space-y-4">
-              {navItems.map((item) => (
-                <Link key={item.name} to={item.to} onClick={() => setIsOpen(false)} className="text-left text-lg font-medium text-gray-800 py-2 border-b border-gray-50">
-                  {item.name}
-                </Link>
-              ))}
+              <Link to={user && user.role === 'owner' ? '/owner' : '/'} onClick={() => setIsOpen(false)} className="text-left text-lg font-medium text-gray-800 py-2 border-b border-gray-50">
+                Home
+              </Link>
+              <Link to="/explore" onClick={() => setIsOpen(false)} className="text-left text-lg font-medium text-gray-800 py-2 border-b border-gray-50">
+                Explore
+              </Link>
+              <Link to="/about" onClick={() => setIsOpen(false)} className="text-left text-lg font-medium text-gray-800 py-2 border-b border-gray-50">
+                About
+              </Link>
               <div className="grid grid-cols-2 gap-4 mt-4">
                 {user ? (
                   <>

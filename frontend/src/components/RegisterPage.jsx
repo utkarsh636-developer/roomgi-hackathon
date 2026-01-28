@@ -27,7 +27,11 @@ const RegisterPage = () => {
 
     try {
       await authService.register(formData);
-      navigate('/'); // Redirect to landing page on success
+      if (formData.role === 'owner') {
+        navigate('/owner');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed. Please try again.');
     } finally {
