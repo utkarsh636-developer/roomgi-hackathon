@@ -265,10 +265,16 @@ const updateProperty = asyncHandler(async (req, res) => {
 });
 
 
+
+
 const getPropertyById = asyncHandler(async (req, res) => {
     const { propertyId } = req.params;
 
-    const property = await Property.findById(propertyId); // fetch property only
+    const property = await Property.findById(propertyId).populate({
+        path: "owner",
+        select: "username email phoneNumber profileImage",
+        model: User
+    });
 
     if (!property) throw new ApiError(404, "Property not found");
 
