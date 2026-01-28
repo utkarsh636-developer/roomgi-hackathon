@@ -63,6 +63,24 @@ const authService = {
             localStorage.setItem('user', JSON.stringify(response.data.data));
         }
         return response.data;
+    },
+
+    getFavorites: async () => {
+        const response = await api.get('/users/tenant/favourites');
+        return response.data;
+    },
+
+    toggleFavorite: async (propertyId) => {
+        const response = await api.post(`/users/favorites/${propertyId}`);
+        // Update local storage
+        if (response.data && response.data.data) {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (user) {
+                user.favorites = response.data.data;
+                localStorage.setItem('user', JSON.stringify(user));
+            }
+        }
+        return response.data;
     }
 };
 

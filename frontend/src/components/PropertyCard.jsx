@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Wifi, Wind, Coffee, BadgeCheck, Heart, Share2, Phone } from 'lucide-react';
+import authService from '../services/authService';
 
 const PropertyCard = ({ property }) => {
   const {
@@ -23,7 +24,36 @@ const PropertyCard = ({ property }) => {
   const displayImage = images?.[0]?.url || property.imageUrl || 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&q=80&w=800';
   const displayLocation = location?.addressLine || location?.city || location || 'Unknown Location';
   // Check for nested capacity object or flat property
+  // Check for nested capacity object or flat property
   const displayCapacity = property.capacity?.total || property.capacity || '2+';
+
+  const [isLiked, setIsLiked] = useState(false);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const currentUser = authService.getCurrentUser();
+    setUser(currentUser);
+    if (currentUser && currentUser.favorites) {
+      setIsLiked(currentUser.favorites.includes(property._id));
+    }
+  }, [property._id]);
+
+  const handleLike = async (e) => {
+    e.preventDefault(); // Prevent Link navigation
+    e.stopPropagation();
+    if (!user) {
+      alert("Please login to like properties");
+      return;
+    }
+
+    try {
+      setIsLiked(!isLiked); // Optimistic UI update
+      await authService.toggleFavorite(property._id);
+    } catch (error) {
+      setIsLiked(!isLiked); // Revert on error
+      console.error("Failed to toggle favorite", error);
+    }
+  };
 
   return (
     <div className="group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
@@ -65,9 +95,14 @@ const PropertyCard = ({ property }) => {
           <h3 className="text-lg font-bold text-gray-900 font-montserrat leading-tight truncate pr-2" title={name}>
             {name}
           </h3>
-          <button className="text-gray-400 hover:text-pink-500 transition-colors">
-            <Heart className="w-5 h-5" />
-          </button>
+          {(!user || user.role !== 'owner') && (
+            <button
+              onClick={handleLike}
+              className={`transition-colors ${isLiked ? 'text-red-500 fill-current' : 'text-gray-400 hover:text-pink-500'}`}
+            >
+              <Heart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
+            </button>
+          )}
         </div>
 
         {/* Price Section */}

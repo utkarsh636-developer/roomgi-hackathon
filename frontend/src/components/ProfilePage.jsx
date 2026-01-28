@@ -3,6 +3,7 @@ import { User, Mail, Phone as PhoneIcon, Camera, Save, ShieldCheck } from 'lucid
 import Navbar from './Navbar';
 import Footer from './Footer';
 import authService from '../services/authService';
+import PropertyCard from './PropertyCard';
 
 const ProfilePage = () => {
     const [user, setUser] = useState(null);
@@ -191,9 +192,54 @@ const ProfilePage = () => {
                             </form>
                         </div>
                     </div>
+
+                    {/* Liked Properties Section - Only for Tenants */}
+                    {user && user.role === 'tenant' && (
+                        <div className="mt-12">
+                            <h2 className="text-2xl font-bold text-gray-900 mb-6">Liked Properties</h2>
+                            <LikedPropertiesList />
+                        </div>
+                    )}
                 </div>
             </main>
             <Footer />
+        </div>
+    );
+};
+
+const LikedPropertiesList = () => {
+    const [favorites, setFavorites] = React.useState([]);
+    const [loading, setLoading] = React.useState(true);
+
+    React.useEffect(() => {
+        const fetchFavorites = async () => {
+            try {
+                const response = await authService.getFavorites();
+                setFavorites(response.data || []);
+            } catch (error) {
+                console.error("Failed to fetch favorites", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchFavorites();
+    }, []);
+
+    if (loading) return <div className="py-10 text-center">Loading favorites...</div>;
+
+    if (favorites.length === 0) {
+        return (
+            <div className="bg-white rounded-3xl p-10 text-center border border-gray-100 shadow-sm">
+                <p className="text-gray-500">You haven't liked any properties yet.</p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {favorites.map(property => (
+                <PropertyCard key={property._id} property={property} />
+            ))}
         </div>
     );
 };
