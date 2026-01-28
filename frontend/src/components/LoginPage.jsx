@@ -21,7 +21,14 @@ const LoginPage = () => {
 
     try {
       await authService.login(formData);
-      navigate('/'); // Redirect to landing page on success
+      
+      // Redirect based on user role
+      const user = authService.getCurrentUser();
+      if (user && user.role === 'admin') {
+        navigate('/admin/dashboard');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
     } finally {
