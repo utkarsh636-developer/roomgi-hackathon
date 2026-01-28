@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import {
     LayoutDashboard, Plus, Home, MessageSquare,
     TrendingUp, Eye, Users, AlertCircle, CheckCircle,
-    MoreVertical, MapPin
+    MoreVertical, MapPin, Edit, Trash2, X
 } from 'lucide-react';
 import Navbar from './Navbar';
 import Footer from './Footer';
@@ -13,6 +13,8 @@ const OwnerDashboard = () => {
     const [properties, setProperties] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
     const [error, setError] = React.useState(null);
+    const [showDeleteModal, setShowDeleteModal] = React.useState(false);
+    const [propertyToDelete, setPropertyToDelete] = React.useState(null);
 
     React.useEffect(() => {
         const fetchProperties = async () => {
@@ -30,6 +32,30 @@ const OwnerDashboard = () => {
         fetchProperties();
     }, []);
 
+    const handleDeleteClick = (id) => {
+        setPropertyToDelete(id);
+        setShowDeleteModal(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!propertyToDelete) return;
+
+        try {
+            await propertyService.deleteProperty(propertyToDelete);
+            setProperties(prev => prev.filter(p => p._id !== propertyToDelete));
+            setShowDeleteModal(false);
+            setPropertyToDelete(null);
+        } catch (err) {
+            console.error("Failed to delete property:", err);
+            alert("Failed to delete property. Please try again.");
+        }
+    };
+
+    const cancelDelete = () => {
+        setShowDeleteModal(false);
+        setPropertyToDelete(null);
+    };
+
     // Mock Data for Stats (Keep these until backend provides stats endpoint)
     const stats = [
         { label: 'Total Views', value: '1,240', change: '+12%', icon: Eye, color: 'text-blue-600', bg: 'bg-blue-50' },
@@ -38,9 +64,49 @@ const OwnerDashboard = () => {
         { label: 'Total Earnings', value: '₹25k', change: 'June', icon: TrendingUp, color: 'text-green-600', bg: 'bg-green-50' },
     ];
 
+
+
     return (
         <div className="min-h-screen bg-gray-50 font-montserrat flex flex-col">
             <Navbar />
+
+            {/* Delete Confirmation Modal */}
+            {showDeleteModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-xl transform scale-100 transition-all">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-xl font-bold text-gray-900">Delete Property</h3>
+                            <button onClick={cancelDelete} className="text-gray-400 hover:text-gray-600">
+                                <X size={24} />
+                            </button>
+                        </div>
+
+                        <div className="mb-6">
+                            <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-4 text-red-600">
+                                <Trash2 size={24} />
+                            </div>
+                            <p className="text-gray-600">
+                                Are you sure you want to delete this property? This action cannot be undone and all associated data will be removed.
+                            </p>
+                        </div>
+
+                        <div className="flex gap-3">
+                            <button
+                                onClick={cancelDelete}
+                                className="flex-1 py-3 px-4 border border-gray-200 rounded-xl font-bold text-gray-700 hover:bg-gray-50 transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmDelete}
+                                className="flex-1 py-3 px-4 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition-colors shadow-lg shadow-red-600/20"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <main className="flex-grow pt-20">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -146,11 +212,17 @@ const OwnerDashboard = () => {
                                         </div>
 
                                         <div className="flex gap-2 w-full md:w-auto mt-4 md:mt-0">
-                                            <button className="flex-1 md:flex-none px-4 py-2 border border-gray-200 rounded-lg text-gray-600 font-bold hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
-                                                Edit
-                                            </button>
-                                            <button className="p-2 border border-gray-200 rounded-lg text-gray-400 hover:text-red-500 hover:border-red-200 transition-colors">
-                                                <MoreVertical size={20} />
+                                            <Link
+                                                to={`/edit-property/${property._id}`}
+                                                className="flex-1 md:flex-none px-4 py-2 border border-gray-200 rounded-lg text-gray-600 font-bold hover:bg-indigo-50 hover:text-indigo-600 transition-colors flex items-center justify-center gap-2"
+                                            >
+                                                <Edit size={16} /> Edit
+                                            </Link>
+                                            <button
+                                                onClick={() => handleDeleteClick(property._id)}
+                                                className="p-2 border border-gray-200 rounded-lg text-gray-400 hover:text-red-500 hover:border-red-200 transition-colors"
+                                            >
+                                                <Trash2 size={20} />
                                             </button>
                                         </div>
                                     </div>

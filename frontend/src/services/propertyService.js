@@ -60,11 +60,38 @@ const getOwnerProperties = async () => {
     }
 };
 
+const updateProperty = async (id, formData) => {
+    try {
+        const response = await axios.patch(`${API_URL}/properties/${id}`, formData, {
+            headers: {
+                ...getAuthHeader(),
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || error.message;
+    }
+};
+
+const deleteProperty = async (id) => {
+    try {
+        const response = await axios.delete(`${API_URL}/properties/${id}`, {
+            headers: getAuthHeader()
+        });
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || error.message;
+    }
+};
+
 const propertyService = {
     addProperty,
     getAllProperties,
     getPropertyById,
-    getOwnerProperties
+    getOwnerProperties,
+    updateProperty,
+    deleteProperty
 };
 
 export default propertyService;

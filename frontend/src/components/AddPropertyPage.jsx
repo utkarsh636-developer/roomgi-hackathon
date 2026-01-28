@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import propertyService from '../services/propertyService';
@@ -15,10 +16,13 @@ const AMENITIES_LIST = [
 ];
 
 const AddPropertyPage = () => {
+    const { id } = useParams();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+    const [fetching, setFetching] = useState(false);
     const [error, setError] = useState('');
     const [images, setImages] = useState([]);
+    const [existingImages, setExistingImages] = useState([]);
 
     const [formData, setFormData] = useState({
         type: 'flat',
@@ -32,6 +36,41 @@ const AddPropertyPage = () => {
         description: '',
         amenities: []
     });
+
+    useEffect(() => {
+        if (id) {
+            const fetchProperty = async () => {
+                setFetching(true);
+                try {
+                    const response = await propertyService.getPropertyById(id);
+                    const property = response.data;
+
+                    setFormData({
+                        type: property.type,
+                        address: property.location.addressLine,
+                        city: property.location.city,
+                        state: property.location.state,
+                        pincode: property.location.pincode,
+                        rent: property.rent,
+                        securityDeposit: property.securityDeposit,
+                        capacity: property.capacity.total,
+                        description: property.description,
+                        amenities: property.amenities || []
+                    });
+
+                    if (property.images && property.images.length > 0) {
+                        setExistingImages(property.images);
+                    }
+                } catch (err) {
+                    console.error('Failed to fetch property details:', err);
+                    setError('Failed to load property details.');
+                } finally {
+                    setFetching(false);
+                }
+            };
+            fetchProperty();
+        }
+    }, [id]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -83,7 +122,7 @@ const AddPropertyPage = () => {
             data.append('state', formData.state);
             data.append('pincode', formData.pincode);
 
-            // Coordinates - explicit flat keys required by backend
+            // Coordinates - explicit flat keys required by backend (mocked for now)
             data.append('coordinates.lng', '77.5946');
             data.append('coordinates.lat', '12.9716');
 
@@ -96,15 +135,28 @@ const AddPropertyPage = () => {
                 data.append('images', image);
             });
 
-            await propertyService.addProperty(data);
+            if (id) {
+                await propertyService.updateProperty(id, data);
+            } else {
+                await propertyService.addProperty(data);
+            }
+
             navigate('/owner-dashboard');
         } catch (err) {
-            console.error('Add Property Error:', err);
-            setError(err.message || 'Failed to add property. Please try again.');
+            console.error('Property Form Error:', err);
+            setError(err.message || `Failed to ${id ? 'update' : 'add'} property.Please try again.`);
         } finally {
             setLoading(false);
         }
     };
+
+    if (fetching) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <Loader className="animate-spin text-indigo-600 w-8 h-8" />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gray-50 font-montserrat flex flex-col">
@@ -114,9 +166,9 @@ const AddPropertyPage = () => {
                 <div className="max-w-4xl mx-auto bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
                     <div className="p-8 border-b border-gray-100 bg-indigo-600 text-white">
                         <h1 className="text-2xl font-bold flex items-center gap-2">
-                            <Home className="w-6 h-6" /> List New Property
+                            <Home className="w-6 h-6" /> {id ? 'Edit Property' : 'List New Property'}
                         </h1>
-                        <p className="text-indigo-100 mt-2">Fill in the details to list your property on RoomGi.</p>
+                        <p className="text-indigo-100 mt-2">{id ? 'Update property details below.' : 'Fill in the details to list your property on RoomGi.'}</p>
                     </div>
 
                     <form onSubmit={handleSubmit} className="p-8 space-y-8">
@@ -312,7 +364,7 @@ const AddPropertyPage = () => {
                                         <div key={index} className="relative group aspect-square rounded-lg overflow-hidden border border-gray-200">
                                             <img
                                                 src={URL.createObjectURL(file)}
-                                                alt={`Preview ${index}`}
+                                                alt={`Preview ${index} `}
                                                 className="w-full h-full object-cover"
                                             />
                                             <button
@@ -337,10 +389,10 @@ const AddPropertyPage = () => {
                             >
                                 {loading ? (
                                     <>
-                                        <Loader className="animate-spin w-5 h-5" /> Publishing...
+                                        <Loader className="animate-spin w-5 h-5" /> {id ? 'Updating...' : 'Publishing...'}
                                     </>
                                 ) : (
-                                    'List Property'
+                                    id ? 'Update Property' : 'List Property'
                                 )}
                             </button>
                         </div>

@@ -44,6 +44,14 @@ function App() {
         }
       />
       <Route
+        path="/edit-property/:id"
+        element={
+          <ProtectedRoute>
+            <AddPropertyPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/verification"
         element={
           <ProtectedRoute>
