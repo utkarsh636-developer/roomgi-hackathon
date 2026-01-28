@@ -2,7 +2,7 @@ import { asyncHandler } from "../utils/asyncHandler.js"
 import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { Property } from "../models/property.model.js"
-import { uploadOnCloudinary ,cloudinary,extractPublicId} from "../utils/cloudinary.js"
+import { uploadOnCloudinary, cloudinary, extractPublicId } from "../utils/cloudinary.js"
 import { AMENITIES } from "../utils/constants.js"
 import { User } from "../models/user.model.js"
 import { Review } from "../models/review.model.js"
@@ -62,7 +62,12 @@ const createProperty = asyncHandler(async (req, res) => {
     }
 
     /* -------- images -------- */
-    const imageFiles = req.files?.images;
+    /* -------- images -------- */
+    let imageFiles = req.files;
+    if (req.files && !Array.isArray(req.files) && req.files.images) {
+        imageFiles = req.files.images;
+    }
+
     if (!imageFiles || imageFiles.length === 0) {
         throw new ApiError(400, "At least one image is required");
     }
@@ -257,7 +262,7 @@ const verifyPropertyRequest = asyncHandler(async (req, res) => {
     }
 
     // Remove any previously uploaded documents (cleanup)
-        if (property.documents && property.documents.length > 0) {
+    if (property.documents && property.documents.length > 0) {
         await Promise.all(
             property.documents.map(doc => {
                 if (doc.publicId) {
@@ -558,18 +563,18 @@ const getPropertiesByQueries = asyncHandler(async (req, res) => {
     if (lat && lng && maxDistance) {
         // Use aggregation with $geoNear to include distance
         properties = await Property.aggregate([
-        {
-            $geoNear: {
-                near: { type: "Point", coordinates: [Number(lng), Number(lat)] },
-                distanceField: "distanceInMeters",
-                maxDistance: Number(maxDistance) * 1000,
-                spherical: true,
-                query: matchFilter,
-                key: "location.coordinates" // <--- Add the specific field name that has the index
-            }
-        },
-        { $sort: { distanceInMeters: 1, rent: 1 } }
-]);
+            {
+                $geoNear: {
+                    near: { type: "Point", coordinates: [Number(lng), Number(lat)] },
+                    distanceField: "distanceInMeters",
+                    maxDistance: Number(maxDistance) * 1000,
+                    spherical: true,
+                    query: matchFilter,
+                    key: "location.coordinates" // <--- Add the specific field name that has the index
+                }
+            },
+            { $sort: { distanceInMeters: 1, rent: 1 } }
+        ]);
 
         // Convert distance to km
         properties = properties.map(p => ({

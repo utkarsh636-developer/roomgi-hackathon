@@ -9,8 +9,9 @@ import ProtectedRoute from './components/ProtectedRoute';
 import authService from './services/authService';
 import OwnerLanding from './components/OwnerLanding';
 import OwnerDashboard from './components/OwnerDashboard';
+import AddPropertyPage from './components/AddPropertyPage';
+import VerificationPage from './components/VerificationPage';
 
-// Layout wrapper to conditionally show landing page based on role
 const HomeRoute = () => {
   const user = authService.getCurrentUser();
   if (user && user.role === 'owner') {
@@ -31,6 +32,22 @@ function App() {
         element={
           <ProtectedRoute>
             <OwnerDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/add-property"
+        element={
+          <ProtectedRoute>
+            <AddPropertyPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/verification"
+        element={
+          <ProtectedRoute>
+            <VerificationPage />
           </ProtectedRoute>
         }
       />

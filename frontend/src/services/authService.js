@@ -30,6 +30,15 @@ const authService = {
         }
     },
 
+    verifyRequest: async (formData) => {
+        const response = await api.post('/users/verify-request', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    },
+
     getCurrentUser: () => {
         return JSON.parse(localStorage.getItem('user'));
     }

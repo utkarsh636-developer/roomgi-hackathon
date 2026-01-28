@@ -151,7 +151,7 @@ router.route("/tenant/favourites").get(getFavouriteProperties)
  * Response: Updated user object with verification status
  */
 router.route("/verify-request").post(
-    upload.fields([{ name: "documents", maxCount: 2 }]),
+    upload.fields([{ name: "documents", maxCount: 5 }]),
     verifyUserRequest
 )
 

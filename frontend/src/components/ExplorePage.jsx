@@ -1,56 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropertyCard from './PropertyCard';
-import { Map, List, Filter, Search } from 'lucide-react';
+import { Map, List, Filter, Search, Loader } from 'lucide-react';
 import Navbar from './Navbar';
 import Footer from './Footer';
-
-// Dummy data for property listings
-const properties = [
-  {
-    id: 1,
-    name: 'Sunshine PG for Girls',
-    location: 'Koramangala, Bangalore',
-    price: 8500,
-    deposit: 15000,
-    sharing: 'Double',
-    gender: 'Girls',
-    imageUrl: '/images/girls-room.jpg',
-    isVerified: true
-  },
-  {
-    id: 2,
-    name: 'Zenith Student Hostel',
-    location: 'HSR Layout, Bangalore',
-    price: 7000,
-    deposit: 10000,
-    sharing: 'Triple',
-    gender: 'Boys',
-    imageUrl: '/images/pg-room.avif',
-    isVerified: true
-  },
-  {
-    id: 3,
-    name: 'Pro-Stay for Working Professionals',
-    location: 'Indiranagar, Bangalore',
-    price: 12000,
-    deposit: 25000,
-    sharing: 'Single',
-    gender: 'Both',
-    imageUrl: '/images/room3.jpg',
-    isVerified: false
-  },
-  {
-    id: 4,
-    name: 'Cozy Nook PG',
-    location: 'Marathahalli, Bangalore',
-    price: 6500,
-    deposit: 10000,
-    sharing: 'Double',
-    gender: 'Girls',
-    imageUrl: '/images/room4.jpg',
-    isVerified: true
-  }
-];
+import propertyService from '../services/propertyService';
 
 const FilterSection = ({ title, children }) => (
   <div className="py-5 border-b border-gray-100 last:border-0">
@@ -72,15 +25,40 @@ const Checkbox = ({ label }) => (
 );
 
 const ExplorePage = () => {
-  const [budget, setBudget] = useState(15000);
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [budget, setBudget] = useState(25000); // Default max budget
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [showMap, setShowMap] = useState(false);
+
+  useEffect(() => {
+    fetchProperties();
+  }, []);
+
+  const fetchProperties = async () => {
+    try {
+      setLoading(true);
+      const data = await propertyService.getAllProperties();
+      // The API returns { success: true, data: [...] } or just [...] depend on backend implementation
+      // Assuming it might be nested in data based on other endpoints, but propertyService.getAllProperties returns response.data
+      // Let's assume response.data is the array or { data: [] }
+      // Adjusting based on common patterns. If response.data is the payload, check if it has a .data property
+      setProperties(data.data || data || []);
+    } catch (err) {
+      console.error("Failed to fetch properties:", err);
+      // Fallback to empty list or handle error
+      setError("Failed to load properties. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const FilterContent = () => (
     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-full">
       <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
         <h3 className="text-xl font-bold text-gray-900 font-montserrat">Filters</h3>
-        <button className="text-sm text-indigo-600 font-semibold hover:text-indigo-800">Reset</button>
+        <button onClick={() => setBudget(25000)} className="text-sm text-indigo-600 font-semibold hover:text-indigo-800">Reset</button>
       </div>
 
       <FilterSection title="Budget Range">
@@ -88,7 +66,7 @@ const ExplorePage = () => {
           <input
             type="range"
             min="5000"
-            max="25000"
+            max="50000"
             step="500"
             value={budget}
             onChange={(e) => setBudget(e.target.value)}
@@ -97,7 +75,7 @@ const ExplorePage = () => {
           <div className="flex justify-between text-sm text-gray-500 mt-3 font-medium">
             <span>₹5k</span>
             <span className="text-indigo-600 bg-indigo-50 px-2 py-1 rounded">₹{Number(budget).toLocaleString()}</span>
-            <span>₹25k+</span>
+            <span>₹50k+</span>
           </div>
         </div>
       </FilterSection>
@@ -193,7 +171,17 @@ const ExplorePage = () => {
 
           {/* Main Content Area */}
           <div className="flex-grow">
-            {properties.length > 0 ? (
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-20">
+                <Loader className="w-10 h-10 text-indigo-600 animate-spin mb-4" />
+                <p className="text-gray-500 font-medium">Loading properties...</p>
+              </div>
+            ) : error ? (
+              <div className="flex flex-col items-center justify-center py-20 text-center">
+                <p className="text-red-500 font-bold mb-2">Oops!</p>
+                <p className="text-gray-500">{error}</p>
+              </div>
+            ) : properties.length > 0 ? (
               showMap ? (
                 // Placeholder for Map View
                 <div className="bg-white rounded-2xl h-[600px] flex flex-col items-center justify-center border border-gray-200 p-8 text-center">
@@ -213,7 +201,15 @@ const ExplorePage = () => {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {properties.map(prop => <PropertyCard key={prop.id} property={prop} />)}
+                  {properties
+                    .filter(prop => {
+                      // Basic client-side filter for budget if API doesn't handle it yet
+                      // Ensure property.price exists and is a number, assume rent is price
+                      // You might need to adjust field names based on API response (rent vs price)
+                      const price = Number(prop.rent || prop.price || 0);
+                      return price <= Number(budget);
+                    })
+                    .map(prop => <PropertyCard key={prop._id || prop.id} property={prop} />)}
                 </div>
               )
             ) : (

@@ -7,37 +7,35 @@ import {
 } from 'lucide-react';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import propertyService from '../services/propertyService';
 
 const OwnerDashboard = () => {
-    // Mock Data
+    const [properties, setProperties] = React.useState([]);
+    const [loading, setLoading] = React.useState(true);
+    const [error, setError] = React.useState(null);
+
+    React.useEffect(() => {
+        const fetchProperties = async () => {
+            try {
+                const response = await propertyService.getOwnerProperties();
+                setProperties(response.data || []);
+            } catch (err) {
+                console.error("Failed to fetch properties:", err);
+                setError("Failed to load your properties.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProperties();
+    }, []);
+
+    // Mock Data for Stats (Keep these until backend provides stats endpoint)
     const stats = [
         { label: 'Total Views', value: '1,240', change: '+12%', icon: Eye, color: 'text-blue-600', bg: 'bg-blue-50' },
         { label: 'Active Enquiries', value: '18', change: '+4', icon: MessageSquare, color: 'text-purple-600', bg: 'bg-purple-50' },
         { label: 'Shortlisted', value: '45', change: '+8%', icon: Users, color: 'text-indigo-600', bg: 'bg-indigo-50' },
         { label: 'Total Earnings', value: '₹25k', change: 'June', icon: TrendingUp, color: 'text-green-600', bg: 'bg-green-50' },
-    ];
-
-    const properties = [
-        {
-            id: 1,
-            name: 'Sunshine Premium Stays',
-            location: 'Koramangala 4th Block',
-            price: 12000,
-            status: 'Active',
-            views: 450,
-            enquiries: 8,
-            image: '/images/landing-page2-upscaled.jpg'
-        },
-        {
-            id: 2,
-            name: 'Green View Apartments',
-            location: 'HSR Layout, Sector 2',
-            price: 18000,
-            status: 'Pending Verification',
-            views: 12,
-            enquiries: 0,
-            image: 'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&q=80&w=800'
-        }
     ];
 
     return (
@@ -68,7 +66,7 @@ const OwnerDashboard = () => {
                             <h3 className="font-bold text-orange-800">Complete your verification</h3>
                             <p className="text-sm text-orange-700 mt-1">
                                 Your "Green View Apartments" listing is hidden until you complete KYC.
-                                <span className="font-bold underline cursor-pointer ml-1">Upload Documents</span>
+                                <Link to="/verification" className="font-bold underline cursor-pointer ml-1">Upload Documents</Link>
                             </p>
                         </div>
                     </div>
@@ -102,42 +100,48 @@ const OwnerDashboard = () => {
 
                         <div className="divide-y divide-gray-100">
                             {properties.map((property) => (
-                                <div key={property.id} className="p-6 hover:bg-gray-50 transition-colors group">
+                                <div key={property._id} className="p-6 hover:bg-gray-50 transition-colors group">
                                     <div className="flex flex-col md:flex-row gap-6 items-center">
                                         <div className="w-full md:w-48 h-32 rounded-xl overflow-hidden shadow-sm">
-                                            <img src={property.image} alt={property.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                            <img
+                                                src={property.images?.[0]?.url || 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&q=80&w=800'}
+                                                alt={property.type}
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                            />
                                         </div>
 
                                         <div className="flex-1 w-full text-center md:text-left">
                                             <div className="flex flex-col md:flex-row md:items-center gap-2 mb-2 justify-center md:justify-start">
-                                                <h4 className="text-lg font-bold text-gray-900">{property.name}</h4>
-                                                {property.status === 'Active' ? (
+                                                <h4 className="text-lg font-bold text-gray-900 capitalize">{property.type} in {property.location?.city}</h4>
+                                                {property.verification?.status === 'approved' ? (
                                                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-700 border border-green-200">
-                                                        <CheckCircle size={12} /> Active
+                                                        <CheckCircle size={12} /> Verified
                                                     </span>
                                                 ) : (
-                                                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-orange-100 text-orange-700 border border-orange-200">
-                                                        <AlertCircle size={12} /> In Review
+                                                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-orange-100 text-orange-700 border border-orange-200 uppercase">
+                                                        <AlertCircle size={12} /> {property.verification?.status || 'Pending'}
                                                     </span>
                                                 )}
                                             </div>
                                             <div className="flex items-center gap-2 text-gray-500 text-sm justify-center md:justify-start mb-4 md:mb-0">
-                                                <MapPin size={16} /> {property.location}
+                                                <MapPin size={16} /> {property.location?.addressLine}, {property.location?.city}
                                             </div>
                                         </div>
 
                                         <div className="flex gap-8 text-center md:text-left">
                                             <div>
-                                                <p className="text-xs text-gray-400 font-bold uppercase">Price</p>
-                                                <p className="font-bold text-gray-900">₹{property.price.toLocaleString()}</p>
+                                                <p className="text-xs text-gray-400 font-bold uppercase">Rent</p>
+                                                <p className="font-bold text-gray-900">₹{property.rent?.toLocaleString()}</p>
                                             </div>
                                             <div>
                                                 <p className="text-xs text-gray-400 font-bold uppercase">Views</p>
-                                                <p className="font-bold text-gray-900">{property.views}</p>
+                                                <p className="font-bold text-gray-900">{property.views || 0}</p>
                                             </div>
                                             <div>
-                                                <p className="text-xs text-gray-400 font-bold uppercase">Leads</p>
-                                                <p className="font-bold text-indigo-600">{property.enquiries}</p>
+                                                <p className="text-xs text-gray-400 font-bold uppercase">Status</p>
+                                                <p className={`font-bold ${property.status === 'available' ? 'text-green-600' : 'text-red-600'} capitalize`}>
+                                                    {property.status}
+                                                </p>
                                             </div>
                                         </div>
 
