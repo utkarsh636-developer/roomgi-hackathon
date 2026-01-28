@@ -9,6 +9,7 @@ import {
 import Navbar from './Navbar';
 import Footer from './Footer';
 import propertyService from '../services/propertyService';
+import ReviewSection from './ReviewSection';
 
 // Helper for Lucide imports if missing
 const Sun = ({ size, className }) => <div className={className}>☀️</div>;
@@ -64,7 +65,6 @@ const PropertyDetailsPage = () => {
         const fetchProperty = async () => {
             try {
                 const response = await propertyService.getPropertyById(id);
-                console.log("DEBUG: Fetched Property Data:", response.data);
                 setProperty(response.data);
             } catch (err) {
                 console.error("Failed to fetch property:", err);
@@ -269,8 +269,8 @@ const PropertyDetailsPage = () => {
                                 )}
                             </div>
 
-                            {/* Reviews Preview (Placeholder for now as reviews need backend integration) */}
-                            {/* <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100"> ... </div> */}
+                            {/* Reviews Section */}
+                            <ReviewSection propertyId={id} />
 
                         </div>
 

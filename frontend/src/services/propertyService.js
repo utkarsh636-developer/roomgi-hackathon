@@ -85,13 +85,23 @@ const deleteProperty = async (id) => {
     }
 };
 
+const getPropertyReviews = async (propertyId) => {
+    try {
+        const response = await axios.get(`${API_URL}/properties/${propertyId}/reviews`);
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || error.message;
+    }
+};
+
 const propertyService = {
     addProperty,
     getAllProperties,
     getPropertyById,
     getOwnerProperties,
     updateProperty,
-    deleteProperty
+    deleteProperty,
+    getPropertyReviews
 };
 
 export default propertyService;
