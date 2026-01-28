@@ -34,72 +34,156 @@ const AMENITIES_LIST = [
 ];
 
 const ExplorePage = () => {
+  /* ------------------------------------------------------------
+   * STATE
+   * ------------------------------------------------------------ */
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [budget, setBudget] = useState(25000); // Default max budget
+
+  // Filters
+  // Initialize budget with a high value or handle it as 'max'
+  const [budget, setBudget] = useState(50000);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedType, setSelectedType] = useState('');
+  const [selectedAmenities, setSelectedAmenities] = useState([]);
+
+  // UI State
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [showMap, setShowMap] = useState(false);
   const [showAllAmenities, setShowAllAmenities] = useState(false);
 
+  /* ------------------------------------------------------------
+   * FETCH LOGIC
+   * ------------------------------------------------------------ */
   useEffect(() => {
-    fetchProperties();
-  }, []);
+    const timeoutId = setTimeout(() => {
+      fetchProperties();
+    }, 500);
+    return () => clearTimeout(timeoutId);
+  }, [budget, searchQuery, selectedType, selectedAmenities]);
 
   const fetchProperties = async () => {
     try {
       setLoading(true);
-      const data = await propertyService.getAllProperties();
-      // The API returns { success: true, data: [...] } or just [...] depend on backend implementation
-      // Assuming it might be nested in data based on other endpoints, but propertyService.getAllProperties returns response.data
-      // Let's assume response.data is the array or { data: [] }
-      // Adjusting based on common patterns. If response.data is the payload, check if it has a .data property
+      setError(null);
+
+      const params = {};
+
+      // Only add params if they restrict the search
+      if (budget < 50000) {
+        params.maxRent = budget;
+      }
+
+      if (searchQuery.trim()) {
+        params.preferences = searchQuery;
+      }
+
+      if (selectedType) {
+        params.type = selectedType;
+      }
+
+      if (selectedAmenities.length > 0) {
+        params.amenities = selectedAmenities.join(',');
+      }
+
+      const data = await propertyService.getAllProperties(params);
       setProperties(data.data || data || []);
     } catch (err) {
       console.error("Failed to fetch properties:", err);
-      // Fallback to empty list or handle error
-      setError("Failed to load properties. Please try again later.");
+      // Don't show error on empty search, just show empty list or generic message if critical
+      setProperties([]);
     } finally {
       setLoading(false);
     }
   };
 
+  /* ------------------------------------------------------------
+   * HANDLERS
+   * ------------------------------------------------------------ */
+  const handleTypeChange = (type) => {
+    setSelectedType(prev => prev === type.toLowerCase() ? '' : type.toLowerCase());
+  };
+
+  const handleAmenityChange = (amenity) => {
+    setSelectedAmenities(prev => {
+      if (prev.includes(amenity)) {
+        return prev.filter(a => a !== amenity);
+      } else {
+        return [...prev, amenity];
+      }
+    });
+  };
+
+  const handleResetFilters = () => {
+    setBudget(50000);
+    setSearchQuery('');
+    setSelectedType('');
+    setSelectedAmenities([]);
+  };
+
   const FilterContent = () => (
-    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-full">
+    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-full overflow-y-auto max-h-[calc(100vh-140px)] sticky-sidebar">
       <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
         <h3 className="text-xl font-bold text-gray-900 font-montserrat">Filters</h3>
-        <button onClick={() => setBudget(25000)} className="text-sm text-indigo-600 font-semibold hover:text-indigo-800">Reset</button>
+        <button onClick={handleResetFilters} className="text-sm text-indigo-600 font-semibold hover:text-indigo-800">Reset</button>
       </div>
 
-      <FilterSection title="Budget Range">
+      <FilterSection title="Budget Range (Max)">
         <div className="relative pt-2">
           <input
             type="range"
-            min="5000"
+            min="2000"
             max="50000"
-            step="500"
+            step="1000"
             value={budget}
-            onChange={(e) => setBudget(e.target.value)}
+            onChange={(e) => setBudget(Number(e.target.value))}
             className="w-full h-2 bg-gray-200 rounded-lg cursor-pointer accent-indigo-600"
           />
           <div className="flex justify-between text-sm text-gray-500 mt-3 font-medium">
-            <span>₹5k</span>
-            <span className="text-indigo-600 bg-indigo-50 px-2 py-1 rounded">₹{Number(budget).toLocaleString()}</span>
+            <span>₹2k</span>
+            <span className="text-indigo-600 bg-indigo-50 px-2 py-1 rounded">
+              {budget >= 50000 ? '50k+' : `₹${budget.toLocaleString()}`}
+            </span>
             <span>₹50k+</span>
           </div>
         </div>
       </FilterSection>
 
       <FilterSection title="Property Type">
-        <Checkbox label="Flat / Apartment" />
-        <Checkbox label="PG" />
-        <Checkbox label="Hostel" />
+        <div className="space-y-3">
+          {['Flat', 'PG', 'Hostel'].map((type) => (
+            <label key={type} className="flex items-center text-gray-600 cursor-pointer hover:text-indigo-600 transition-colors">
+              <div className="relative flex items-center">
+                <input
+                  type="checkbox"
+                  checked={selectedType === type.toLowerCase()}
+                  onChange={() => handleTypeChange(type)}
+                  className="peer h-5 w-5 text-indigo-600 border-2 border-gray-300 rounded focus:ring-indigo-500 checked:bg-indigo-600 checked:border-indigo-600 transition-all"
+                />
+                <svg className="absolute w-3.5 h-3.5 text-white hidden peer-checked:block left-1 top-1 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
+              </div>
+              <span className="ml-3 text-sm font-medium">{type}</span>
+            </label>
+          ))}
+        </div>
       </FilterSection>
 
       <FilterSection title="Amenities">
         <div className="space-y-3">
           {AMENITIES_LIST.slice(0, showAllAmenities ? AMENITIES_LIST.length : 5).map(amenity => (
-            <Checkbox key={amenity} label={amenity.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())} />
+            <label key={amenity} className="flex items-center text-gray-600 cursor-pointer hover:text-indigo-600 transition-colors">
+              <div className="relative flex items-center">
+                <input
+                  type="checkbox"
+                  checked={selectedAmenities.includes(amenity)}
+                  onChange={() => handleAmenityChange(amenity)}
+                  className="peer h-5 w-5 text-indigo-600 border-2 border-gray-300 rounded focus:ring-indigo-500 checked:bg-indigo-600 checked:border-indigo-600 transition-all"
+                />
+                <svg className="absolute w-3.5 h-3.5 text-white hidden peer-checked:block left-1 top-1 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
+              </div>
+              <span className="ml-3 text-sm font-medium">{amenity.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</span>
+            </label>
           ))}
         </div>
         <button
@@ -132,7 +216,9 @@ const ExplorePage = () => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder="Search by area, college..."
+                placeholder="Search by city, area, college..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 transition-all outline-none"
               />
             </div>
@@ -211,15 +297,7 @@ const ExplorePage = () => {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {properties
-                    .filter(prop => {
-                      // Basic client-side filter for budget if API doesn't handle it yet
-                      // Ensure property.price exists and is a number, assume rent is price
-                      // You might need to adjust field names based on API response (rent vs price)
-                      const price = Number(prop.rent || prop.price || 0);
-                      return price <= Number(budget);
-                    })
-                    .map(prop => <PropertyCard key={prop._id || prop.id} property={prop} />)}
+                  {properties.map(prop => <PropertyCard key={prop._id || prop.id} property={prop} />)}
                 </div>
               )
             ) : (
@@ -228,7 +306,7 @@ const ExplorePage = () => {
                 <img src="/images/no-results.svg" alt="No Data" className="w-64 h-64 mb-6 opacity-80" />
                 <h3 className="text-2xl font-bold text-gray-800">No Properties Found</h3>
                 <p className="text-gray-500 mt-2">Try adjusting your filters or search for a different area.</p>
-                <button onClick={() => setBudget(25000)} className="mt-6 text-indigo-600 font-semibold hover:underline">
+                <button onClick={handleResetFilters} className="mt-6 text-indigo-600 font-semibold hover:underline">
                   Clear Filters
                 </button>
               </div>
