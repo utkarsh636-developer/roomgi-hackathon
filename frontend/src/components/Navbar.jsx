@@ -62,7 +62,7 @@ const Navbar = () => {
             {/* List Property Logic: Guest -> Login, Owner -> Become Host, Tenant -> Hidden */}
             {(!user || user.role === 'owner') && (
               <Link
-                to={user ? "/become-host" : "/login"}
+                to={user ? "/owner-dashboard" : "/login"}
                 className={`px-4 py-2 font-bold rounded-full transition-all border-2 ${showWhiteBg
                   ? 'border-indigo-600 text-indigo-600 hover:bg-indigo-50'
                   : 'border-white text-white hover:bg-white/10'

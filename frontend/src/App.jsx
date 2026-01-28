@@ -8,6 +8,7 @@ import PropertyDetailsPage from './components/PropertyDetailsPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import authService from './services/authService';
 import OwnerLanding from './components/OwnerLanding';
+import OwnerDashboard from './components/OwnerDashboard';
 
 // Layout wrapper to conditionally show landing page based on role
 const HomeRoute = () => {
@@ -25,6 +26,14 @@ function App() {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/" element={<HomeRoute />} />
       <Route path="/owner" element={<OwnerLanding />} />
+      <Route
+        path="/owner-dashboard"
+        element={
+          <ProtectedRoute>
+            <OwnerDashboard />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/explore"
         element={
