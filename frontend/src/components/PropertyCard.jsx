@@ -82,19 +82,32 @@ const PropertyCard = ({ property }) => {
         </div>
 
         {/* Amenities Preview */}
-        <div className="flex gap-3 mb-5 border-y border-gray-50 py-3">
-          <div className="flex items-center gap-1.5 text-xs font-medium text-gray-600 bg-gray-50 px-2 py-1 rounded">
-            <Wind className="w-3.5 h-3.5" /> AC
-          </div>
-          <div className="flex items-center gap-1.5 text-xs font-medium text-gray-600 bg-gray-50 px-2 py-1 rounded">
-            <Wifi className="w-3.5 h-3.5" /> Wi-Fi
-          </div>
-          <div className="flex items-center gap-1.5 text-xs font-medium text-gray-600 bg-gray-50 px-2 py-1 rounded">
-            <Coffee className="w-3.5 h-3.5" /> Food
-          </div>
-          <div className="flex items-center gap-1.5 text-xs font-medium text-gray-600 bg-gray-50 px-2 py-1 rounded ml-auto">
-            {sharing}
-          </div>
+        <div className="flex flex-wrap gap-2 mb-5 border-y border-gray-50 py-3">
+          {amenities.length > 0 ? (
+            amenities.slice(0, 3).map((amenity, index) => {
+              // Simple mapping helper inside selection
+              const getIcon = (a) => {
+                const lower = a.toLowerCase();
+                if (lower.includes('wifi')) return <Wifi className="w-3.5 h-3.5" />;
+                if (lower.includes('ac')) return <Wind className="w-3.5 h-3.5" />;
+                if (lower.includes('food') || lower.includes('mess')) return <Coffee className="w-3.5 h-3.5" />;
+                return <BadgeCheck className="w-3.5 h-3.5" />;
+              };
+
+              return (
+                <div key={index} className="flex items-center gap-1.5 text-xs font-medium text-gray-600 bg-gray-50 px-2 py-1 rounded whitespace-nowrap">
+                  {getIcon(amenity)} {amenity.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
+                </div>
+              );
+            })
+          ) : (
+            <div className="text-xs text-gray-400 italic">No amenities listed</div>
+          )}
+          {amenities.length > 3 && (
+            <div className="flex items-center text-xs font-medium text-indigo-600 bg-indigo-50 px-2 py-1 rounded">
+              +{amenities.length - 3} more
+            </div>
+          )}
         </div>
 
         {/* Action Buttons */}

@@ -25,6 +25,7 @@ const AddPropertyPage = () => {
     const [existingImages, setExistingImages] = useState([]);
 
     const [formData, setFormData] = useState({
+        name: '',
         type: 'flat',
         address: '',
         city: '',
@@ -43,9 +44,11 @@ const AddPropertyPage = () => {
                 setFetching(true);
                 try {
                     const response = await propertyService.getPropertyById(id);
+                    console.log("Fetched Property for Edit:", response.data);
                     const property = response.data;
 
                     setFormData({
+                        name: property.name || '',
                         type: property.type,
                         address: property.location.addressLine,
                         city: property.location.city,
@@ -100,6 +103,10 @@ const AddPropertyPage = () => {
         setImages(prev => prev.filter((_, i) => i !== index));
     };
 
+    const removeExistingImage = (index) => {
+        setExistingImages(prev => prev.filter((_, i) => i !== index));
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -108,6 +115,7 @@ const AddPropertyPage = () => {
         try {
             const data = new FormData();
 
+            data.append('name', formData.name);
             data.append('type', formData.type);
             data.append('description', formData.description);
             data.append('rent', formData.rent);
@@ -131,6 +139,11 @@ const AddPropertyPage = () => {
                 data.append('amenities', amenity);
             });
 
+            // Handle Existing Images (Keep vs Delete)
+            const keptPublicIds = existingImages.map(img => img.publicId);
+            data.append('keptPublicIds', JSON.stringify(keptPublicIds));
+
+            // Handle New Images
             images.forEach(image => {
                 data.append('images', image);
             });
@@ -181,6 +194,19 @@ const AddPropertyPage = () => {
                         {/* Basic Info */}
                         <section>
                             <h3 className="text-lg font-bold text-gray-900 mb-4 border-b pb-2">Basic Info</h3>
+                            <div className="mb-6">
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Property Name <span className="text-red-500">*</span></label>
+                                <input
+                                    type="text"
+                                    name="name"
+                                    value={formData.name}
+                                    onChange={handleInputChange}
+                                    placeholder="e.g. Sunny Boys PG"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all"
+                                    required
+                                />
+                            </div>
+
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 mb-2">Property Type</label>
@@ -326,8 +352,8 @@ const AddPropertyPage = () => {
                                     <label key={amenity} className="flex items-center space-x-2 cursor-pointer group">
                                         <div
                                             className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${formData.amenities.includes(amenity)
-                                                    ? 'bg-indigo-600 border-indigo-600 text-white'
-                                                    : 'border-gray-300 text-transparent group-hover:border-indigo-400'
+                                                ? 'bg-indigo-600 border-indigo-600 text-white'
+                                                : 'border-gray-300 text-transparent group-hover:border-indigo-400'
                                                 }`}
                                             onClick={(e) => {
                                                 e.preventDefault();
@@ -345,6 +371,35 @@ const AddPropertyPage = () => {
                         {/* Image Upload */}
                         <section>
                             <h3 className="text-lg font-bold text-gray-900 mb-4 border-b pb-2">Property Images</h3>
+
+                            {/* Existing Images Display */}
+                            {existingImages.length > 0 && (
+                                <div className="mb-6">
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-2">Current Images</h4>
+                                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
+                                        {existingImages.map((img, index) => (
+                                            <div key={index} className="relative group aspect-square rounded-lg overflow-hidden border border-gray-200">
+                                                <img
+                                                    src={img.url}
+                                                    alt={`Existing ${index}`}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeExistingImage(index)}
+                                                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity transform scale-90 hover:scale-100"
+                                                >
+                                                    <X className="w-3 h-3" />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <p className="text-xs text-gray-500 mt-2">
+                                        Note: Uploading new images will replace all these existing images.
+                                    </p>
+                                </div>
+                            )}
+
                             <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center hover:bg-gray-50 transition-colors cursor-pointer relative">
                                 <input
                                     type="file"

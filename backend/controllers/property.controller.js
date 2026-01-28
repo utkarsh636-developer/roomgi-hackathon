@@ -11,6 +11,7 @@ import { Enquiry } from "../models/enquiry.model.js"
 
 const createProperty = asyncHandler(async (req, res) => {
     const {
+        name,
         type,
         address,
         city,
@@ -89,6 +90,7 @@ const createProperty = asyncHandler(async (req, res) => {
 
     /* -------- create -------- */
     const property = await Property.create({
+        name,
         type,
         location: {
             addressLine: address,
@@ -123,6 +125,7 @@ const createProperty = asyncHandler(async (req, res) => {
 const updateProperty = asyncHandler(async (req, res) => {
     const { propertyId } = req.params;
     const {
+        name,
         type,
         address,
         city,
@@ -146,23 +149,76 @@ const updateProperty = asyncHandler(async (req, res) => {
     if (!property) throw new ApiError(404, "Property not found");
     if (property.owner.toString() !== userId.toString()) throw new ApiError(403, "Not your property");
 
-    const imageFiles = req.files?.images;
-    if (!imageFiles || imageFiles.length === 0) throw new ApiError(400, "Images are required");
-    if (imageFiles.length > 4) throw new ApiError(400, "Maximum 4 images allowed");
+    // ---------------------------------------------------------
+    // Image Handling Concept: Reconcile kept images + new uploads
+    // ---------------------------------------------------------
+    const imageFiles = req.files?.images || [];
 
-    // Delete old images
-    await Promise.all(
-        property.images.map(img => cloudinary.uploader.destroy(img.publicId))
-    );
+    let keptPublicIdsRaw = req.body.keptPublicIds;
+    let keptPublicIds = [];
 
-    // Upload new images
-    const uploadedImages = await Promise.all(
-        imageFiles.map(async file => {
-            const uploaded = await uploadOnCloudinary(file.path);
-            if (!uploaded?.secure_url) throw new ApiError(500, "Image upload failed");
-            return { url: uploaded.secure_url, publicId: uploaded.public_id };
-        })
-    );
+    if (keptPublicIdsRaw) {
+        if (Array.isArray(keptPublicIdsRaw)) {
+            // Case 1: Standard form-data array (multiple fields with same name)
+            keptPublicIds = keptPublicIdsRaw;
+        } else if (typeof keptPublicIdsRaw === 'string') {
+            // Case 2: Could be JSON string (new frontend) OR single ID (legacy/standard single field)
+            try {
+                const parsed = JSON.parse(keptPublicIdsRaw);
+                // Ensure parsed is actually an array of strings
+                if (Array.isArray(parsed)) {
+                    keptPublicIds = parsed;
+                } else {
+                    // Valid JSON but not an array (e.g. number or unexpected object), treat as single ID fallback
+                    keptPublicIds = [keptPublicIdsRaw];
+                }
+            } catch (e) {
+                // Case 3: Plain string ID (not JSON), e.g. "public_id_123"
+                keptPublicIds = [keptPublicIdsRaw];
+            }
+        }
+    }
+
+    // Filter out potential empty strings or nulls
+    keptPublicIds = keptPublicIds.filter(id => id && typeof id === 'string');
+
+    const currentImages = property.images;
+
+    // 1. Identify images to delete (Present in DB but NOT in kept list)
+    // Note: If keptPublicIds is empty and new images are uploaded, this logic deletes all old images (correct replacement behavior)
+    // If keptPublicIds is empty and NO new images, we might want to prevent deleting everything inadvertently, 
+    // BUT the frontend is now sending keptPublicIds. If the user deleted all in frontend, they should be deleted here.
+    const imagesToDelete = currentImages.filter(img => !keptPublicIds.includes(img.publicId));
+    const imagesToKeep = currentImages.filter(img => keptPublicIds.includes(img.publicId));
+
+    // DELETE removed images from Cloudinary
+    if (imagesToDelete.length > 0) {
+        await Promise.all(
+            imagesToDelete.map(img => cloudinary.uploader.destroy(img.publicId))
+        );
+    }
+
+    // UPLOAD new images
+    let newUploadedImages = [];
+    if (imageFiles.length > 0) {
+        if ((imagesToKeep.length + imageFiles.length) > 4) {
+            throw new ApiError(400, "Maximum 4 images allowed");
+        }
+
+        newUploadedImages = await Promise.all(
+            imageFiles.map(async file => {
+                const uploaded = await uploadOnCloudinary(file.path);
+                if (!uploaded?.secure_url) throw new ApiError(500, "Image upload failed");
+                return { url: uploaded.secure_url, publicId: uploaded.public_id };
+            })
+        );
+    }
+
+    // Final Image Set
+    const finalImages = [...imagesToKeep, ...newUploadedImages];
+
+    // Optional: Validation - uncomment if you want to force at least 1 image
+    // if (finalImages.length === 0) throw new ApiError(400, "At least one image is required");
 
     // Validate amenities
     const validAmenities = amenities.filter(a => AMENITIES.includes(a));
@@ -185,6 +241,7 @@ const updateProperty = asyncHandler(async (req, res) => {
     const updatedProperty = await Property.findByIdAndUpdate(
         propertyId,
         {
+            name,
             type,
             location: {
                 addressLine: address,
@@ -199,7 +256,7 @@ const updateProperty = asyncHandler(async (req, res) => {
             capacity: updatedCapacity,
             description,
             preferences,
-            images: uploadedImages
+            images: finalImages
         },
         { new: true }
     );
