@@ -24,6 +24,15 @@ const Checkbox = ({ label }) => (
   </label>
 );
 
+const AMENITIES_LIST = [
+  "wifi", "ac", "non_ac", "furnished", "semi_furnished", "unfurnished",
+  "balcony", "garden", "terrace", "parking", "covered_parking",
+  "power_backup", "water_supply_24x7", "water_geaser", "gas",
+  "mess", "shared_kitchen", "private_kitchen", "refrigerator", "gas_stove",
+  "gym", "yoga_room", "cctv", "security_guard", "laundry", "housekeeping",
+  "tv_cable", "internet_high_speed", "pet_friendly", "smoking_allowed", "drinking_allowed"
+];
+
 const ExplorePage = () => {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -31,6 +40,7 @@ const ExplorePage = () => {
   const [budget, setBudget] = useState(25000); // Default max budget
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [showMap, setShowMap] = useState(false);
+  const [showAllAmenities, setShowAllAmenities] = useState(false);
 
   useEffect(() => {
     fetchProperties();
@@ -87,11 +97,17 @@ const ExplorePage = () => {
       </FilterSection>
 
       <FilterSection title="Amenities">
-        <Checkbox label="Wifi" />
-        <Checkbox label="AC" />
-        <Checkbox label="Parking" />
-        <Checkbox label="Power Backup" />
-        <Checkbox label="Water Supply" />
+        <div className="space-y-3">
+          {AMENITIES_LIST.slice(0, showAllAmenities ? AMENITIES_LIST.length : 5).map(amenity => (
+            <Checkbox key={amenity} label={amenity.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())} />
+          ))}
+        </div>
+        <button
+          onClick={() => setShowAllAmenities(!showAllAmenities)}
+          className="mt-3 text-sm font-semibold text-indigo-600 hover:text-indigo-800 transition-colors flex items-center gap-1"
+        >
+          {showAllAmenities ? 'Show Less' : 'Show More...'}
+        </button>
       </FilterSection>
     </div>
   );
