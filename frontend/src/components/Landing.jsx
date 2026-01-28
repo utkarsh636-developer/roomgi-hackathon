@@ -1,10 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ShieldCheck, Users, Star, ArrowRight } from 'lucide-react';
+import Navbar from './Navbar';
+import Footer from './Footer';
 
 const Landing = () => {
   return (
     <div className="flex flex-col min-h-screen bg-white">
+      <Navbar />
 
       {/* Hero Section */}
       <div className="relative w-full min-h-screen flex flex-col lg:flex-row bg-[#0f172a] overflow-hidden pt-24 lg:pt-28">
@@ -106,6 +109,7 @@ const Landing = () => {
 
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

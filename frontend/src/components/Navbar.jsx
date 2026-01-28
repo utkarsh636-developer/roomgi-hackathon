@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { UserCircle, LogIn, Menu, X, User } from 'lucide-react';
+import authService from '../services/authService';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const showWhiteBg = isScrolled || (location.pathname !== '/' && location.pathname !== '/home');
+
+  // Auth state
+  const user = authService.getCurrentUser();
 
   // Change navbar background on scroll
   React.useEffect(() => {
@@ -15,8 +20,13 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const handleLogout = () => {
+    authService.logout();
+    navigate('/login');
+  };
+
   const navItems = [
-    { name: 'Home', to: '/home' },
+    { name: 'Home', to: '/' },
     { name: 'Explore', to: '/explore' },
     { name: 'About', to: '/about' },
   ];
@@ -27,7 +37,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between">
 
           {/* Logo */}
-          <Link to="/home" className="flex items-center gap-2 cursor-pointer group">
+          <Link to="/" className="flex items-center gap-2 cursor-pointer group">
             <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-xl group-hover:rotate-12 transition-transform">R</div>
             <span className={`text-2xl font-bold tracking-tight ${showWhiteBg ? 'text-gray-900' : 'text-white'}`}>
               Room<span className="text-indigo-600">Gi</span>
@@ -58,15 +68,35 @@ const Navbar = () => {
             >
               List Property
             </Link>
-            <button
-              className={`flex items-center gap-2 px-5 py-2 font-bold rounded-full shadow-lg transition-all ${showWhiteBg
-                ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-200'
-                : 'bg-white text-indigo-900 hover:bg-indigo-50'
-                }`}
-            >
-              <User size={18} />
-              <span>Login</span>
-            </button>
+
+            {user ? (
+              <div className="flex items-center gap-3">
+                <span className={`font-bold ${showWhiteBg ? 'text-gray-700' : 'text-white'}`}>
+                  {user.username?.split(' ')[0]}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className={`flex items-center gap-2 px-5 py-2 font-bold rounded-full shadow-lg transition-all ${showWhiteBg
+                    ? 'bg-red-50 text-red-600 hover:bg-red-100'
+                    : 'bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
+                    }`}
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <Link to="/login">
+                <button
+                  className={`flex items-center gap-2 px-5 py-2 font-bold rounded-full shadow-lg transition-all ${showWhiteBg
+                    ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-200'
+                    : 'bg-white text-indigo-900 hover:bg-indigo-50'
+                    }`}
+                >
+                  <User size={18} />
+                  <span>Login</span>
+                </button>
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -88,12 +118,20 @@ const Navbar = () => {
                 </Link>
               ))}
               <div className="grid grid-cols-2 gap-4 mt-4">
-                <Link to="/login" onClick={() => setIsOpen(false)} className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-gray-700 bg-gray-100">
-                  Login
-                </Link>
-                <Link to="/become-host" onClick={() => setIsOpen(false)} className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-white bg-indigo-600 shadow-lg shadow-indigo-200">
-                  List Property
-                </Link>
+                {user ? (
+                  <button onClick={() => { handleLogout(); setIsOpen(false); }} className="col-span-2 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-white bg-red-500 shadow-lg">
+                    Logout ({user.username})
+                  </button>
+                ) : (
+                  <>
+                    <Link to="/login" onClick={() => setIsOpen(false)} className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-gray-700 bg-gray-100">
+                      Login
+                    </Link>
+                    <Link to="/become-host" onClick={() => setIsOpen(false)} className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-white bg-indigo-600 shadow-lg shadow-indigo-200">
+                      List Property
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>

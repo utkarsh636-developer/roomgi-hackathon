@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import PropertyCard from './PropertyCard';
 import { Map, List, Filter, Search } from 'lucide-react';
+import Navbar from './Navbar';
+import Footer from './Footer';
 
 // Dummy data for property listings
 const properties = [
@@ -123,6 +125,7 @@ const ExplorePage = () => {
 
   return (
     <div className="bg-slate-50 min-h-screen pt-24 font-sans">
+      <Navbar />
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         {/* Page Header & Controls */}
@@ -228,6 +231,7 @@ const ExplorePage = () => {
 
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

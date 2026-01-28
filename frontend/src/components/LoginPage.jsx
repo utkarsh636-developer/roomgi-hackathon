@@ -21,7 +21,7 @@ const LoginPage = () => {
 
     try {
       await authService.login(formData);
-      navigate('/home'); // Redirect to home on success
+      navigate('/'); // Redirect to landing page on success
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
     } finally {
