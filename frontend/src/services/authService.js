@@ -41,6 +41,28 @@ const authService = {
 
     getCurrentUser: () => {
         return JSON.parse(localStorage.getItem('user'));
+    },
+
+    fetchCurrentUser: async () => {
+        const response = await api.get('/users/current-user');
+        // Update local storage to keep it in sync
+        if (response.data && response.data.data) {
+            localStorage.setItem('user', JSON.stringify(response.data.data));
+        }
+        return response.data;
+    },
+
+    updateProfile: async (formData) => {
+        const response = await api.patch('/users/update-profile', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        // Update local storage with new user data
+        if (response.data && response.data.data) {
+            localStorage.setItem('user', JSON.stringify(response.data.data));
+        }
+        return response.data;
     }
 };
 

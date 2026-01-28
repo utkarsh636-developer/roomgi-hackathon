@@ -9,6 +9,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import authService from './services/authService';
 import OwnerLanding from './components/OwnerLanding';
 import OwnerDashboard from './components/OwnerDashboard';
+import ProfilePage from './components/ProfilePage';
 import AddPropertyPage from './components/AddPropertyPage';
 import VerificationPage from './components/VerificationPage';
 
@@ -25,6 +26,7 @@ function App() {
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
       <Route path="/" element={<HomeRoute />} />
       <Route path="/owner" element={<OwnerLanding />} />
       <Route

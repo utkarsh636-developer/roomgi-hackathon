@@ -73,19 +73,36 @@ const Navbar = () => {
             )}
 
             {user ? (
-              <div className="flex items-center gap-3">
-                <span className={`font-bold ${showWhiteBg ? 'text-gray-700' : 'text-white'}`}>
-                  {user.username?.split(' ')[0]}
-                </span>
-                <button
-                  onClick={handleLogout}
-                  className={`flex items-center gap-2 px-5 py-2 font-bold rounded-full shadow-lg transition-all ${showWhiteBg
-                    ? 'bg-red-50 text-red-600 hover:bg-red-100'
-                    : 'bg-white/10 text-white hover:bg-white/20 backdrop-blur-md'
-                    }`}
-                >
-                  Logout
+              <div className="relative group">
+                <button className="flex items-center gap-2 focus:outline-none">
+                  <div className="w-10 h-10 rounded-full bg-indigo-100 border-2 border-indigo-200 flex items-center justify-center text-indigo-700 font-bold overflow-hidden shadow-sm">
+                    {user.profileImage ? (
+                      <img src={user.profileImage} alt={user.username} className="w-full h-full object-cover" />
+                    ) : (
+                      user.username?.charAt(0).toUpperCase()
+                    )}
+                  </div>
+                  <span className={`font-bold hidden lg:block ${showWhiteBg ? 'text-gray-700' : 'text-white'}`}>
+                    {user.username?.split(' ')[0]}
+                  </span>
                 </button>
+
+                {/* Dropdown Menu */}
+                <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden transform origin-top-right scale-0 group-hover:scale-100 transition-transform duration-200 ease-in-out">
+                  <div className="p-4 border-b border-gray-50 bg-gray-50">
+                    <p className="font-bold text-gray-900 truncate">{user.username}</p>
+                    <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                  </div>
+                  <Link to="/profile" className="block px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-indigo-600 transition-colors font-medium text-sm">
+                    Profile
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left px-4 py-3 text-red-600 hover:bg-red-50 transition-colors font-medium text-sm"
+                  >
+                    Logout
+                  </button>
+                </div>
               </div>
             ) : (
               <Link to="/login">
