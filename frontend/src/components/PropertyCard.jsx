@@ -22,6 +22,8 @@ const PropertyCard = ({ property }) => {
   const displayDeposit = deposit || securityDeposit || 0;
   const displayImage = images?.[0]?.url || property.imageUrl || 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&q=80&w=800';
   const displayLocation = location?.addressLine || location?.city || location || 'Unknown Location';
+  // Check for nested capacity object or flat property
+  const displayCapacity = property.capacity?.total || property.capacity || '2+';
 
   return (
     <div className="group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
@@ -41,12 +43,9 @@ const PropertyCard = ({ property }) => {
           </div>
         )}
 
-        {/* Gender Tag */}
-        <div className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-bold tracking-wide shadow-sm
-          ${gender === 'Girls' ? 'bg-pink-50 text-pink-600 border border-pink-100' :
-            gender === 'Boys' ? 'bg-blue-50 text-blue-600 border border-blue-100' :
-              'bg-purple-50 text-purple-600 border border-purple-100'}`}>
-          {gender}
+        {/* Occupancy Tag */}
+        <div className="absolute top-3 right-3 px-3 py-1 bg-white/95 backdrop-blur-sm rounded-full text-xs font-bold tracking-wide shadow-sm border border-gray-100 flex items-center gap-1 text-gray-700">
+          <span className="text-indigo-600">👥</span> {displayCapacity} Occupancy
         </div>
 
         {/* Overlay Gradients */}

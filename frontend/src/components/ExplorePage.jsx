@@ -70,7 +70,7 @@ const ExplorePage = () => {
             step="500"
             value={budget}
             onChange={(e) => setBudget(e.target.value)}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer range-indigo focus:outline-none"
+            className="w-full h-2 bg-gray-200 rounded-lg cursor-pointer accent-indigo-600"
           />
           <div className="flex justify-between text-sm text-gray-500 mt-3 font-medium">
             <span>₹5k</span>
@@ -80,23 +80,18 @@ const ExplorePage = () => {
         </div>
       </FilterSection>
 
-      <FilterSection title="Available For">
-        <Checkbox label="Girls" />
-        <Checkbox label="Boys" />
-        <Checkbox label="Co-ed (Unisex)" />
-      </FilterSection>
-
-      <FilterSection title="Sharing Type">
-        <Checkbox label="Private Room" />
-        <Checkbox label="Double Sharing" />
-        <Checkbox label="Triple Sharing" />
+      <FilterSection title="Property Type">
+        <Checkbox label="Flat / Apartment" />
+        <Checkbox label="PG" />
+        <Checkbox label="Hostel" />
       </FilterSection>
 
       <FilterSection title="Amenities">
-        <Checkbox label="Wi-Fi" />
-        <Checkbox label="Air Conditioning" />
+        <Checkbox label="Wifi" />
+        <Checkbox label="AC" />
+        <Checkbox label="Parking" />
         <Checkbox label="Power Backup" />
-        <Checkbox label="Food Included" />
+        <Checkbox label="Water Supply" />
       </FilterSection>
     </div>
   );
@@ -113,7 +108,6 @@ const ExplorePage = () => {
               Explore
               <span className="text-indigo-600 ml-2">Stays</span>
             </h1>
-            <p className="text-gray-500 mt-2">Found {properties.length} verified properties in Bangalore</p>
           </div>
 
           <div className="flex gap-3 w-full md:w-auto">
