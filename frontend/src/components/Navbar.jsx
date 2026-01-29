@@ -20,8 +20,9 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleLogout = () => {
-    authService.logout();
+  const handleLogout = async () => {
+    await authService.logout();
+    setIsOpen(false); // Close mobile menu if open
     navigate('/');
   };
 
