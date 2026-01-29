@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import {
     LayoutDashboard, Plus, Home, MessageSquare,
     TrendingUp, Eye, Users, AlertCircle, CheckCircle,
-    MoreVertical, MapPin, Edit, Trash2, X
+    MoreVertical, MapPin, Edit, Trash2, X, Clock
 } from 'lucide-react';
 import Navbar from './Navbar';
 import Footer from './Footer';
@@ -125,17 +125,59 @@ const OwnerDashboard = () => {
                         </Link>
                     </div>
 
-                    {/* Verification Alert (Mock) */}
-                    <div className="bg-orange-50 border border-orange-200 rounded-2xl p-4 mb-8 flex items-start gap-4">
-                        <AlertCircle className="text-orange-600 shrink-0 mt-1" />
-                        <div>
-                            <h3 className="font-bold text-orange-800">Complete your verification</h3>
-                            <p className="text-sm text-orange-700 mt-1">
-                                Your "Green View Apartments" listing is hidden until you complete KYC.
-                                <Link to="/verification" className="font-bold underline cursor-pointer ml-1">Upload Documents</Link>
-                            </p>
-                        </div>
-                    </div>
+                    {/* Verification Alert - Dynamic Logic */}
+                    {(() => {
+                        const pendingProp = properties.find(p => p.verification?.status === 'pending');
+                        const rejectedProp = properties.find(p => p.verification?.status === 'rejected');
+                        const unverifiedProp = properties.find(p => !p.verification?.status || p.verification?.status === 'unverified');
+
+                        if (pendingProp) {
+                            return (
+                                <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-8 flex items-start gap-4">
+                                    <Clock className="text-blue-600 shrink-0 mt-1" />
+                                    <div>
+                                        <h3 className="font-bold text-blue-800">Verification Under Scrutiny</h3>
+                                        <p className="text-sm text-blue-700 mt-1">
+                                            Your documents for <strong>"{pendingProp.type} in {pendingProp.location?.city}"</strong> have been received and are currently under review by our admin team. This usually takes 24-48 hours.
+                                        </p>
+                                    </div>
+                                </div>
+                            );
+                        }
+
+                        if (rejectedProp) {
+                            return (
+                                <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-8 flex items-start gap-4">
+                                    <AlertCircle className="text-red-600 shrink-0 mt-1" />
+                                    <div>
+                                        <h3 className="font-bold text-red-800">Verification Rejected</h3>
+                                        <p className="text-sm text-red-700 mt-1">
+                                            Verification for <strong>"{rejectedProp.type} in {rejectedProp.location?.city}"</strong> was rejected.
+                                            <span className="block mt-1">Reason: {rejectedProp.verification?.rejectionReason || "Documents invalid or unclear."}</span>
+                                            <Link to="/verification" className="font-bold underline cursor-pointer mt-2 inline-block">Re-upload Documents</Link>
+                                        </p>
+                                    </div>
+                                </div>
+                            );
+                        }
+
+                        if (unverifiedProp) {
+                            return (
+                                <div className="bg-orange-50 border border-orange-200 rounded-2xl p-4 mb-8 flex items-start gap-4">
+                                    <AlertCircle className="text-orange-600 shrink-0 mt-1" />
+                                    <div>
+                                        <h3 className="font-bold text-orange-800">Complete your verification</h3>
+                                        <p className="text-sm text-orange-700 mt-1">
+                                            Your <strong>"{unverifiedProp.type} in {unverifiedProp.location?.city}"</strong> listing is hidden until you complete KYC.
+                                            <Link to="/verification" className="font-bold underline cursor-pointer ml-1">Upload Documents</Link>
+                                        </p>
+                                    </div>
+                                </div>
+                            );
+                        }
+
+                        return null;
+                    })()}
 
                     {/* Stats Grid */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
