@@ -11,12 +11,13 @@ import { Enquiry } from "../models/enquiry.model.js"
 
 const createProperty = asyncHandler(async (req, res) => {
     const {
-        name,
+        title,
         type,
         address,
         city,
         state,
         pincode,
+        landmark,
         description,
         preferences
     } = req.body;
@@ -90,13 +91,14 @@ const createProperty = asyncHandler(async (req, res) => {
 
     /* -------- create -------- */
     const property = await Property.create({
-        name,
+        title,
         type,
         location: {
             addressLine: address,
             city,
             state,
             pincode,
+            landmark,
             coordinates: {
                 type: "Point",
                 coordinates: [lng, lat]
@@ -125,12 +127,13 @@ const createProperty = asyncHandler(async (req, res) => {
 const updateProperty = asyncHandler(async (req, res) => {
     const { propertyId } = req.params;
     const {
-        name,
+        title,
         type,
         address,
         city,
         state,
         pincode,
+        landmark,
         rent,
         securityDeposit,
         amenities,
@@ -241,13 +244,14 @@ const updateProperty = asyncHandler(async (req, res) => {
     const updatedProperty = await Property.findByIdAndUpdate(
         propertyId,
         {
-            name,
+            title,
             type,
             location: {
                 addressLine: address,
                 city,
                 state,
                 pincode,
+                landmark,
                 coordinates: updatedCoordinates
             },
             rent,
@@ -399,7 +403,6 @@ const editPropertyDocument = asyncHandler(async (req, res) => {
             "Documents can only be edited when verification is pending or rejected"
         )
     }
-
     const documentFiles = req.files?.documents || []
 
     if (documentFiles.length < 2) {

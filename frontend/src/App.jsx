@@ -6,7 +6,6 @@ import Landing from './components/Landing';
 import ExplorePage from './components/ExplorePage';
 import PropertyDetailsPage from './components/PropertyDetailsPage';
 import ProtectedRoute from './components/ProtectedRoute';
-<<<<<<< HEAD
 import AdminRoute from './components/AdminRoute';
 import NewAdminDashboard from './components/NewAdminDashboard';
 import UserManagement from './components/UserManagement';
@@ -14,7 +13,6 @@ import PropertyManagement from './components/PropertyManagement';
 import ReportsManagement from './components/ReportsManagement';
 import VerificationQueue from './components/VerificationQueue';
 import AdminAnalytics from './components/AdminAnalytics';
-=======
 import authService from './services/authService';
 import OwnerLanding from './components/OwnerLanding';
 import OwnerDashboard from './components/OwnerDashboard';
@@ -24,12 +22,14 @@ import VerificationPage from './components/VerificationPage';
 
 const HomeRoute = () => {
   const user = authService.getCurrentUser();
+  if (user && user.role === 'admin') {
+    return <Navigate to="/admin/dashboard" replace />;
+  }
   if (user && user.role === 'owner') {
     return <Navigate to="/owner" replace />;
   }
   return <Landing />;
 };
->>>>>>> main
 
 function App() {
   return (

@@ -12,6 +12,8 @@ const VerificationQueue = () => {
     const [selectedItem, setSelectedItem] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [verificationAction, setVerificationAction] = useState({ status: '', reason: '' });
+    const [verifying, setVerifying] = useState(false);
+    const [error, setError] = useState('');
 
     useEffect(() => {
         fetchPendingVerifications();
@@ -29,6 +31,7 @@ const VerificationQueue = () => {
             }
         } catch (error) {
             console.error('Failed to fetch verifications:', error);
+            setError('Failed to load verifications. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -36,17 +39,34 @@ const VerificationQueue = () => {
 
     const handleVerify = async () => {
         try {
+            setVerifying(true);
+            setError('');
+            
+            console.log('Verifying:', {
+                tab: activeTab,
+                itemId: selectedItem._id,
+                status: verificationAction.status,
+                reason: verificationAction.reason
+            });
+            
             if (activeTab === 'users') {
-                await adminService.verifyUser(selectedItem._id, verificationAction.status, verificationAction.reason);
+                const result = await adminService.verifyUser(selectedItem._id, verificationAction.status, verificationAction.reason);
+                console.log('User verification result:', result);
             } else {
-                await adminService.verifyProperty(selectedItem._id, verificationAction.status, verificationAction.reason);
+                const result = await adminService.verifyProperty(selectedItem._id, verificationAction.status, verificationAction.reason);
+                console.log('Property verification result:', result);
             }
+            
             setShowModal(false);
             setSelectedItem(null);
             setVerificationAction({ status: '', reason: '' });
             fetchPendingVerifications();
         } catch (error) {
-            console.error('Failed to verify:', error);
+            console.error('Failed to verify - Full error:', error);
+            console.error('Error response:', error.response);
+            setError(error.response?.data?.message || 'Failed to update verification status. Please try again.');
+        } finally {
+            setVerifying(false);
         }
     };
 
@@ -240,6 +260,12 @@ const VerificationQueue = () => {
                             {verificationAction.status === 'approved' ? 'Approve Verification' : 'Reject Verification'}
                         </h3>
                         
+                        {error && (
+                            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
+                                {error}
+                            </div>
+                        )}
+                        
                         {verificationAction.status === 'rejected' && (
                             <div className="mb-4">
                                 <label className="block text-sm font-medium text-slate-300 mb-2">
@@ -261,21 +287,30 @@ const VerificationQueue = () => {
                                     setShowModal(false);
                                     setSelectedItem(null);
                                     setVerificationAction({ status: '', reason: '' });
+                                    setError('');
                                 }}
-                                className="flex-1 py-2 px-4 bg-slate-700 text-white rounded-lg font-medium hover:bg-slate-600 transition-colors"
+                                disabled={verifying}
+                                className="flex-1 py-2 px-4 bg-slate-700 text-white rounded-lg font-medium hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleVerify}
-                                disabled={verificationAction.status === 'rejected' && !verificationAction.reason}
-                                className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${
+                                disabled={(verificationAction.status === 'rejected' && !verificationAction.reason) || verifying}
+                                className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
                                     verificationAction.status === 'approved'
-                                        ? 'bg-green-600 text-white hover:bg-green-700'
+                                        ? 'bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed'
                                         : 'bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed'
                                 }`}
                             >
-                                Confirm
+                                {verifying ? (
+                                    <>
+                                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                        Processing...
+                                    </>
+                                ) : (
+                                    'Confirm'
+                                )}
                             </button>
                         </div>
                     </div>
