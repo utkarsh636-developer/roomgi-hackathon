@@ -46,8 +46,8 @@ const NewAdminDashboard = () => {
             <AdminLayout>
                 <div className="flex items-center justify-center min-h-[60vh]">
                     <div className="text-center">
-                        <div className="w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                        <p className="text-slate-400">Loading dashboard...</p>
+                        <div className="w-16 h-16 border-4 border-brand-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                        <p className="text-brand-bg/60">Loading dashboard...</p>
                     </div>
                 </div>
             </AdminLayout>
@@ -58,9 +58,9 @@ const NewAdminDashboard = () => {
         <AdminLayout>
             <div className="space-y-6">
                 {/* Welcome Section */}
-                <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-6 shadow-xl">
+                <div className="bg-gradient-to-r from-brand-primary to-brand-secondary rounded-2xl p-6 shadow-xl">
                     <h2 className="text-2xl font-bold text-white mb-2">Welcome back, Admin! 👋</h2>
-                    <p className="text-indigo-100">Here's what's happening with your platform today.</p>
+                    <p className="text-brand-bg/90">Here's what's happening with your platform today.</p>
                 </div>
 
                 {/* Stats Grid */}
@@ -69,13 +69,13 @@ const NewAdminDashboard = () => {
                         icon={Users}
                         label="Total Users"
                         value={stats?.totalUsers || 0}
-                        color="indigo"
+                        color="brand"
                     />
                     <StatCard
                         icon={Building2}
                         label="Total Properties"
                         value={stats?.totalProperties || 0}
-                        color="purple"
+                        color="brand-dark"
                     />
                     <StatCard
                         icon={Clock}
@@ -110,30 +110,30 @@ const NewAdminDashboard = () => {
                 {/* Pending Verifications Section */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* Pending User Verifications */}
-                    <div className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 rounded-2xl overflow-hidden">
-                        <div className="p-6 border-b border-slate-700/50">
+                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden">
+                        <div className="p-6 border-b border-white/10">
                             <div className="flex items-center justify-between">
                                 <div>
                                     <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                                        <CheckCircle className="text-indigo-400" size={20} />
+                                        <CheckCircle className="text-brand-primary" size={20} />
                                         Pending User Verifications
                                     </h3>
-                                    <p className="text-sm text-slate-400 mt-1">
+                                    <p className="text-sm text-brand-bg/60 mt-1">
                                         {stats?.pendingUserVerifications || 0} users awaiting review
                                     </p>
                                 </div>
                                 <Link
                                     to="/admin/verifications"
-                                    className="text-indigo-400 hover:text-indigo-300 text-sm font-medium flex items-center gap-1"
+                                    className="text-brand-primary hover:text-brand-secondary text-sm font-medium flex items-center gap-1"
                                 >
                                     View All <ArrowRight size={16} />
                                 </Link>
                             </div>
                         </div>
-                        <div className="divide-y divide-slate-700/50">
+                        <div className="divide-y divide-white/10">
                             {pendingUsers.length > 0 ? (
                                 pendingUsers.map((user) => (
-                                    <div key={user._id} className="p-4 hover:bg-slate-700/30 transition-colors">
+                                    <div key={user._id} className="p-4 hover:bg-white/5 transition-colors">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold">
@@ -146,7 +146,7 @@ const NewAdminDashboard = () => {
                                             </div>
                                             <Link
                                                 to="/admin/verifications"
-                                                className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-medium flex items-center gap-1 transition-colors"
+                                                className="px-3 py-1.5 bg-brand-primary hover:bg-brand-secondary text-white rounded-lg text-xs font-medium flex items-center gap-1 transition-colors"
                                             >
                                                 <Eye size={14} /> Review
                                             </Link>
@@ -163,27 +163,27 @@ const NewAdminDashboard = () => {
                     </div>
 
                     {/* Pending Property Verifications */}
-                    <div className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 rounded-2xl overflow-hidden">
-                        <div className="p-6 border-b border-slate-700/50">
+                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden">
+                        <div className="p-6 border-b border-white/10">
                             <div className="flex items-center justify-between">
                                 <div>
                                     <h3 className="text-lg font-bold text-white flex items-center gap-2">
                                         <Building2 className="text-purple-400" size={20} />
                                         Pending Property Verifications
                                     </h3>
-                                    <p className="text-sm text-slate-400 mt-1">
+                                    <p className="text-sm text-brand-bg/60 mt-1">
                                         {stats?.pendingPropertyVerifications || 0} properties awaiting review
                                     </p>
                                 </div>
                                 <Link
                                     to="/admin/verifications"
-                                    className="text-purple-400 hover:text-purple-300 text-sm font-medium flex items-center gap-1"
+                                    className="text-brand-primary hover:text-brand-secondary text-sm font-medium flex items-center gap-1"
                                 >
                                     View All <ArrowRight size={16} />
                                 </Link>
                             </div>
                         </div>
-                        <div className="divide-y divide-slate-700/50">
+                        <div className="divide-y divide-white/10">
                             {pendingProperties.length > 0 ? (
                                 pendingProperties.map((property) => (
                                     <div key={property._id} className="p-4 hover:bg-slate-700/30 transition-colors">
@@ -199,7 +199,7 @@ const NewAdminDashboard = () => {
                                             </div>
                                             <Link
                                                 to="/admin/verifications"
-                                                className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-medium flex items-center gap-1 transition-colors"
+                                                className="px-3 py-1.5 bg-brand-primary hover:bg-brand-secondary text-white rounded-lg text-xs font-medium flex items-center gap-1 transition-colors"
                                             >
                                                 <Eye size={14} /> Review
                                             </Link>
@@ -217,8 +217,8 @@ const NewAdminDashboard = () => {
                 </div>
 
                 {/* Recent Reports */}
-                <div className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 rounded-2xl overflow-hidden">
-                    <div className="p-6 border-b border-slate-700/50">
+                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden">
+                    <div className="p-6 border-b border-white/10">
                         <div className="flex items-center justify-between">
                             <div>
                                 <h3 className="text-lg font-bold text-white flex items-center gap-2">
@@ -235,7 +235,7 @@ const NewAdminDashboard = () => {
                             </Link>
                         </div>
                     </div>
-                    <div className="divide-y divide-slate-700/50">
+                    <div className="divide-y divide-white/10">
                         {recentReports.length > 0 ? (
                             recentReports.map((report) => (
                                 <div key={report._id} className="p-4 hover:bg-slate-700/30 transition-colors">
@@ -277,19 +277,19 @@ const NewAdminDashboard = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Link
                         to="/admin/users"
-                        className="p-6 bg-gradient-to-br from-indigo-600/20 to-indigo-600/5 border border-indigo-600/30 rounded-xl hover:border-indigo-600/50 transition-all duration-300 group"
+                        className="p-6 bg-gradient-to-br from-brand-primary/20 to-brand-primary/5 border border-brand-primary/30 rounded-xl hover:border-brand-primary/50 transition-all duration-300 group"
                     >
-                        <Users className="text-indigo-400 mb-3 group-hover:scale-110 transition-transform" size={32} />
+                        <Users className="text-brand-primary mb-3 group-hover:scale-110 transition-transform" size={32} />
                         <h4 className="text-white font-bold mb-1">Manage Users</h4>
-                        <p className="text-slate-400 text-sm">View, block, and verify users</p>
+                        <p className="text-brand-bg/60 text-sm">View, block, and verify users</p>
                     </Link>
                     <Link
                         to="/admin/properties"
-                        className="p-6 bg-gradient-to-br from-purple-600/20 to-purple-600/5 border border-purple-600/30 rounded-xl hover:border-purple-600/50 transition-all duration-300 group"
+                        className="p-6 bg-gradient-to-br from-brand-secondary/20 to-brand-secondary/5 border border-brand-secondary/30 rounded-xl hover:border-brand-secondary/50 transition-all duration-300 group"
                     >
-                        <Building2 className="text-purple-400 mb-3 group-hover:scale-110 transition-transform" size={32} />
+                        <Building2 className="text-brand-secondary mb-3 group-hover:scale-110 transition-transform" size={32} />
                         <h4 className="text-white font-bold mb-1">Manage Properties</h4>
-                        <p className="text-slate-400 text-sm">View, block, and verify properties</p>
+                        <p className="text-brand-bg/60 text-sm">View, block, and verify properties</p>
                     </Link>
                     <Link
                         to="/admin/analytics"

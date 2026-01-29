@@ -21,7 +21,7 @@ const LoginPage = () => {
 
     try {
       await authService.login(formData);
-      
+
       // Redirect based on user role
       const user = authService.getCurrentUser();
       if (user && user.role === 'admin') {
@@ -37,7 +37,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 font-montserrat p-4">
+    <div className="min-h-screen flex items-center justify-center bg-brand-bg font-montserrat p-4">
       <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-gray-100">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-gray-900">Welcome Back</h2>
@@ -61,7 +61,7 @@ const LoginPage = () => {
                 required
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition-all"
+                className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-primary focus:bg-white outline-none transition-all"
                 placeholder="name@example.com"
               />
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
@@ -77,7 +77,7 @@ const LoginPage = () => {
                 required
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition-all"
+                className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-primary focus:bg-white outline-none transition-all"
                 placeholder="••••••••"
               />
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
@@ -87,7 +87,7 @@ const LoginPage = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-indigo-600 text-white py-3.5 rounded-xl font-bold hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-200 transition-all flex items-center justify-center gap-2 dark:shadow-indigo-900/20 shadow-lg"
+            className="w-full bg-brand-primary text-white py-3.5 rounded-xl font-bold hover:bg-brand-secondary focus:ring-4 focus:ring-brand-primary/30 transition-all flex items-center justify-center gap-2 shadow-lg shadow-brand-dark/10"
           >
             {loading ? <Loader2 className="animate-spin" /> : 'Sign In'}
           </button>
@@ -95,7 +95,7 @@ const LoginPage = () => {
 
         <div className="mt-8 text-center text-sm text-gray-500">
           Don't have an account?{' '}
-          <Link to="/register" className="text-indigo-600 font-bold hover:underline">
+          <Link to="/register" className="text-brand-primary font-bold hover:underline">
             Create Account
           </Link>
         </div>

@@ -20,7 +20,7 @@ const VerificationReview = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 font-montserrat flex flex-col h-screen">
+        <div className="min-h-screen bg-brand-bg font-montserrat flex flex-col h-screen">
 
             {/* Header */}
             <div className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center shrink-0">
@@ -48,7 +48,7 @@ const VerificationReview = () => {
             <div className="flex-1 flex overflow-hidden">
 
                 {/* Left: Document Viewer */}
-                <div className="flex-1 bg-slate-900 p-8 overflow-y-auto flex flex-col items-center justify-center relative">
+                <div className="flex-1 bg-brand-dark p-8 overflow-y-auto flex flex-col items-center justify-center relative">
                     <div className="absolute top-4 left-4 bg-black/50 text-white px-3 py-1 rounded-full text-xs font-bold backdrop-blur-sm">
                         Aadhaar Card (Front)
                     </div>
@@ -68,7 +68,7 @@ const VerificationReview = () => {
                     {/* Thumbnails */}
                     <div className="mt-8 flex gap-4">
                         {[1, 2, 3].map((i) => (
-                            <div key={i} className={`w-20 h-20 rounded-lg border-2 cursor-pointer transition-all ${i === 1 ? 'border-indigo-500 ring-2 ring-indigo-500/50' : 'border-slate-700 hover:border-slate-500'} bg-slate-800 flex items-center justify-center`}>
+                            <div key={i} className={`w-20 h-20 rounded-lg border-2 cursor-pointer transition-all ${i === 1 ? 'border-brand-primary ring-2 ring-brand-primary/50' : 'border-white/10 hover:border-white/30'} bg-black/20 flex items-center justify-center`}>
                                 <FileText className="text-slate-400" />
                             </div>
                         ))}
@@ -122,7 +122,7 @@ const VerificationReview = () => {
                             <div>
                                 <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Internal Notes</h4>
                                 <textarea
-                                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+                                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-primary outline-none"
                                     rows="4"
                                     placeholder="Add notes for other admins..."
                                 ></textarea>
@@ -141,7 +141,7 @@ const VerificationReview = () => {
                                     <XCircle size={16} /> Reject
                                 </button>
                             </div>
-                            <button onClick={() => handleAction('approve')} className="w-full px-4 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2 transition-all">
+                            <button onClick={() => handleAction('approve')} className="w-full px-4 py-3 bg-brand-primary text-white rounded-xl font-bold hover:bg-brand-secondary shadow-lg shadow-brand-dark/20 flex items-center justify-center gap-2 transition-all">
                                 <ShieldCheck size={20} /> Approve & Verify
                             </button>
                         </div>

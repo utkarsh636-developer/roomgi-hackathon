@@ -8,6 +8,8 @@ const StatCard = ({ icon: Icon, label, value, trend, color = 'indigo' }) => {
         orange: 'from-orange-600 to-orange-500',
         red: 'from-red-600 to-red-500',
         blue: 'from-blue-600 to-blue-500',
+        'brand': 'from-brand-primary to-brand-primary/80',
+        'brand-dark': 'from-brand-secondary to-brand-secondary/80',
     };
 
     return (
@@ -17,11 +19,10 @@ const StatCard = ({ icon: Icon, label, value, trend, color = 'indigo' }) => {
                     <Icon size={24} className="text-white" />
                 </div>
                 {trend && (
-                    <span className={`text-xs font-bold px-2 py-1 rounded-full ${
-                        trend > 0 
-                            ? 'bg-green-500/10 text-green-400 border border-green-500/20' 
+                    <span className={`text-xs font-bold px-2 py-1 rounded-full ${trend > 0
+                            ? 'bg-green-500/10 text-green-400 border border-green-500/20'
                             : 'bg-red-500/10 text-red-400 border border-red-500/20'
-                    }`}>
+                        }`}>
                         {trend > 0 ? '+' : ''}{trend}%
                     </span>
                 )}

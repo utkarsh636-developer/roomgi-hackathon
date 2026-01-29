@@ -39,21 +39,21 @@ const Navbar = () => {
 
           {/* Logo */}
           <Link to={user && user.role === 'owner' ? '/owner' : '/'} className="flex items-center gap-2 cursor-pointer group">
-            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-xl group-hover:rotate-12 transition-transform">R</div>
-            <span className={`text-2xl font-bold tracking-tight ${showWhiteBg ? 'text-gray-900' : 'text-white'}`}>
-              Room<span className="text-indigo-600">Gi</span>
+            <div className="w-8 h-8 rounded-lg bg-brand-bg flex items-center justify-center text-brand-primary font-bold text-xl group-hover:rotate-12 transition-transform">R</div>
+            <span className={`text-2xl font-bold tracking-tight ${showWhiteBg ? 'text-brand-dark' : 'text-white'}`}>
+              Room<span className="text-[#d47e30]">Gi</span>
             </span>
           </Link>
 
           {/* Desktop Nav */}
-          <div className={`hidden md:flex items-center space-x-8 ${showWhiteBg ? 'text-gray-600' : 'text-gray-200'}`}>
-            <Link to={user && user.role === 'owner' ? '/owner' : '/'} className="hover:text-indigo-500 font-medium transition-colors">
+          <div className={`hidden md:flex items-center space-x-8 ${showWhiteBg ? 'text-brand-dark' : 'text-gray-200'}`}>
+            <Link to={user && user.role === 'owner' ? '/owner' : '/'} className="hover:text-brand-primary font-medium transition-colors">
               Home
             </Link>
-            <Link to="/explore" className="hover:text-indigo-500 font-medium transition-colors">
+            <Link to="/explore" className="hover:text-brand-primary font-medium transition-colors">
               Explore
             </Link>
-            <Link to="/about" className="hover:text-indigo-500 font-medium transition-colors">
+            <Link to="/about" className="hover:text-brand-primary font-medium transition-colors">
               About
             </Link>
           </div>
@@ -65,7 +65,7 @@ const Navbar = () => {
               <Link
                 to={user ? "/owner-dashboard" : "/login"}
                 className={`px-4 py-2 font-bold rounded-full transition-all border-2 ${showWhiteBg
-                  ? 'border-indigo-600 text-indigo-600 hover:bg-indigo-50'
+                  ? 'border-brand-primary text-brand-primary hover:bg-brand-bg'
                   : 'border-white text-white hover:bg-white/10'
                   }`}
               >
@@ -76,14 +76,14 @@ const Navbar = () => {
             {user ? (
               <div className="relative group">
                 <button className="flex items-center gap-2 focus:outline-none">
-                  <div className="w-10 h-10 rounded-full bg-indigo-100 border-2 border-indigo-200 flex items-center justify-center text-indigo-700 font-bold overflow-hidden shadow-sm">
+                  <div className="w-10 h-10 rounded-full bg-brand-bg border-2 border-brand-primary/20 flex items-center justify-center text-brand-primary font-bold overflow-hidden shadow-sm">
                     {user.profileImage ? (
                       <img src={user.profileImage} alt={user.username} className="w-full h-full object-cover" />
                     ) : (
                       user.username?.charAt(0).toUpperCase()
                     )}
                   </div>
-                  <span className={`font-bold hidden lg:block ${showWhiteBg ? 'text-gray-700' : 'text-white'}`}>
+                  <span className={`font-bold hidden lg:block ${showWhiteBg ? 'text-brand-dark' : 'text-white'}`}>
                     {user.username?.split(' ')[0]}
                   </span>
                 </button>
@@ -94,7 +94,7 @@ const Navbar = () => {
                     <p className="font-bold text-gray-900 truncate">{user.username}</p>
                     <p className="text-xs text-gray-500 truncate">{user.email}</p>
                   </div>
-                  <Link to="/profile" className="block px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-indigo-600 transition-colors font-medium text-sm">
+                  <Link to="/profile" className="block px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-brand-primary transition-colors font-medium text-sm">
                     Profile
                   </Link>
                   <button
@@ -109,8 +109,8 @@ const Navbar = () => {
               <Link to="/login">
                 <button
                   className={`flex items-center gap-2 px-5 py-2 font-bold rounded-full shadow-lg transition-all ${showWhiteBg
-                    ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-200'
-                    : 'bg-white text-indigo-900 hover:bg-indigo-50'
+                    ? 'bg-brand-primary text-white hover:bg-brand-secondary shadow-orange-200'
+                    : 'bg-white text-brand-dark hover:bg-brand-bg'
                     }`}
                 >
                   <User size={18} />

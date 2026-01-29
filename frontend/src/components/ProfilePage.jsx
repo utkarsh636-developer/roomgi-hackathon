@@ -70,24 +70,26 @@ const ProfilePage = () => {
 
     if (loading) {
         return (
-            <div className="flex flex-col min-h-screen bg-gray-50 font-montserrat">
+            <div className="flex flex-col min-h-screen bg-brand-bg font-montserrat">
                 <Navbar />
                 <div className="flex-grow flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-primary"></div>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="flex flex-col min-h-screen bg-gray-50 font-montserrat">
+        <div className="flex flex-col min-h-screen bg-brand-bg font-montserrat">
             <Navbar />
 
             <main className="flex-grow pt-28 pb-12 px-4">
                 <div className="max-w-3xl mx-auto">
                     <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
                         {/* Header Background */}
-                        <div className="h-32 bg-gradient-to-r from-indigo-500 to-purple-600"></div>
+                        <div className="h-32 bg-brand-dark overflow-hidden relative">
+                            <div className="absolute inset-0 bg-[#d47e30]/30 mix-blend-overlay"></div>
+                        </div>
 
                         <div className="px-8 pb-8">
                             <div className="relative flex justify-between items-end -mt-12 mb-6">
@@ -97,7 +99,7 @@ const ProfilePage = () => {
                                             {previewImage ? (
                                                 <img src={previewImage} alt="Profile" className="w-full h-full object-cover" />
                                             ) : (
-                                                <div className="w-full h-full flex items-center justify-center bg-indigo-50 text-indigo-300">
+                                                <div className="w-full h-full flex items-center justify-center bg-brand-bg text-brand-primary/50">
                                                     <User size={40} />
                                                 </div>
                                             )}
@@ -216,7 +218,7 @@ const ProfilePage = () => {
                                                 type="text"
                                                 value={username}
                                                 onChange={(e) => setUsername(e.target.value)}
-                                                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                                                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary outline-none transition-all"
                                                 placeholder="Your Name"
                                             />
                                         </div>
@@ -232,7 +234,7 @@ const ProfilePage = () => {
                                                 type="text"
                                                 value={phoneNumber}
                                                 onChange={(e) => setPhoneNumber(e.target.value)}
-                                                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                                                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary outline-none transition-all"
                                                 placeholder="+91 9876543210"
                                             />
                                         </div>
@@ -259,7 +261,7 @@ const ProfilePage = () => {
                                     <button
                                         type="submit"
                                         disabled={saving}
-                                        className="flex items-center gap-2 px-8 py-3 bg-indigo-600 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all disabled:opacity-50"
+                                        className="flex items-center gap-2 px-8 py-3 bg-brand-primary text-white font-bold rounded-xl shadow-lg shadow-brand-dark/20 hover:bg-brand-secondary transition-all disabled:opacity-50"
                                     >
                                         {saving ? (
                                             <>Saving...</>

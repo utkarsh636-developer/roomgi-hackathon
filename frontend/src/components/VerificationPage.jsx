@@ -87,16 +87,16 @@ const VerificationPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 font-montserrat flex flex-col">
+        <div className="min-h-screen bg-brand-bg font-montserrat flex flex-col">
             <Navbar />
 
             <main className="flex-grow pt-24 pb-12 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-2xl mx-auto bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div className="p-8 border-b border-gray-100 bg-orange-50">
-                        <h1 className="text-2xl font-bold flex items-center gap-2 text-orange-800">
-                            <ShieldCheck className="w-8 h-8 text-orange-600" /> Identity Verification
+                    <div className="p-8 border-b border-gray-100 bg-brand-primary text-white">
+                        <h1 className="text-2xl font-bold flex items-center gap-2">
+                            <ShieldCheck className="w-8 h-8 opacity-80" /> Identity Verification
                         </h1>
-                        <p className="text-orange-700 mt-2 text-sm">
+                        <p className="mt-2 text-sm text-brand-bg/90">
                             To ensure safety, we need to verify your identity. <span className="font-bold">Please upload at least 2 documents.</span>
                         </p>
                     </div>
@@ -119,8 +119,8 @@ const VerificationPage = () => {
                                     onChange={handleFileChange}
                                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                 />
-                                <div className="bg-indigo-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Upload className="text-indigo-600 w-8 h-8" />
+                                <div className="bg-brand-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <Upload className="text-brand-primary w-8 h-8" />
                                 </div>
                                 <h3 className="font-bold text-gray-900 mb-1">Click to upload Documents</h3>
                                 <p className="text-sm text-gray-500">PDF, JPG or PNG (Min 2 files)</p>
@@ -133,7 +133,7 @@ const VerificationPage = () => {
                                         <div key={index} className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
                                             <div className="flex items-center gap-3 flex-grow">
                                                 <div className="bg-white p-2 rounded-lg border border-gray-200">
-                                                    <FileText className="text-indigo-500 w-5 h-5" />
+                                                    <FileText className="text-brand-primary w-5 h-5" />
                                                 </div>
                                                 <span className="text-sm font-medium text-gray-700 truncate max-w-[150px]">{item.file.name}</span>
                                             </div>
@@ -142,7 +142,7 @@ const VerificationPage = () => {
                                                 <select
                                                     value={item.type}
                                                     onChange={(e) => handleTypeChange(index, e.target.value)}
-                                                    className="w-full sm:w-48 px-3 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500"
+                                                    className="w-full sm:w-48 px-3 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary"
                                                 >
                                                     {DOCUMENT_TYPES.map(type => (
                                                         <option key={type.value} value={type.value}>{type.label}</option>
@@ -167,7 +167,7 @@ const VerificationPage = () => {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-600/20 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                                className="w-full py-4 bg-brand-primary hover:bg-brand-secondary text-white font-bold rounded-xl shadow-lg shadow-brand-dark/20 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                             >
                                 {loading ? (
                                     <>

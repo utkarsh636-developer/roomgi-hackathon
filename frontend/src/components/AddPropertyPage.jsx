@@ -186,22 +186,22 @@ const AddPropertyPage = () => {
     if (fetching) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <Loader className="animate-spin text-indigo-600 w-8 h-8" />
+                <Loader className="animate-spin text-brand-primary w-8 h-8" />
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 font-montserrat flex flex-col">
+        <div className="min-h-screen bg-brand-bg font-montserrat flex flex-col">
             <Navbar />
 
             <main className="flex-grow pt-24 pb-12 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-4xl mx-auto bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div className="p-8 border-b border-gray-100 bg-indigo-600 text-white">
+                    <div className="p-8 border-b border-gray-100 bg-brand-primary text-white">
                         <h1 className="text-2xl font-bold flex items-center gap-2">
                             <Home className="w-6 h-6" /> {id ? 'Edit Property' : 'List New Property'}
                         </h1>
-                        <p className="text-indigo-100 mt-2">{id ? 'Update property details below.' : 'Fill in the details to list your property on RoomGi.'}</p>
+                        <p className="text-brand-bg/80 mt-2">{id ? 'Update property details below.' : 'Fill in the details to list your property on RoomGi.'}</p>
                     </div>
 
                     <form onSubmit={handleSubmit} className="p-8 space-y-8">
@@ -222,7 +222,7 @@ const AddPropertyPage = () => {
                                     value={formData.title}
                                     onChange={handleInputChange}
                                     placeholder="e.g. Sunny Boys PG"
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all text-gray-900"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary outline-none transition-all text-gray-900"
                                     required
                                 />
                             </div>
@@ -234,7 +234,7 @@ const AddPropertyPage = () => {
                                         name="type"
                                         value={formData.type}
                                         onChange={handleInputChange}
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all"
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary outline-none transition-all"
                                     >
                                         <option value="flat">Flat / Apartment</option>
                                         <option value="PG">PG (Paying Guest)</option>
@@ -249,7 +249,7 @@ const AddPropertyPage = () => {
                                         value={formData.capacity}
                                         onChange={handleInputChange}
                                         placeholder="e.g. 10"
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all"
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary outline-none transition-all"
                                         required
                                     />
                                 </div>
@@ -262,7 +262,7 @@ const AddPropertyPage = () => {
                                     onChange={handleInputChange}
                                     placeholder="Describe your property clearly..."
                                     rows="4"
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all resize-none"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary outline-none transition-all resize-none"
                                     required
                                 />
                             </div>
@@ -282,7 +282,7 @@ const AddPropertyPage = () => {
                                             value={formData.rent}
                                             onChange={handleInputChange}
                                             placeholder="15000"
-                                            className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all"
+                                            className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary outline-none transition-all"
                                             required
                                         />
                                     </div>
@@ -297,7 +297,7 @@ const AddPropertyPage = () => {
                                             value={formData.securityDeposit}
                                             onChange={handleInputChange}
                                             placeholder="50000"
-                                            className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all"
+                                            className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary outline-none transition-all"
                                             required
                                         />
                                     </div>
@@ -312,7 +312,7 @@ const AddPropertyPage = () => {
                                 <button
                                     type="button"
                                     onClick={() => setShowLocationPicker(true)}
-                                    className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition-colors"
+                                    className="flex items-center gap-2 px-4 py-2 bg-brand-primary text-white text-sm font-semibold rounded-lg hover:bg-brand-secondary transition-colors"
                                 >
                                     <Map className="w-4 h-4" />
                                     Select on Map
@@ -338,7 +338,7 @@ const AddPropertyPage = () => {
                                         onChange={handleInputChange}
                                         placeholder="Full address of the property"
                                         rows="2"
-                                        className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all resize-none"
+                                        className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary outline-none transition-all resize-none"
                                         required
                                     />
                                 </div>
@@ -353,7 +353,7 @@ const AddPropertyPage = () => {
                                         value={formData.city}
                                         onChange={handleInputChange}
                                         placeholder="Mumbai"
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all"
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary outline-none transition-all"
                                         required
                                     />
                                 </div>
@@ -365,7 +365,7 @@ const AddPropertyPage = () => {
                                         value={formData.state}
                                         onChange={handleInputChange}
                                         placeholder="Maharashtra"
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all"
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary outline-none transition-all"
                                         required
                                     />
                                 </div>
@@ -377,7 +377,7 @@ const AddPropertyPage = () => {
                                         value={formData.pincode}
                                         onChange={handleInputChange}
                                         placeholder="400001"
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all"
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary outline-none transition-all"
                                         required
                                     />
                                 </div>
@@ -392,8 +392,8 @@ const AddPropertyPage = () => {
                                     <label key={amenity} className="flex items-center space-x-2 cursor-pointer group">
                                         <div
                                             className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${formData.amenities.includes(amenity)
-                                                ? 'bg-indigo-600 border-indigo-600 text-white'
-                                                : 'border-gray-300 text-transparent group-hover:border-indigo-400'
+                                                ? 'bg-brand-primary border-brand-primary text-white'
+                                                : 'border-gray-300 text-transparent group-hover:border-brand-primary/50'
                                                 }`}
                                             onClick={(e) => {
                                                 e.preventDefault();
@@ -448,7 +448,7 @@ const AddPropertyPage = () => {
                                     onChange={handleImageChange}
                                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                 />
-                                <Upload className="mx-auto text-indigo-500 w-10 h-10 mb-2" />
+                                <Upload className="mx-auto text-brand-primary w-10 h-10 mb-2" />
                                 <span className="text-sm text-gray-500 font-medium">Click to upload images</span>
                             </div>
 
@@ -480,7 +480,7 @@ const AddPropertyPage = () => {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-600/20 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                                className="w-full py-4 bg-brand-primary hover:bg-brand-secondary text-white font-bold rounded-xl shadow-lg shadow-brand-dark/20 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                             >
                                 {loading ? (
                                     <>

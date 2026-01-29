@@ -41,14 +41,14 @@ const VerificationQueue = () => {
         try {
             setVerifying(true);
             setError('');
-            
+
             console.log('Verifying:', {
                 tab: activeTab,
                 itemId: selectedItem._id,
                 status: verificationAction.status,
                 reason: verificationAction.reason
             });
-            
+
             if (activeTab === 'users') {
                 const result = await adminService.verifyUser(selectedItem._id, verificationAction.status, verificationAction.reason);
                 console.log('User verification result:', result);
@@ -56,7 +56,7 @@ const VerificationQueue = () => {
                 const result = await adminService.verifyProperty(selectedItem._id, verificationAction.status, verificationAction.reason);
                 console.log('Property verification result:', result);
             }
-            
+
             setShowModal(false);
             setSelectedItem(null);
             setVerificationAction({ status: '', reason: '' });
@@ -89,21 +89,19 @@ const VerificationQueue = () => {
                 <div className="flex gap-2">
                     <button
                         onClick={() => setActiveTab('users')}
-                        className={`px-6 py-3 rounded-xl font-medium transition-all flex items-center gap-2 ${
-                            activeTab === 'users'
-                                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg'
-                                : 'bg-slate-800/40 text-slate-300 hover:bg-slate-700/50 border border-slate-700/50'
-                        }`}
+                        className={`px-6 py-3 rounded-xl font-medium transition-all flex items-center gap-2 ${activeTab === 'users'
+                                ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white shadow-lg'
+                                : 'bg-white/5 text-brand-bg/70 hover:bg-white/10 border border-white/10'
+                            }`}
                     >
                         <Users size={20} /> User Verifications ({users.length})
                     </button>
                     <button
                         onClick={() => setActiveTab('properties')}
-                        className={`px-6 py-3 rounded-xl font-medium transition-all flex items-center gap-2 ${
-                            activeTab === 'properties'
-                                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg'
-                                : 'bg-slate-800/40 text-slate-300 hover:bg-slate-700/50 border border-slate-700/50'
-                        }`}
+                        className={`px-6 py-3 rounded-xl font-medium transition-all flex items-center gap-2 ${activeTab === 'properties'
+                                ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white shadow-lg'
+                                : 'bg-white/5 text-brand-bg/70 hover:bg-white/10 border border-white/10'
+                            }`}
                     >
                         <Building2 size={20} /> Property Verifications ({properties.length})
                     </button>
@@ -113,16 +111,16 @@ const VerificationQueue = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {loading ? (
                         <div className="col-span-full flex items-center justify-center py-12">
-                            <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                            <div className="w-8 h-8 border-4 border-brand-primary border-t-transparent rounded-full animate-spin"></div>
                         </div>
                     ) : activeTab === 'users' ? (
                         users.length > 0 ? (
                             users.map((user) => (
-                                <div key={user._id} className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 rounded-xl p-6 hover:border-slate-600/50 transition-all">
+                                <div key={user._id} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:border-brand-primary/30 transition-all">
                                     {/* User Info */}
                                     <div className="flex items-start justify-between mb-4">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-lg">
+                                            <div className="w-12 h-12 rounded-full bg-brand-primary flex items-center justify-center text-white font-bold text-lg">
                                                 {user.username?.[0]?.toUpperCase()}
                                             </div>
                                             <div>
@@ -146,7 +144,7 @@ const VerificationQueue = () => {
                                                     href={doc.url}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="p-2 bg-slate-900/50 rounded-lg text-xs text-indigo-400 hover:bg-slate-900 transition-colors flex items-center gap-2"
+                                                    className="p-2 bg-white/5 rounded-lg text-xs text-brand-primary hover:bg-white/10 transition-colors flex items-center gap-2"
                                                 >
                                                     <Eye size={14} />
                                                     {doc.type}
@@ -181,11 +179,11 @@ const VerificationQueue = () => {
                     ) : (
                         properties.length > 0 ? (
                             properties.map((property) => (
-                                <div key={property._id} className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 rounded-xl p-6 hover:border-slate-600/50 transition-all">
+                                <div key={property._id} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:border-brand-primary/30 transition-all">
                                     {/* Property Info */}
                                     <div className="flex items-start justify-between mb-4">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                                            <div className="w-12 h-12 rounded-lg bg-brand-secondary flex items-center justify-center">
                                                 <Building2 size={24} className="text-white" />
                                             </div>
                                             <div>
@@ -216,7 +214,7 @@ const VerificationQueue = () => {
                                                     href={doc.url}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="p-2 bg-slate-900/50 rounded-lg text-xs text-purple-400 hover:bg-slate-900 transition-colors flex items-center gap-2"
+                                                    className="p-2 bg-white/5 rounded-lg text-xs text-brand-primary hover:bg-white/10 transition-colors flex items-center gap-2"
                                                 >
                                                     <Eye size={14} />
                                                     {doc.type}
@@ -255,17 +253,17 @@ const VerificationQueue = () => {
             {/* Verification Modal */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-slate-800 border border-slate-700 rounded-2xl p-6 max-w-md w-full">
+                    <div className="bg-brand-dark border border-white/10 rounded-2xl p-6 max-w-md w-full">
                         <h3 className="text-xl font-bold text-white mb-4">
                             {verificationAction.status === 'approved' ? 'Approve Verification' : 'Reject Verification'}
                         </h3>
-                        
+
                         {error && (
                             <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
                                 {error}
                             </div>
                         )}
-                        
+
                         {verificationAction.status === 'rejected' && (
                             <div className="mb-4">
                                 <label className="block text-sm font-medium text-slate-300 mb-2">
@@ -274,7 +272,7 @@ const VerificationQueue = () => {
                                 <textarea
                                     value={verificationAction.reason}
                                     onChange={(e) => setVerificationAction(prev => ({ ...prev, reason: e.target.value }))}
-                                    className="w-full px-4 py-2 bg-slate-900/50 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                    className="w-full px-4 py-2 bg-black/30 border border-white/20 rounded-lg text-white placeholder-brand-bg/30 focus:outline-none focus:ring-2 focus:ring-red-500"
                                     rows="3"
                                     placeholder="Enter reason for rejection..."
                                 />
@@ -290,18 +288,17 @@ const VerificationQueue = () => {
                                     setError('');
                                 }}
                                 disabled={verifying}
-                                className="flex-1 py-2 px-4 bg-slate-700 text-white rounded-lg font-medium hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="flex-1 py-2 px-4 bg-white/10 text-white rounded-lg font-medium hover:bg-white/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleVerify}
                                 disabled={(verificationAction.status === 'rejected' && !verificationAction.reason) || verifying}
-                                className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
-                                    verificationAction.status === 'approved'
+                                className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${verificationAction.status === 'approved'
                                         ? 'bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed'
                                         : 'bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed'
-                                }`}
+                                    }`}
                             >
                                 {verifying ? (
                                     <>

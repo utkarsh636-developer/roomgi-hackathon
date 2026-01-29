@@ -62,7 +62,7 @@ const PropertyManagement = () => {
                 </div>
 
                 {/* Filters */}
-                <div className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 rounded-xl p-4">
+                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4">
                     <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
@@ -71,13 +71,13 @@ const PropertyManagement = () => {
                                 placeholder="Search properties..."
                                 value={filters.search}
                                 onChange={(e) => handleFilterChange('search', e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 bg-slate-900/50 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                className="w-full pl-10 pr-4 py-2 bg-black/30 border border-white/10 rounded-lg text-white placeholder-brand-bg/50 focus:outline-none focus:ring-2 focus:ring-brand-primary"
                             />
                         </div>
                         <select
                             value={filters.type}
                             onChange={(e) => handleFilterChange('type', e.target.value)}
-                            className="px-4 py-2 bg-slate-900/50 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="px-4 py-2 bg-black/30 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-brand-primary"
                         >
                             <option value="">All Types</option>
                             <option value="flat">Flat</option>
@@ -89,12 +89,12 @@ const PropertyManagement = () => {
                             placeholder="City"
                             value={filters.city}
                             onChange={(e) => handleFilterChange('city', e.target.value)}
-                            className="px-4 py-2 bg-slate-900/50 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="px-4 py-2 bg-black/30 border border-white/10 rounded-lg text-white placeholder-brand-bg/50 focus:outline-none focus:ring-2 focus:ring-brand-primary"
                         />
                         <select
                             value={filters.verificationStatus}
                             onChange={(e) => handleFilterChange('verificationStatus', e.target.value)}
-                            className="px-4 py-2 bg-slate-900/50 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="px-4 py-2 bg-black/30 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-brand-primary"
                         >
                             <option value="">All Verification</option>
                             <option value="pending">Pending</option>
@@ -104,7 +104,7 @@ const PropertyManagement = () => {
                         <select
                             value={filters.isBlocked}
                             onChange={(e) => handleFilterChange('isBlocked', e.target.value)}
-                            className="px-4 py-2 bg-slate-900/50 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="px-4 py-2 bg-black/30 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-brand-primary"
                         >
                             <option value="">All Status</option>
                             <option value="false">Active</option>
@@ -117,13 +117,13 @@ const PropertyManagement = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {loading ? (
                         <div className="col-span-full flex items-center justify-center py-12">
-                            <div className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
+                            <div className="w-8 h-8 border-4 border-brand-primary border-t-transparent rounded-full animate-spin"></div>
                         </div>
                     ) : properties.length > 0 ? (
                         properties.map((property) => (
-                            <div key={property._id} className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 rounded-xl overflow-hidden hover:border-slate-600/50 transition-all duration-300">
+                            <div key={property._id} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden hover:border-brand-primary/30 transition-all duration-300">
                                 {/* Property Image */}
-                                <div className="relative h-48 bg-gradient-to-br from-purple-600/20 to-pink-600/20">
+                                <div className="relative h-48 bg-gradient-to-br from-brand-secondary/20 to-brand-primary/20">
                                     {property.images?.[0]?.url ? (
                                         <img
                                             src={property.images[0].url}
@@ -168,11 +168,10 @@ const PropertyManagement = () => {
                                     <div className="flex items-center gap-2">
                                         <button
                                             onClick={() => handleBlockToggle(property._id)}
-                                            className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
-                                                property.isBlocked
+                                            className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${property.isBlocked
                                                     ? 'bg-green-600/10 text-green-400 hover:bg-green-600/20 border border-green-600/20'
                                                     : 'bg-red-600/10 text-red-400 hover:bg-red-600/20 border border-red-600/20'
-                                            }`}
+                                                }`}
                                         >
                                             {property.isBlocked ? <><CheckCircle size={16} className="inline mr-1" /> Unblock</> : <><Ban size={16} className="inline mr-1" /> Block</>}
                                         </button>
@@ -189,7 +188,7 @@ const PropertyManagement = () => {
 
                 {/* Pagination */}
                 {pagination.totalPages > 1 && (
-                    <div className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 rounded-xl px-6 py-4 flex items-center justify-between">
+                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl px-6 py-4 flex items-center justify-between">
                         <p className="text-sm text-slate-400">
                             Showing {((pagination.currentPage - 1) * 20) + 1} to {Math.min(pagination.currentPage * 20, pagination.totalCount)} of {pagination.totalCount} properties
                         </p>
@@ -197,7 +196,7 @@ const PropertyManagement = () => {
                             <button
                                 onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage - 1 }))}
                                 disabled={pagination.currentPage === 1}
-                                className="p-2 rounded-lg bg-slate-700/50 text-slate-300 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                className="p-2 rounded-lg bg-white/5 text-slate-300 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
                                 <ChevronLeft size={20} />
                             </button>
@@ -207,7 +206,7 @@ const PropertyManagement = () => {
                             <button
                                 onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage + 1 }))}
                                 disabled={pagination.currentPage === pagination.totalPages}
-                                className="p-2 rounded-lg bg-slate-700/50 text-slate-300 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                className="p-2 rounded-lg bg-white/5 text-slate-300 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
                                 <ChevronRight size={20} />
                             </button>

@@ -84,7 +84,7 @@ const PropertyDetailsPage = () => {
             <div className="flex flex-col min-h-screen bg-gray-50 font-montserrat">
                 <Navbar />
                 <div className="flex-grow flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-primary"></div>
                 </div>
             </div>
         );
@@ -97,7 +97,7 @@ const PropertyDetailsPage = () => {
                 <div className="flex-grow flex flex-col items-center justify-center text-center p-4">
                     <h2 className="text-2xl font-bold text-gray-800 mb-2">Oops!</h2>
                     <p className="text-gray-600 mb-6">{error || "Property not found."}</p>
-                    <Link to="/explore" className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                    <Link to="/explore" className="px-6 py-2 bg-brand-primary text-white rounded-lg hover:bg-brand-secondary transition-colors">
                         Back to Explore
                     </Link>
                 </div>
@@ -132,7 +132,7 @@ const PropertyDetailsPage = () => {
     ];
 
     return (
-        <div className="flex flex-col min-h-screen bg-gray-50 font-montserrat">
+        <div className="flex flex-col min-h-screen bg-brand-bg font-montserrat">
             <Navbar />
 
             <main className="flex-grow pt-24 pb-12">
@@ -155,13 +155,13 @@ const PropertyDetailsPage = () => {
 
                 {/* Top Navigation / Breadcrumbs */}
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
-                    <Link to="/explore" className="inline-flex items-center text-gray-500 hover:text-indigo-600 transition-colors mb-4 text-sm font-medium">
+                    <Link to="/explore" className="inline-flex items-center text-gray-500 hover:text-brand-primary transition-colors mb-4 text-sm font-medium">
                         <ArrowLeft size={16} className="mr-2" /> Back to Explore
                     </Link>
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                         <div>
                             <div className="flex items-center gap-3 mb-2">
-                                <span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-bold uppercase tracking-wide">
+                                <span className="px-3 py-1 bg-brand-primary/10 text-brand-primary rounded-full text-xs font-bold uppercase tracking-wide">
                                     {property.type}
                                 </span>
                                 {property.verification?.status === 'approved' && (
@@ -174,7 +174,7 @@ const PropertyDetailsPage = () => {
                                 {property.name || `${property.type} in ${property.location?.city}`}
                             </h1>
                             <div className="flex items-center gap-2 text-gray-500 mt-2 text-sm md:text-base">
-                                <MapPin size={18} className="text-indigo-500" />
+                                <MapPin size={18} className="text-brand-primary" />
                                 {property.location?.addressLine}, {property.location?.city}
                             </div>
                         </div>
@@ -182,7 +182,7 @@ const PropertyDetailsPage = () => {
                             <button className="p-3 bg-white border border-gray-200 rounded-full shadow-sm hover:bg-gray-50 hover:text-red-500 transition-colors">
                                 <Heart size={20} />
                             </button>
-                            <button className="p-3 bg-white border border-gray-200 rounded-full shadow-sm hover:bg-gray-50 hover:text-indigo-500 transition-colors">
+                            <button className="p-3 bg-white border border-gray-200 rounded-full shadow-sm hover:bg-gray-50 hover:text-brand-primary transition-colors">
                                 <Share2 size={20} />
                             </button>
                         </div>
@@ -257,7 +257,7 @@ const PropertyDetailsPage = () => {
                                     <div className="grid grid-cols-2 md:grid-cols-3 gap-y-6 gap-x-4">
                                         {displayAmenities.map((amenity, idx) => (
                                             <div key={idx} className="flex items-center gap-3 text-gray-700">
-                                                <div className="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                                                <div className="w-10 h-10 rounded-full bg-brand-primary/10 text-brand-primary flex items-center justify-center shrink-0">
                                                     <amenity.icon size={20} />
                                                 </div>
                                                 <span className="font-medium text-sm">{amenity.name}</span>
@@ -295,7 +295,7 @@ const PropertyDetailsPage = () => {
                                 <div className="mb-6">
                                     <div className="flex items-center gap-4 mb-4">
                                         <div className="w-16 h-16 rounded-full bg-gray-200 overflow-hidden border-2 border-white shadow-md">
-                                            <div className="w-full h-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-2xl">
+                                            <div className="w-full h-full bg-brand-primary/10 flex items-center justify-center text-brand-primary font-bold text-2xl">
                                                 {property.owner?.username?.charAt(0).toUpperCase() || 'O'}
                                             </div>
                                         </div>
@@ -316,7 +316,7 @@ const PropertyDetailsPage = () => {
                                     {/* <div className="space-y-3 p-4 bg-gray-50 rounded-2xl border border-gray-100 text-sm"> ... </div> */}
                                 </div>
 
-                                <button className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-indigo-600/20 transition-all hover:scale-[1.02] active:scale-[0.98] group">
+                                <button className="w-full flex items-center justify-center gap-2 bg-brand-primary hover:bg-brand-secondary text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-brand-dark/20 transition-all hover:scale-[1.02] active:scale-[0.98] group">
                                     <Phone size={20} className="group-hover:animate-pulse" />
                                     Contact Owner
                                 </button>

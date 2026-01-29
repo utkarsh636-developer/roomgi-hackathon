@@ -67,14 +67,14 @@ const OwnerDashboard = () => {
     const stats = [
         { label: 'Total Views', value: '1,240', change: '+12%', icon: Eye, color: 'text-blue-600', bg: 'bg-blue-50' },
         { label: 'Active Enquiries', value: '18', change: '+4', icon: MessageSquare, color: 'text-purple-600', bg: 'bg-purple-50' },
-        { label: 'Shortlisted', value: '45', change: '+8%', icon: Users, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+        { label: 'Shortlisted', value: '45', change: '+8%', icon: Users, color: 'text-brand-primary', bg: 'bg-brand-bg' },
         { label: 'Total Earnings', value: '₹25k', change: 'June', icon: TrendingUp, color: 'text-green-600', bg: 'bg-green-50' },
     ];
 
 
 
     return (
-        <div className="min-h-screen bg-gray-50 font-montserrat flex flex-col">
+        <div className="min-h-screen bg-brand-bg font-montserrat flex flex-col">
             <Navbar />
 
             {/* Delete Confirmation Modal */}
@@ -133,7 +133,7 @@ const OwnerDashboard = () => {
                         </div>
                         <Link
                             to="/add-property"
-                            className="flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-600/20 transition-all"
+                            className="flex items-center gap-2 px-6 py-3 bg-brand-primary hover:bg-brand-secondary text-white font-bold rounded-xl shadow-lg shadow-brand-dark/20 transition-all"
                         >
                             <Plus size={20} /> Add New Property
                         </Link>
@@ -226,7 +226,7 @@ const OwnerDashboard = () => {
                     <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
                         <div className="p-6 border-b border-gray-100 flex justify-between items-center">
                             <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                                <Home size={20} className="text-indigo-600" /> My Properties
+                                <Home size={20} className="text-brand-primary" /> My Properties
                             </h3>
                             <div className="text-sm text-gray-500">
                                 Showing {properties.length} listings
@@ -283,7 +283,7 @@ const OwnerDashboard = () => {
                                         <div className="flex gap-2 w-full md:w-auto mt-4 md:mt-0">
                                             <Link
                                                 to={`/edit-property/${property._id}`}
-                                                className="flex-1 md:flex-none px-4 py-2 border border-gray-200 rounded-lg text-gray-600 font-bold hover:bg-indigo-50 hover:text-indigo-600 transition-colors flex items-center justify-center gap-2"
+                                                className="flex-1 md:flex-none px-4 py-2 border border-brand-secondary/20 rounded-lg text-brand-secondary font-bold hover:bg-brand-bg hover:text-brand-primary transition-colors flex items-center justify-center gap-2"
                                             >
                                                 <Edit size={16} /> Edit
                                             </Link>
@@ -301,7 +301,7 @@ const OwnerDashboard = () => {
                                                 ) : (
                                                     <Link
                                                         to={`/property/${property._id}/verify`}
-                                                        className={`flex-1 md:flex-none px-4 py-2 ${property.verification?.status === 'rejected' ? 'bg-red-600 hover:bg-red-700' : 'bg-indigo-600 hover:bg-indigo-700'} text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2`}
+                                                        className={`flex-1 md:flex-none px-4 py-2 ${property.verification?.status === 'rejected' ? 'bg-red-600 hover:bg-red-700' : 'bg-brand-primary hover:bg-brand-secondary'} text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2`}
                                                     >
                                                         <ShieldCheck size={16} /> {property.verification?.status === 'rejected' ? 'Re-Verify' : 'Verify'}
                                                     </Link>

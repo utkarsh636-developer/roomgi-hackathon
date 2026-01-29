@@ -11,15 +11,15 @@ const OwnerLanding = () => {
             <div className="flex-grow pt-20">
 
                 {/* Hero Section */}
-                <div className="relative bg-indigo-900 text-white overflow-hidden">
+                <div className="relative bg-brand-dark text-white overflow-hidden">
                     <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&q=80&w=1920')] bg-cover bg-center opacity-10"></div>
                     <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 flex flex-col md:flex-row items-center gap-12">
                         <div className="w-full md:w-1/2 space-y-6">
-                            <span className="inline-block py-1 px-3 rounded-full bg-indigo-800 text-indigo-200 text-sm font-semibold border border-indigo-700">
+                            <span className="inline-block py-1 px-3 rounded-full bg-brand-primary/20 text-brand-cream text-sm font-semibold border border-brand-primary/30">
                                 For Property Owners
                             </span>
                             <h1 className="text-4xl md:text-6xl font-extrabold leading-tight">
-                                Unlock the True Value of Your <span className="text-teal-400">Property</span>
+                                Unlock the True Value of Your <span className="text-brand-primary">Property</span>
                             </h1>
                             <p className="text-lg text-indigo-100 max-w-lg leading-relaxed">
                                 Join thousands of owners who trust RoomGi to find verified student tenants without the hassle of brokerage.
@@ -31,7 +31,7 @@ const OwnerLanding = () => {
                                 >
                                     List Your Property <ArrowRight size={20} />
                                 </Link>
-                                <button className="px-8 py-4 bg-transparent border border-indigo-400 text-white font-semibold rounded-xl hover:bg-white/10 transition-all">
+                                <button className="px-8 py-4 bg-transparent border border-brand-cream/30 text-white font-semibold rounded-xl hover:bg-white/10 transition-all">
                                     Learn More
                                 </button>
                             </div>
@@ -70,7 +70,7 @@ const OwnerLanding = () => {
                                         <p className="text-sm text-gray-500">Projected Monthly Earning</p>
                                         <p className="text-4xl font-extrabold text-indigo-600">₹25,000<span className="text-lg text-gray-400 font-medium">/mo</span></p>
                                     </div>
-                                    <Link to="/owner-dashboard" className="block w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-center rounded-xl transition-all">
+                                    <Link to="/owner-dashboard" className="block w-full py-3 bg-brand-primary hover:bg-brand-secondary text-white font-bold text-center rounded-xl transition-all">
                                         Start Earning Today
                                     </Link>
                                 </div>
@@ -80,23 +80,23 @@ const OwnerLanding = () => {
                 </div>
 
                 {/* Stats Section */}
-                <div className="bg-gray-50 py-12 border-b border-gray-200">
+                <div className="bg-brand-cream py-12 border-b border-brand-dark/10">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
                             <div>
-                                <p className="text-3xl font-extrabold text-indigo-600 mb-1">10k+</p>
+                                <p className="text-3xl font-extrabold text-brand-primary mb-1">10k+</p>
                                 <p className="text-sm text-gray-600 font-medium">Verified Students</p>
                             </div>
                             <div>
-                                <p className="text-3xl font-extrabold text-indigo-600 mb-1">500+</p>
+                                <p className="text-3xl font-extrabold text-brand-primary mb-1">500+</p>
                                 <p className="text-sm text-gray-600 font-medium">Active Properties</p>
                             </div>
                             <div>
-                                <p className="text-3xl font-extrabold text-indigo-600 mb-1">98%</p>
+                                <p className="text-3xl font-extrabold text-brand-primary mb-1">98%</p>
                                 <p className="text-sm text-gray-600 font-medium">Occupancy Rate</p>
                             </div>
                             <div>
-                                <p className="text-3xl font-extrabold text-indigo-600 mb-1">₹5Cr+</p>
+                                <p className="text-3xl font-extrabold text-brand-primary mb-1">₹5Cr+</p>
                                 <p className="text-sm text-gray-600 font-medium">Rent Generated</p>
                             </div>
                         </div>
@@ -106,7 +106,7 @@ const OwnerLanding = () => {
                 {/* Why Choose Us */}
                 <div className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-16">
-                        <span className="text-indigo-600 font-bold uppercase tracking-wider text-sm">Why Partner With Us</span>
+                        <span className="text-brand-primary font-bold uppercase tracking-wider text-sm">Why Partner With Us</span>
                         <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-2">Simple, Secure, and Profitable</h2>
                     </div>
 
@@ -147,7 +147,7 @@ const OwnerLanding = () => {
                 </div>
 
                 {/* How it Works */}
-                <div className="bg-indigo-50 py-20">
+                <div className="bg-brand-cream/50 py-20">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="flex flex-col md:flex-row items-center gap-16">
                             <div className="w-full md:w-1/2">
@@ -158,26 +158,26 @@ const OwnerLanding = () => {
                                 />
                             </div>
                             <div className="w-full md:w-1/2">
-                                <span className="text-indigo-600 font-bold uppercase tracking-wider text-sm">How It Works</span>
+                                <span className="text-brand-primary font-bold uppercase tracking-wider text-sm">How It Works</span>
                                 <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-2 mb-8">List your property in 3 easy steps</h2>
 
                                 <div className="space-y-8">
                                     <div className="flex gap-4">
-                                        <div className="w-10 h-10 rounded-full bg-white border-2 border-indigo-600 text-indigo-600 flex items-center justify-center font-bold text-lg shrink-0">1</div>
+                                        <div className="w-10 h-10 rounded-full bg-white border-2 border-brand-primary text-brand-primary flex items-center justify-center font-bold text-lg shrink-0">1</div>
                                         <div>
                                             <h4 className="text-lg font-bold text-gray-900 mb-1">Add Property Details</h4>
                                             <p className="text-gray-600">Enter basic details like location, room type, and amenities. It takes less than 5 minutes.</p>
                                         </div>
                                     </div>
                                     <div className="flex gap-4">
-                                        <div className="w-10 h-10 rounded-full bg-white border-2 border-indigo-600 text-indigo-600 flex items-center justify-center font-bold text-lg shrink-0">2</div>
+                                        <div className="w-10 h-10 rounded-full bg-white border-2 border-brand-primary text-brand-primary flex items-center justify-center font-bold text-lg shrink-0">2</div>
                                         <div>
                                             <h4 className="text-lg font-bold text-gray-900 mb-1">Get Verified</h4>
                                             <p className="text-gray-600">Upload your RERA ID or Electricity bill. Our team verifies it within 24 hours.</p>
                                         </div>
                                     </div>
                                     <div className="flex gap-4">
-                                        <div className="w-10 h-10 rounded-full bg-white border-2 border-indigo-600 text-indigo-600 flex items-center justify-center font-bold text-lg shrink-0">3</div>
+                                        <div className="w-10 h-10 rounded-full bg-white border-2 border-brand-primary text-brand-primary flex items-center justify-center font-bold text-lg shrink-0">3</div>
                                         <div>
                                             <h4 className="text-lg font-bold text-gray-900 mb-1">Start Earning</h4>
                                             <p className="text-gray-600">Your listing goes live to thousands of students. Accept enquiries and start rented.</p>
@@ -188,7 +188,7 @@ const OwnerLanding = () => {
                                 <div className="mt-10">
                                     <Link
                                         to="/owner-dashboard"
-                                        className="inline-block px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg transition-all"
+                                        className="inline-block px-8 py-4 bg-brand-primary hover:bg-brand-secondary text-white font-bold rounded-xl shadow-lg transition-all"
                                     >
                                         Become a Host Now
                                     </Link>

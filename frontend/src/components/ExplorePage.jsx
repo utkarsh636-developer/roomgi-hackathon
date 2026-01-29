@@ -16,9 +16,9 @@ const FilterSection = ({ title, children }) => (
 );
 
 const Checkbox = ({ label }) => (
-  <label className="flex items-center text-gray-600 cursor-pointer hover:text-indigo-600 transition-colors">
+  <label className="flex items-center text-gray-600 cursor-pointer hover:text-brand-primary transition-colors">
     <div className="relative flex items-center">
-      <input type="checkbox" className="peer h-5 w-5 text-indigo-600 border-2 border-gray-300 rounded focus:ring-indigo-500 checked:bg-indigo-600 checked:border-indigo-600 transition-all" />
+      <input type="checkbox" className="peer h-5 w-5 text-brand-primary border-2 border-gray-300 rounded focus:ring-brand-primary checked:bg-brand-primary checked:border-brand-primary transition-all" />
       <svg className="absolute w-3.5 h-3.5 text-white hidden peer-checked:block left-1 top-1 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
     </div>
     <span className="ml-3 text-sm font-medium">{label}</span>
@@ -127,7 +127,7 @@ const ExplorePage = () => {
     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-full overflow-y-auto max-h-[calc(100vh-140px)] sticky-sidebar">
       <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
         <h3 className="text-xl font-bold text-gray-900 font-montserrat">Filters</h3>
-        <button onClick={handleResetFilters} className="text-sm text-indigo-600 font-semibold hover:text-indigo-800">Reset</button>
+        <button onClick={handleResetFilters} className="text-sm text-brand-primary font-semibold hover:text-brand-secondary">Reset</button>
       </div>
 
       <FilterSection title="Budget Range (Max)">
@@ -139,11 +139,11 @@ const ExplorePage = () => {
             step="1000"
             value={budget}
             onChange={(e) => setBudget(Number(e.target.value))}
-            className="w-full h-2 bg-gray-200 rounded-lg cursor-pointer accent-indigo-600"
+            className="w-full h-2 bg-gray-200 rounded-lg cursor-pointer accent-brand-primary"
           />
           <div className="flex justify-between text-sm text-gray-500 mt-3 font-medium">
             <span>₹2k</span>
-            <span className="text-indigo-600 bg-indigo-50 px-2 py-1 rounded">
+            <span className="text-brand-primary bg-brand-primary/10 px-2 py-1 rounded">
               {budget >= 50000 ? '50k+' : `₹${budget.toLocaleString()}`}
             </span>
             <span>₹50k+</span>
@@ -154,13 +154,13 @@ const ExplorePage = () => {
       <FilterSection title="Property Type">
         <div className="space-y-3">
           {['Flat', 'PG', 'Hostel'].map((type) => (
-            <label key={type} className="flex items-center text-gray-600 cursor-pointer hover:text-indigo-600 transition-colors">
+            <label key={type} className="flex items-center text-gray-600 cursor-pointer hover:text-brand-primary transition-colors">
               <div className="relative flex items-center">
                 <input
                   type="checkbox"
                   checked={selectedType === type.toLowerCase()}
                   onChange={() => handleTypeChange(type)}
-                  className="peer h-5 w-5 text-indigo-600 border-2 border-gray-300 rounded focus:ring-indigo-500 checked:bg-indigo-600 checked:border-indigo-600 transition-all"
+                  className="peer h-5 w-5 text-brand-primary border-2 border-gray-300 rounded focus:ring-brand-primary checked:bg-brand-primary checked:border-brand-primary transition-all"
                 />
                 <svg className="absolute w-3.5 h-3.5 text-white hidden peer-checked:block left-1 top-1 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
               </div>
@@ -173,13 +173,13 @@ const ExplorePage = () => {
       <FilterSection title="Amenities">
         <div className="space-y-3">
           {AMENITIES_LIST.slice(0, showAllAmenities ? AMENITIES_LIST.length : 5).map(amenity => (
-            <label key={amenity} className="flex items-center text-gray-600 cursor-pointer hover:text-indigo-600 transition-colors">
+            <label key={amenity} className="flex items-center text-gray-600 cursor-pointer hover:text-brand-primary transition-colors">
               <div className="relative flex items-center">
                 <input
                   type="checkbox"
                   checked={selectedAmenities.includes(amenity)}
                   onChange={() => handleAmenityChange(amenity)}
-                  className="peer h-5 w-5 text-indigo-600 border-2 border-gray-300 rounded focus:ring-indigo-500 checked:bg-indigo-600 checked:border-indigo-600 transition-all"
+                  className="peer h-5 w-5 text-brand-primary border-2 border-gray-300 rounded focus:ring-brand-primary checked:bg-brand-primary checked:border-brand-primary transition-all"
                 />
                 <svg className="absolute w-3.5 h-3.5 text-white hidden peer-checked:block left-1 top-1 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
               </div>
@@ -198,7 +198,7 @@ const ExplorePage = () => {
   );
 
   return (
-    <div className="bg-slate-50 min-h-screen pt-24 font-sans">
+    <div className="bg-brand-bg min-h-screen pt-24 font-sans">
       <Navbar />
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
@@ -207,7 +207,7 @@ const ExplorePage = () => {
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 font-montserrat">
               Explore
-              <span className="text-indigo-600 ml-2">Stays</span>
+              <span className="text-brand-primary ml-2">Stays</span>
             </h1>
           </div>
 
@@ -220,7 +220,7 @@ const ExplorePage = () => {
                 placeholder="Search by city, area, college..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 transition-all outline-none"
+                className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary transition-all outline-none"
               />
             </div>
 
@@ -228,13 +228,13 @@ const ExplorePage = () => {
             <div className="bg-white p-1 rounded-xl border border-gray-200 hidden md:flex">
               <button
                 onClick={() => setShowMap(false)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${!showMap ? 'bg-indigo-600 text-white shadow-md' : 'text-gray-500 hover:bg-gray-50'}`}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${!showMap ? 'bg-brand-primary text-white shadow-md' : 'text-gray-500 hover:bg-gray-50'}`}
               >
                 <List className="w-4 h-4" /> List
               </button>
               <button
                 onClick={() => setShowMap(true)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${showMap ? 'bg-indigo-600 text-white shadow-md' : 'text-gray-500 hover:bg-gray-50'}`}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${showMap ? 'bg-brand-primary text-white shadow-md' : 'text-gray-500 hover:bg-gray-50'}`}
               >
                 <Map className="w-4 h-4" /> Map
               </button>
@@ -270,7 +270,7 @@ const ExplorePage = () => {
           <div className="flex-grow">
             {loading ? (
               <div className="flex flex-col items-center justify-center py-20">
-                <Loader className="w-10 h-10 text-indigo-600 animate-spin mb-4" />
+                <Loader className="w-10 h-10 text-brand-primary animate-spin mb-4" />
                 <p className="text-gray-500 font-medium">Loading properties...</p>
               </div>
             ) : error ? (
@@ -292,7 +292,7 @@ const ExplorePage = () => {
                 <img src="/images/no-results.svg" alt="No Data" className="w-64 h-64 mb-6 opacity-80" />
                 <h3 className="text-2xl font-bold text-gray-800">No Properties Found</h3>
                 <p className="text-gray-500 mt-2">Try adjusting your filters or search for a different area.</p>
-                <button onClick={handleResetFilters} className="mt-6 text-indigo-600 font-semibold hover:underline">
+                <button onClick={handleResetFilters} className="mt-6 text-brand-primary font-semibold hover:underline">
                   Clear Filters
                 </button>
               </div>
