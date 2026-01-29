@@ -3,33 +3,40 @@ import { Link } from 'react-router-dom';
 import {
     LayoutDashboard, Plus, Home, MessageSquare,
     TrendingUp, Eye, Users, AlertCircle, CheckCircle,
-    MoreVertical, MapPin, Edit, Trash2, X, Clock
+    MoreVertical, MapPin, Edit, Trash2, X, Clock, ShieldCheck
 } from 'lucide-react';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import authService from '../services/authService';
 import propertyService from '../services/propertyService';
 
 const OwnerDashboard = () => {
     const [properties, setProperties] = React.useState([]);
+    const [user, setUser] = React.useState(null);
     const [loading, setLoading] = React.useState(true);
     const [error, setError] = React.useState(null);
     const [showDeleteModal, setShowDeleteModal] = React.useState(false);
     const [propertyToDelete, setPropertyToDelete] = React.useState(null);
 
     React.useEffect(() => {
-        const fetchProperties = async () => {
+        const fetchData = async () => {
             try {
-                const response = await propertyService.getOwnerProperties();
-                setProperties(response.data || []);
+                const [propsRes, userRes] = await Promise.all([
+                    propertyService.getOwnerProperties(),
+                    authService.fetchCurrentUser()
+                ]);
+                setProperties(propsRes.data || []);
+                // Unwrap the user data from the API response
+                setUser(userRes.data || null);
             } catch (err) {
-                console.error("Failed to fetch properties:", err);
-                setError("Failed to load your properties.");
+                console.error("Failed to fetch dashboard data:", err);
+                setError("Failed to load dashboard data.");
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchProperties();
+        fetchData();
     }, []);
 
     const handleDeleteClick = (id) => {
@@ -114,7 +121,14 @@ const OwnerDashboard = () => {
                     {/* Header */}
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-8">
                         <div>
-                            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Owner Dashboard</h1>
+                            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-3">
+                                Owner Dashboard
+                                {user?.verification?.status === 'approved' && (
+                                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold bg-green-100 text-green-700 border border-green-200">
+                                        <CheckCircle size={16} /> Verified
+                                    </span>
+                                )}
+                            </h1>
                             <p className="text-gray-500">Manage your listings and track performance.</p>
                         </div>
                         <Link
@@ -127,49 +141,62 @@ const OwnerDashboard = () => {
 
                     {/* Verification Alert - Dynamic Logic */}
                     {(() => {
-                        const pendingProp = properties.find(p => p.verification?.status === 'pending');
-                        const rejectedProp = properties.find(p => p.verification?.status === 'rejected');
-                        const unverifiedProp = properties.find(p => !p.verification?.status || p.verification?.status === 'unverified');
+                        const status = user?.verification?.status;
+                        const rejectionReason = user?.verification?.rejectionReason;
 
-                        if (pendingProp) {
-                            return (
-                                <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-8 flex items-start gap-4">
-                                    <Clock className="text-blue-600 shrink-0 mt-1" />
-                                    <div>
-                                        <h3 className="font-bold text-blue-800">Verification Under Scrutiny</h3>
-                                        <p className="text-sm text-blue-700 mt-1">
-                                            Your documents for <strong>"{pendingProp.type} in {pendingProp.location?.city}"</strong> have been received and are currently under review by our admin team. This usually takes 24-48 hours.
-                                        </p>
-                                    </div>
-                                </div>
-                            );
-                        }
-
-                        if (rejectedProp) {
+                        if (status === 'rejected') {
                             return (
                                 <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-8 flex items-start gap-4">
                                     <AlertCircle className="text-red-600 shrink-0 mt-1" />
                                     <div>
-                                        <h3 className="font-bold text-red-800">Verification Rejected</h3>
+                                        <h3 className="font-bold text-red-800">Identity Verification Rejected</h3>
                                         <p className="text-sm text-red-700 mt-1">
-                                            Verification for <strong>"{rejectedProp.type} in {rejectedProp.location?.city}"</strong> was rejected.
-                                            <span className="block mt-1">Reason: {rejectedProp.verification?.rejectionReason || "Documents invalid or unclear."}</span>
-                                            <Link to="/verification" className="font-bold underline cursor-pointer mt-2 inline-block">Re-upload Documents</Link>
+                                            Your identity verification was rejected.
+                                            <span className="block mt-1">Reason: {rejectionReason || "Documents invalid or unclear."}</span>
+                                            <Link to="/verification" className="font-bold underline cursor-pointer mt-2 inline-block">Re-upload Identity Documents</Link>
                                         </p>
                                     </div>
                                 </div>
                             );
                         }
 
-                        if (unverifiedProp) {
+                        if (!status || status === 'unverified') {
                             return (
                                 <div className="bg-orange-50 border border-orange-200 rounded-2xl p-4 mb-8 flex items-start gap-4">
                                     <AlertCircle className="text-orange-600 shrink-0 mt-1" />
                                     <div>
                                         <h3 className="font-bold text-orange-800">Complete your verification</h3>
                                         <p className="text-sm text-orange-700 mt-1">
-                                            Your <strong>"{unverifiedProp.type} in {unverifiedProp.location?.city}"</strong> listing is hidden until you complete KYC.
-                                            <Link to="/verification" className="font-bold underline cursor-pointer ml-1">Upload Documents</Link>
+                                            Please verify your identity to build trust with tenants.
+                                            <Link to="/verification" className="font-bold underline cursor-pointer ml-1">Upload Identity Documents</Link>
+                                        </p>
+                                    </div>
+                                </div>
+                            );
+                        }
+
+                        if (status === 'approved') {
+                            return (
+                                <div className="bg-green-50 border border-green-200 rounded-2xl p-4 mb-8 flex items-start gap-4">
+                                    <CheckCircle className="text-green-600 shrink-0 mt-1" />
+                                    <div>
+                                        <h3 className="font-bold text-green-800">Identity Verified</h3>
+                                        <p className="text-sm text-green-700 mt-1">
+                                            Your identity has been verified. You can now list properties and interact with tenants freely.
+                                        </p>
+                                    </div>
+                                </div>
+                            );
+                        }
+
+                        if (status === 'pending') {
+                            return (
+                                <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-8 flex items-start gap-4">
+                                    <Clock className="text-blue-600 shrink-0 mt-1" />
+                                    <div>
+                                        <h3 className="font-bold text-blue-800">Identity Verification Under Scrutiny</h3>
+                                        <p className="text-sm text-blue-700 mt-1">
+                                            Your identity documents have been submitted and are currently under scrutiny. This usually takes 24-48 hours.
                                         </p>
                                     </div>
                                 </div>
@@ -266,6 +293,20 @@ const OwnerDashboard = () => {
                                             >
                                                 <Trash2 size={20} />
                                             </button>
+                                            {property.verification?.status !== 'approved' && (
+                                                (property.verification?.status === 'pending' && property.documents?.length > 0) ? (
+                                                    <div className="flex-1 md:flex-none px-4 py-2 bg-blue-50 text-blue-600 font-bold rounded-lg border border-blue-200 flex items-center justify-center gap-2">
+                                                        <Clock size={16} /> Under Review
+                                                    </div>
+                                                ) : (
+                                                    <Link
+                                                        to={`/property/${property._id}/verify`}
+                                                        className={`flex-1 md:flex-none px-4 py-2 ${property.verification?.status === 'rejected' ? 'bg-red-600 hover:bg-red-700' : 'bg-indigo-600 hover:bg-indigo-700'} text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2`}
+                                                    >
+                                                        <ShieldCheck size={16} /> {property.verification?.status === 'rejected' ? 'Re-Verify' : 'Verify'}
+                                                    </Link>
+                                                )
+                                            )}
                                         </div>
                                     </div>
                                 </div>

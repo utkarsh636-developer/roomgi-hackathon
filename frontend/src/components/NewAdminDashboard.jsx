@@ -145,7 +145,7 @@ const NewAdminDashboard = () => {
                                                 </div>
                                             </div>
                                             <Link
-                                                to={`/admin/verify/${user._id}`}
+                                                to="/admin/verifications"
                                                 className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-medium flex items-center gap-1 transition-colors"
                                             >
                                                 <Eye size={14} /> Review
@@ -198,7 +198,7 @@ const NewAdminDashboard = () => {
                                                 </div>
                                             </div>
                                             <Link
-                                                to={`/admin/verify/${property._id}`}
+                                                to="/admin/verifications"
                                                 className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-medium flex items-center gap-1 transition-colors"
                                             >
                                                 <Eye size={14} /> Review

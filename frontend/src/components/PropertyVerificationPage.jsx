@@ -1,44 +1,44 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
-import authService from '../services/authService';
-import { Upload, X, ShieldCheck, Loader, FileText } from 'lucide-react';
+import propertyService from '../services/propertyService';
+import { Upload, X, ShieldCheck, Loader, FileText, Home } from 'lucide-react';
 
 const DOCUMENT_TYPES = [
-    { value: 'aadhaar', label: 'Aadhaar Card' },
-    { value: 'pan_card', label: 'PAN Card' },
-    { value: 'voter_id', label: 'Voter ID' },
-    { value: 'driving_license', label: 'Driving License' },
-    { value: 'passport', label: 'Passport' },
+    { value: 'ownership_proof', label: 'Proof of Ownership (Required)' },
+    { value: 'government_id', label: 'Government ID (Required)' },
+    { value: 'rent_agreement', label: 'Rent Agreement' },
+    { value: 'electricity_bill', label: 'Electricity Bill' },
+    { value: 'water_bill', label: 'Water Bill' },
+    { value: 'property_tax_receipt', label: 'Property Tax Receipt' },
     { value: 'other', label: 'Other' }
 ];
 
-const VerificationPage = () => {
+const PropertyVerificationPage = () => {
+    const { id } = useParams();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+    const [property, setProperty] = useState(null);
     const [error, setError] = useState('');
-    // Store files with their selected type: [{ file: File, type: 'government_id' }]
     const [docList, setDocList] = useState([]);
 
-    React.useEffect(() => {
-        const checkStatus = async () => {
+    useEffect(() => {
+        const fetchProperty = async () => {
             try {
-                const currentUser = await authService.fetchCurrentUser();
-                if (currentUser?.data?.verification?.status === 'approved') {
-                    navigate('/owner-dashboard');
-                }
-            } catch (e) {
-                console.error("Failed to check status", e);
+                const response = await propertyService.getPropertyById(id);
+                setProperty(response.data);
+            } catch (err) {
+                console.error("Failed to fetch property:", err);
+                setError("Failed to load property details.");
             }
         };
-        checkStatus();
-    }, [navigate]);
+        fetchProperty();
+    }, [id]);
 
     const handleFileChange = (e) => {
         const files = Array.from(e.target.files);
-        // Default new files to 'aadhaar' or first option, user can change later
-        const newDocs = files.map(file => ({ file, type: 'aadhaar' }));
+        const newDocs = files.map(file => ({ file, type: 'ownership_proof' }));
         setDocList(prev => [...prev, ...newDocs]);
     };
 
@@ -56,7 +56,14 @@ const VerificationPage = () => {
         setError('');
 
         if (docList.length < 2) {
-            setError('Please upload at least 2 documents as required.');
+            setError('Please upload at least 2 documents.');
+            setLoading(false);
+            return;
+        }
+
+        const types = docList.map(d => d.type);
+        if (!types.includes('ownership_proof') || !types.includes('government_id')) {
+            setError('Proof of Ownership and Government ID are mandatory.');
             setLoading(false);
             return;
         }
@@ -68,30 +75,39 @@ const VerificationPage = () => {
                 data.append('documentTypes', item.type);
             });
 
-            await authService.verifyRequest(data);
-            alert('Verification request submitted successfully!');
+            await propertyService.verifyPropertyRequest(id, data);
+            alert('Property verification documents submitted successfully!');
             navigate('/owner-dashboard');
         } catch (err) {
             console.error('Verification Error:', err);
-            const errorMessage = err.response?.data?.message || err.message || 'Failed to submit verification request.';
-            setError(errorMessage);
+            setError(err.message || 'Failed to submit verification request.');
         } finally {
             setLoading(false);
         }
     };
+
+    if (!property) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <Loader className="animate-spin text-indigo-600 w-8 h-8" />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gray-50 font-montserrat flex flex-col">
             <Navbar />
 
             <main className="flex-grow pt-24 pb-12 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-2xl mx-auto bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div className="p-8 border-b border-gray-100 bg-orange-50">
-                        <h1 className="text-2xl font-bold flex items-center gap-2 text-orange-800">
-                            <ShieldCheck className="w-8 h-8 text-orange-600" /> Identity Verification
+                <div className="max-w-3xl mx-auto bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="p-8 border-b border-gray-100 bg-purple-50">
+                        <h1 className="text-2xl font-bold flex items-center gap-2 text-purple-900">
+                            <ShieldCheck className="w-8 h-8 text-purple-600" /> Verify Property
                         </h1>
-                        <p className="text-orange-700 mt-2 text-sm">
-                            To ensure safety, we need to verify your identity. <span className="font-bold">Please upload at least 2 documents.</span>
+                        <p className="text-purple-700 mt-2 text-sm">
+                            Submit documents for <span className="font-bold">"{property.type} in {property.location?.city}"</span>.
+                            <br />
+                            <span className="font-bold">Proof of Ownership</span> and <span className="font-bold">Government ID</span> are required.
                         </p>
                     </div>
 
@@ -102,9 +118,8 @@ const VerificationPage = () => {
                             </div>
                         )}
 
-                        {/* Document Upload */}
                         <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-2">Upload Documents</label>
+                            <label className="block text-sm font-bold text-gray-700 mb-2">Upload Legal Documents</label>
                             <div className="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center hover:bg-gray-50 transition-colors cursor-pointer relative">
                                 <input
                                     type="file"
@@ -113,8 +128,8 @@ const VerificationPage = () => {
                                     onChange={handleFileChange}
                                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                 />
-                                <div className="bg-indigo-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Upload className="text-indigo-600 w-8 h-8" />
+                                <div className="bg-purple-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <Upload className="text-purple-600 w-8 h-8" />
                                 </div>
                                 <h3 className="font-bold text-gray-900 mb-1">Click to upload Documents</h3>
                                 <p className="text-sm text-gray-500">PDF, JPG or PNG (Min 2 files)</p>
@@ -136,7 +151,7 @@ const VerificationPage = () => {
                                                 <select
                                                     value={item.type}
                                                     onChange={(e) => handleTypeChange(index, e.target.value)}
-                                                    className="w-full sm:w-48 px-3 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500"
+                                                    className="w-full sm:w-56 px-3 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-100 focus:border-purple-500"
                                                 >
                                                     {DOCUMENT_TYPES.map(type => (
                                                         <option key={type.value} value={type.value}>{type.label}</option>
@@ -156,19 +171,18 @@ const VerificationPage = () => {
                             )}
                         </div>
 
-                        {/* Submit Button */}
                         <div className="pt-4">
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-600/20 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                                className="w-full py-4 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl shadow-lg shadow-purple-600/20 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                             >
                                 {loading ? (
                                     <>
                                         <Loader className="animate-spin w-5 h-5" /> Submitting...
                                     </>
                                 ) : (
-                                    'Submit for Verification'
+                                    'Submit Verification Request'
                                 )}
                             </button>
                         </div>
@@ -181,4 +195,4 @@ const VerificationPage = () => {
     );
 };
 
-export default VerificationPage;
+export default PropertyVerificationPage;

@@ -1,4 +1,5 @@
 import api from './api';
+import axios from 'axios';
 
 const authService = {
     register: async (userData) => {
@@ -31,9 +32,11 @@ const authService = {
     },
 
     verifyRequest: async (formData) => {
-        const response = await api.post('/users/verify-request', formData, {
+        const token = localStorage.getItem('accessToken');
+        const response = await axios.post(`${api.defaults.baseURL}/users/verify-request`, formData, {
             headers: {
-                'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${token}`,
+                // Axios will automatically set Content-Type to multipart/form-data with boundary
             },
         });
         return response.data;

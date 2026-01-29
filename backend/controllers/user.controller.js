@@ -402,11 +402,11 @@ const verifyUserRequest = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Minimum 2 documents are required")
     }
 
-    if (!documentTypes || documentFiles.length !== (Array.isArray(documentTypes) ? documentTypes.length : 1)) {
-        throw new ApiError(400, "Document types must match uploaded files")
+    if (!documentTypes) {
+        throw new ApiError(400, "Document types are required")
     }
 
-    const typesArray = Array.isArray(documentTypes) ? documentTypes : [documentTypes];
+    let typesArray = Array.isArray(documentTypes) ? documentTypes : [documentTypes];
 
     if (typesArray.length !== documentFiles.length) {
         throw new ApiError(400, "Mismatch between document files and types provided")

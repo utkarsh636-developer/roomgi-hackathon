@@ -19,6 +19,7 @@ import OwnerDashboard from './components/OwnerDashboard';
 import ProfilePage from './components/ProfilePage';
 import AddPropertyPage from './components/AddPropertyPage';
 import VerificationPage from './components/VerificationPage';
+import PropertyVerificationPage from './components/PropertyVerificationPage';
 
 const HomeRoute = () => {
   const user = authService.getCurrentUser();
@@ -81,6 +82,14 @@ function App() {
         element={
           <ProtectedRoute>
             <PropertyDetailsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/property/:id/verify"
+        element={
+          <ProtectedRoute>
+            <PropertyVerificationPage />
           </ProtectedRoute>
         }
       />

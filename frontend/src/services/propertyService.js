@@ -94,6 +94,20 @@ const getPropertyReviews = async (propertyId) => {
     }
 };
 
+const verifyPropertyRequest = async (id, formData) => {
+    try {
+        const response = await axios.post(`${API_URL}/properties/${id}/verify-request`, formData, {
+            headers: {
+                ...getAuthHeader(),
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || error.message;
+    }
+};
+
 const propertyService = {
     addProperty,
     getAllProperties,
@@ -101,7 +115,8 @@ const propertyService = {
     getOwnerProperties,
     updateProperty,
     deleteProperty,
-    getPropertyReviews
+    getPropertyReviews,
+    verifyPropertyRequest
 };
 
 export default propertyService;
