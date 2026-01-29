@@ -14,7 +14,7 @@ const AdminLayout = ({ children }) => {
 
     const handleLogout = async () => {
         await authService.logout();
-        navigate('/login');
+        navigate('/admin/login');
     };
 
     const navItems = [
@@ -48,11 +48,10 @@ const AdminLayout = ({ children }) => {
                                 <Link
                                     key={item.path}
                                     to={item.path}
-                                    className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200 ${
-                                        isActive
+                                    className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200 ${isActive
                                             ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-900/30'
                                             : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
-                                    }`}
+                                        }`}
                                 >
                                     <Icon size={20} />
                                     <span>{item.label}</span>

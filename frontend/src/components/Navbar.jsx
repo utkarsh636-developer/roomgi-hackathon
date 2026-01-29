@@ -22,7 +22,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     authService.logout();
-    navigate('/login');
+    navigate('/');
   };
 
   const navItems = [
