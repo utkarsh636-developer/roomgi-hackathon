@@ -67,7 +67,7 @@ const PropertyCard = ({ property }) => {
         />
 
         {/* Verified Badge */}
-        {isVerified && (
+        {(isVerified || property.verification?.status === 'approved') && (
           <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1 shadow-sm border border-green-50">
             <BadgeCheck className="w-4 h-4 text-blue-500 fill-blue-50" />
             <span className="text-xs font-bold text-gray-700 font-montserrat tracking-wide">VERIFIED</span>

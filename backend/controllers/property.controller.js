@@ -276,7 +276,7 @@ const getPropertyById = asyncHandler(async (req, res) => {
 
     const property = await Property.findById(propertyId).populate({
         path: "owner",
-        select: "username email phoneNumber profileImage",
+        select: "username email phoneNumber profileImage verification",
         model: User
     });
 
