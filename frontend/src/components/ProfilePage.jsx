@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Mail, Phone as PhoneIcon, Camera, Save, ShieldCheck } from 'lucide-react';
+import { User, Mail, Phone as PhoneIcon, Camera, Save, ShieldCheck, CheckCircle } from 'lucide-react';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import authService from '../services/authService';
@@ -114,7 +114,14 @@ const ProfilePage = () => {
                                 </div>
                             </div>
 
-                            <h1 className="text-3xl font-bold text-gray-900 mb-1">{user.username}</h1>
+                            <h1 className="text-3xl font-bold text-gray-900 mb-1 flex items-center gap-3">
+                                {user.username}
+                                {user.verification?.status === 'approved' && (
+                                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold bg-green-100 text-green-700 border border-green-200">
+                                        <CheckCircle size={16} /> Verified
+                                    </span>
+                                )}
+                            </h1>
                             <p className="text-gray-500 mb-8">{user.email}</p>
 
                             {message && (
