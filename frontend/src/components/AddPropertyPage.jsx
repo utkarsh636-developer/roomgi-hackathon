@@ -4,7 +4,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import propertyService from '../services/propertyService';
-import { Upload, X, Home, MapPin, IndianRupee, Loader, CheckSquare, Square } from 'lucide-react';
+import LocationPicker from './LocationPicker';
+import { Upload, X, Home, MapPin, IndianRupee, Loader, CheckSquare, Square, Map } from 'lucide-react';
 
 const AMENITIES_LIST = [
     "wifi", "ac", "non_ac", "furnished", "semi_furnished", "unfurnished",
@@ -23,6 +24,8 @@ const AddPropertyPage = () => {
     const [error, setError] = useState('');
     const [images, setImages] = useState([]);
     const [existingImages, setExistingImages] = useState([]);
+    const [showLocationPicker, setShowLocationPicker] = useState(false);
+    const [coordinates, setCoordinates] = useState(null);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -107,6 +110,17 @@ const AddPropertyPage = () => {
         setExistingImages(prev => prev.filter((_, i) => i !== index));
     };
 
+    const handleLocationSelect = (locationData) => {
+        setCoordinates(locationData.coordinates);
+        setFormData(prev => ({
+            ...prev,
+            address: locationData.address || prev.address,
+            city: locationData.city || prev.city,
+            state: locationData.state || prev.state,
+            pincode: locationData.pincode || prev.pincode
+        }));
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -130,9 +144,15 @@ const AddPropertyPage = () => {
             data.append('state', formData.state);
             data.append('pincode', formData.pincode);
 
-            // Coordinates - explicit flat keys required by backend (mocked for now)
-            data.append('coordinates.lng', '77.5946');
-            data.append('coordinates.lat', '12.9716');
+            // Coordinates - use selected coordinates or default
+            if (coordinates) {
+                data.append('coordinates.lng', coordinates.lng);
+                data.append('coordinates.lat', coordinates.lat);
+            } else {
+                // Default coordinates (Delhi) if not selected
+                data.append('coordinates.lng', '77.2090');
+                data.append('coordinates.lat', '28.6139');
+            }
 
             // Amenities
             formData.amenities.forEach((amenity) => {
@@ -287,7 +307,27 @@ const AddPropertyPage = () => {
 
                         {/* Location */}
                         <section>
-                            <h3 className="text-lg font-bold text-gray-900 mb-4 border-b pb-2">Location</h3>
+                            <div className="flex items-center justify-between mb-4 border-b pb-2">
+                                <h3 className="text-lg font-bold text-gray-900">Location</h3>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowLocationPicker(true)}
+                                    className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition-colors"
+                                >
+                                    <Map className="w-4 h-4" />
+                                    Select on Map
+                                </button>
+                            </div>
+                            
+                            {coordinates && (
+                                <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-xl flex items-center gap-2">
+                                    <MapPin className="w-4 h-4 text-green-600" />
+                                    <span className="text-sm text-green-800 font-medium">
+                                        Location selected: {coordinates.lat.toFixed(4)}, {coordinates.lng.toFixed(4)}
+                                    </span>
+                                </div>
+                            )}
+                            
                             <div className="mb-6">
                                 <label className="block text-sm font-bold text-gray-700 mb-2">Address Line</label>
                                 <div className="relative">
@@ -456,6 +496,14 @@ const AddPropertyPage = () => {
             </main>
 
             <Footer />
+            
+            {showLocationPicker && (
+                <LocationPicker
+                    onLocationSelect={handleLocationSelect}
+                    onClose={() => setShowLocationPicker(false)}
+                    initialPosition={coordinates ? [coordinates.lat, coordinates.lng] : undefined}
+                />
+            )}
         </div>
     );
 };

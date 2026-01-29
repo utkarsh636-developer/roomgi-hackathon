@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropertyCard from './PropertyCard';
+import PropertyMapView from './PropertyMapView';
 import { Map, List, Filter, Search, Loader } from 'lucide-react';
 import Navbar from './Navbar';
 import Footer from './Footer';
@@ -279,22 +280,7 @@ const ExplorePage = () => {
               </div>
             ) : properties.length > 0 ? (
               showMap ? (
-                // Placeholder for Map View
-                <div className="bg-white rounded-2xl h-[600px] flex flex-col items-center justify-center border border-gray-200 p-8 text-center">
-                  <div className="bg-indigo-50 p-6 rounded-full mb-6">
-                    <Map className="w-12 h-12 text-indigo-600" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Map View Coming Soon</h3>
-                  <p className="text-gray-500 max-w-md mx-auto">
-                    We are integrating Google Maps to show you verified properties near your college or office.
-                  </p>
-                  <button
-                    onClick={() => setShowMap(false)}
-                    className="mt-6 px-6 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition"
-                  >
-                    Switch to List View
-                  </button>
-                </div>
+                <PropertyMapView properties={properties} />
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                   {properties.map(prop => <PropertyCard key={prop._id || prop.id} property={prop} />)}

@@ -14,6 +14,7 @@ import PropertyManagement from './components/PropertyManagement';
 import ReportsManagement from './components/ReportsManagement';
 import VerificationQueue from './components/VerificationQueue';
 import AdminAnalytics from './components/AdminAnalytics';
+
 import OwnerLanding from './components/OwnerLanding';
 import OwnerDashboard from './components/OwnerDashboard';
 import ProfilePage from './components/ProfilePage';
@@ -23,6 +24,9 @@ import PropertyVerificationPage from './components/PropertyVerificationPage';
 
 const HomeRoute = () => {
   const user = authService.getCurrentUser();
+  if (user && user.role === 'admin') {
+    return <Navigate to="/admin/dashboard" replace />;
+  }
   if (user && user.role === 'owner') {
     return <Navigate to="/owner" replace />;
   }

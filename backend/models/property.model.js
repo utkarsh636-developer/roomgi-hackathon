@@ -15,6 +15,12 @@ const propertySchema = new Schema(
       index: true
     },
 
+    title: {
+      type: String,
+      trim: true,
+      maxlength: 100
+    },
+
     owner: {
       type: Schema.Types.ObjectId,
       ref: "User",
@@ -41,6 +47,11 @@ const propertySchema = new Schema(
       pincode: {
         type: String,
         required: true
+      },
+      landmark: {
+        type: String,
+        trim: true,
+        maxlength: 200
       },
       coordinates: {
         type: {

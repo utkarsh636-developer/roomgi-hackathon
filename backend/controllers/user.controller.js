@@ -141,6 +141,10 @@ const loginUser = asyncHandler(async (req, res) => {
         throw new ApiError(401, "Invalid credentials")
     }
 
+    if (user.isBlocked) {
+        throw new ApiError(403, "Your account has been blocked. Please contact support.")
+    }
+
     const { accessToken, refreshToken } =
         await generateAccessAndRefereshTokens(user._id)
 
