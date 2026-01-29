@@ -5,6 +5,7 @@ import authService from '../services/authService';
 
 const PropertyCard = ({ property }) => {
   const {
+    title,
     name,
     location,
     price,
@@ -61,7 +62,7 @@ const PropertyCard = ({ property }) => {
       <div className="relative h-56 overflow-hidden">
         <img
           src={displayImage}
-          alt={name}
+          alt={title || name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
 
@@ -92,8 +93,8 @@ const PropertyCard = ({ property }) => {
       {/* Content */}
       <div className="p-5">
         <div className="flex justify-between items-start mb-2">
-          <h3 className="text-lg font-bold text-gray-900 font-montserrat leading-tight truncate pr-2" title={name}>
-            {name}
+          <h3 className="text-lg font-bold text-gray-900 font-montserrat leading-tight truncate pr-2" title={title || name}>
+            {title || name}
           </h3>
           {(!user || user.role !== 'owner') && (
             <button

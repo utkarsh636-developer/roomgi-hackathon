@@ -247,7 +247,7 @@ const OwnerDashboard = () => {
 
                                         <div className="flex-1 w-full text-center md:text-left">
                                             <div className="flex flex-col md:flex-row md:items-center gap-2 mb-2 justify-center md:justify-start">
-                                                <h4 className="text-lg font-bold text-gray-900 capitalize">{property.type} in {property.location?.city}</h4>
+                                                <h4 className="text-lg font-bold text-gray-900 capitalize">{property.title || property.name || `${property.type} in ${property.location?.city}`}</h4>
                                                 {property.verification?.status === 'approved' ? (
                                                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-700 border border-green-200">
                                                         <CheckCircle size={12} /> Verified

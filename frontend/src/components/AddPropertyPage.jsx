@@ -28,7 +28,7 @@ const AddPropertyPage = () => {
     const [coordinates, setCoordinates] = useState(null);
 
     const [formData, setFormData] = useState({
-        name: '',
+        title: '',
         type: 'flat',
         address: '',
         city: '',
@@ -51,7 +51,7 @@ const AddPropertyPage = () => {
                     const property = response.data;
 
                     setFormData({
-                        name: property.name || '',
+                        title: property.title || property.name || '',
                         type: property.type,
                         address: property.location.addressLine,
                         city: property.location.city,
@@ -129,7 +129,7 @@ const AddPropertyPage = () => {
         try {
             const data = new FormData();
 
-            data.append('name', formData.name);
+            data.append('title', formData.title);
             data.append('type', formData.type);
             data.append('description', formData.description);
             data.append('rent', formData.rent);
@@ -215,14 +215,14 @@ const AddPropertyPage = () => {
                         <section>
                             <h3 className="text-lg font-bold text-gray-900 mb-4 border-b pb-2">Basic Info</h3>
                             <div className="mb-6">
-                                <label className="block text-sm font-bold text-gray-700 mb-2">Property Name <span className="text-red-500">*</span></label>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Property Title <span className="text-red-500">*</span></label>
                                 <input
                                     type="text"
-                                    name="name"
-                                    value={formData.name}
+                                    name="title"
+                                    value={formData.title}
                                     onChange={handleInputChange}
                                     placeholder="e.g. Sunny Boys PG"
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all text-gray-900"
                                     required
                                 />
                             </div>
@@ -318,7 +318,7 @@ const AddPropertyPage = () => {
                                     Select on Map
                                 </button>
                             </div>
-                            
+
                             {coordinates && (
                                 <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-xl flex items-center gap-2">
                                     <MapPin className="w-4 h-4 text-green-600" />
@@ -327,7 +327,7 @@ const AddPropertyPage = () => {
                                     </span>
                                 </div>
                             )}
-                            
+
                             <div className="mb-6">
                                 <label className="block text-sm font-bold text-gray-700 mb-2">Address Line</label>
                                 <div className="relative">
@@ -496,7 +496,7 @@ const AddPropertyPage = () => {
             </main>
 
             <Footer />
-            
+
             {showLocationPicker && (
                 <LocationPicker
                     onLocationSelect={handleLocationSelect}
