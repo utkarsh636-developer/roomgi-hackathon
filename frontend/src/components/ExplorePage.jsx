@@ -1,56 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropertyCard from './PropertyCard';
-import { Map, List, Filter, Search } from 'lucide-react';
+import { Map, List, Filter, Search, Loader } from 'lucide-react';
 import Navbar from './Navbar';
 import Footer from './Footer';
-
-// Dummy data for property listings
-const properties = [
-  {
-    id: 1,
-    name: 'Sunshine PG for Girls',
-    location: 'Koramangala, Bangalore',
-    price: 8500,
-    deposit: 15000,
-    sharing: 'Double',
-    gender: 'Girls',
-    imageUrl: '/images/girls-room.jpg',
-    isVerified: true
-  },
-  {
-    id: 2,
-    name: 'Zenith Student Hostel',
-    location: 'HSR Layout, Bangalore',
-    price: 7000,
-    deposit: 10000,
-    sharing: 'Triple',
-    gender: 'Boys',
-    imageUrl: '/images/pg-room.avif',
-    isVerified: true
-  },
-  {
-    id: 3,
-    name: 'Pro-Stay for Working Professionals',
-    location: 'Indiranagar, Bangalore',
-    price: 12000,
-    deposit: 25000,
-    sharing: 'Single',
-    gender: 'Both',
-    imageUrl: '/images/room3.jpg',
-    isVerified: false
-  },
-  {
-    id: 4,
-    name: 'Cozy Nook PG',
-    location: 'Marathahalli, Bangalore',
-    price: 6500,
-    deposit: 10000,
-    sharing: 'Double',
-    gender: 'Girls',
-    imageUrl: '/images/room4.jpg',
-    isVerified: true
-  }
-];
+import propertyService from '../services/propertyService';
 
 const FilterSection = ({ title, children }) => (
   <div className="py-5 border-b border-gray-100 last:border-0">
@@ -71,54 +24,174 @@ const Checkbox = ({ label }) => (
   </label>
 );
 
+const AMENITIES_LIST = [
+  "wifi", "ac", "non_ac", "furnished", "semi_furnished", "unfurnished",
+  "balcony", "garden", "terrace", "parking", "covered_parking",
+  "power_backup", "water_supply_24x7", "water_geaser", "gas",
+  "mess", "shared_kitchen", "private_kitchen", "refrigerator", "gas_stove",
+  "gym", "yoga_room", "cctv", "security_guard", "laundry", "housekeeping",
+  "tv_cable", "internet_high_speed", "pet_friendly", "smoking_allowed", "drinking_allowed"
+];
+
 const ExplorePage = () => {
-  const [budget, setBudget] = useState(15000);
+  /* ------------------------------------------------------------
+   * STATE
+   * ------------------------------------------------------------ */
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Filters
+  // Initialize budget with a high value or handle it as 'max'
+  const [budget, setBudget] = useState(50000);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedType, setSelectedType] = useState('');
+  const [selectedAmenities, setSelectedAmenities] = useState([]);
+
+  // UI State
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [showMap, setShowMap] = useState(false);
+  const [showAllAmenities, setShowAllAmenities] = useState(false);
+
+  /* ------------------------------------------------------------
+   * FETCH LOGIC
+   * ------------------------------------------------------------ */
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      fetchProperties();
+    }, 500);
+    return () => clearTimeout(timeoutId);
+  }, [budget, searchQuery, selectedType, selectedAmenities]);
+
+  const fetchProperties = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const params = {};
+
+      // Only add params if they restrict the search
+      if (budget < 50000) {
+        params.maxRent = budget;
+      }
+
+      if (searchQuery.trim()) {
+        params.preferences = searchQuery;
+      }
+
+      if (selectedType) {
+        params.type = selectedType;
+      }
+
+      if (selectedAmenities.length > 0) {
+        params.amenities = selectedAmenities.join(',');
+      }
+
+      const data = await propertyService.getAllProperties(params);
+      setProperties(data.data || data || []);
+    } catch (err) {
+      console.error("Failed to fetch properties:", err);
+      // Don't show error on empty search, just show empty list or generic message if critical
+      setProperties([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /* ------------------------------------------------------------
+   * HANDLERS
+   * ------------------------------------------------------------ */
+  const handleTypeChange = (type) => {
+    setSelectedType(prev => prev === type.toLowerCase() ? '' : type.toLowerCase());
+  };
+
+  const handleAmenityChange = (amenity) => {
+    setSelectedAmenities(prev => {
+      if (prev.includes(amenity)) {
+        return prev.filter(a => a !== amenity);
+      } else {
+        return [...prev, amenity];
+      }
+    });
+  };
+
+  const handleResetFilters = () => {
+    setBudget(50000);
+    setSearchQuery('');
+    setSelectedType('');
+    setSelectedAmenities([]);
+  };
 
   const FilterContent = () => (
-    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-full">
+    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-full overflow-y-auto max-h-[calc(100vh-140px)] sticky-sidebar">
       <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
         <h3 className="text-xl font-bold text-gray-900 font-montserrat">Filters</h3>
-        <button className="text-sm text-indigo-600 font-semibold hover:text-indigo-800">Reset</button>
+        <button onClick={handleResetFilters} className="text-sm text-indigo-600 font-semibold hover:text-indigo-800">Reset</button>
       </div>
 
-      <FilterSection title="Budget Range">
+      <FilterSection title="Budget Range (Max)">
         <div className="relative pt-2">
           <input
             type="range"
-            min="5000"
-            max="25000"
-            step="500"
+            min="2000"
+            max="50000"
+            step="1000"
             value={budget}
-            onChange={(e) => setBudget(e.target.value)}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer range-indigo focus:outline-none"
+            onChange={(e) => setBudget(Number(e.target.value))}
+            className="w-full h-2 bg-gray-200 rounded-lg cursor-pointer accent-indigo-600"
           />
           <div className="flex justify-between text-sm text-gray-500 mt-3 font-medium">
-            <span>₹5k</span>
-            <span className="text-indigo-600 bg-indigo-50 px-2 py-1 rounded">₹{Number(budget).toLocaleString()}</span>
-            <span>₹25k+</span>
+            <span>₹2k</span>
+            <span className="text-indigo-600 bg-indigo-50 px-2 py-1 rounded">
+              {budget >= 50000 ? '50k+' : `₹${budget.toLocaleString()}`}
+            </span>
+            <span>₹50k+</span>
           </div>
         </div>
       </FilterSection>
 
-      <FilterSection title="Available For">
-        <Checkbox label="Girls" />
-        <Checkbox label="Boys" />
-        <Checkbox label="Co-ed (Unisex)" />
-      </FilterSection>
-
-      <FilterSection title="Sharing Type">
-        <Checkbox label="Private Room" />
-        <Checkbox label="Double Sharing" />
-        <Checkbox label="Triple Sharing" />
+      <FilterSection title="Property Type">
+        <div className="space-y-3">
+          {['Flat', 'PG', 'Hostel'].map((type) => (
+            <label key={type} className="flex items-center text-gray-600 cursor-pointer hover:text-indigo-600 transition-colors">
+              <div className="relative flex items-center">
+                <input
+                  type="checkbox"
+                  checked={selectedType === type.toLowerCase()}
+                  onChange={() => handleTypeChange(type)}
+                  className="peer h-5 w-5 text-indigo-600 border-2 border-gray-300 rounded focus:ring-indigo-500 checked:bg-indigo-600 checked:border-indigo-600 transition-all"
+                />
+                <svg className="absolute w-3.5 h-3.5 text-white hidden peer-checked:block left-1 top-1 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
+              </div>
+              <span className="ml-3 text-sm font-medium">{type}</span>
+            </label>
+          ))}
+        </div>
       </FilterSection>
 
       <FilterSection title="Amenities">
-        <Checkbox label="Wi-Fi" />
-        <Checkbox label="Air Conditioning" />
-        <Checkbox label="Power Backup" />
-        <Checkbox label="Food Included" />
+        <div className="space-y-3">
+          {AMENITIES_LIST.slice(0, showAllAmenities ? AMENITIES_LIST.length : 5).map(amenity => (
+            <label key={amenity} className="flex items-center text-gray-600 cursor-pointer hover:text-indigo-600 transition-colors">
+              <div className="relative flex items-center">
+                <input
+                  type="checkbox"
+                  checked={selectedAmenities.includes(amenity)}
+                  onChange={() => handleAmenityChange(amenity)}
+                  className="peer h-5 w-5 text-indigo-600 border-2 border-gray-300 rounded focus:ring-indigo-500 checked:bg-indigo-600 checked:border-indigo-600 transition-all"
+                />
+                <svg className="absolute w-3.5 h-3.5 text-white hidden peer-checked:block left-1 top-1 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
+              </div>
+              <span className="ml-3 text-sm font-medium">{amenity.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</span>
+            </label>
+          ))}
+        </div>
+        <button
+          onClick={() => setShowAllAmenities(!showAllAmenities)}
+          className="mt-3 text-sm font-semibold text-indigo-600 hover:text-indigo-800 transition-colors flex items-center gap-1"
+        >
+          {showAllAmenities ? 'Show Less' : 'Show More...'}
+        </button>
       </FilterSection>
     </div>
   );
@@ -135,7 +208,6 @@ const ExplorePage = () => {
               Explore
               <span className="text-indigo-600 ml-2">Stays</span>
             </h1>
-            <p className="text-gray-500 mt-2">Found {properties.length} verified properties in Bangalore</p>
           </div>
 
           <div className="flex gap-3 w-full md:w-auto">
@@ -144,7 +216,9 @@ const ExplorePage = () => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder="Search by area, college..."
+                placeholder="Search by city, area, college..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 transition-all outline-none"
               />
             </div>
@@ -193,7 +267,17 @@ const ExplorePage = () => {
 
           {/* Main Content Area */}
           <div className="flex-grow">
-            {properties.length > 0 ? (
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-20">
+                <Loader className="w-10 h-10 text-indigo-600 animate-spin mb-4" />
+                <p className="text-gray-500 font-medium">Loading properties...</p>
+              </div>
+            ) : error ? (
+              <div className="flex flex-col items-center justify-center py-20 text-center">
+                <p className="text-red-500 font-bold mb-2">Oops!</p>
+                <p className="text-gray-500">{error}</p>
+              </div>
+            ) : properties.length > 0 ? (
               showMap ? (
                 // Placeholder for Map View
                 <div className="bg-white rounded-2xl h-[600px] flex flex-col items-center justify-center border border-gray-200 p-8 text-center">
@@ -213,7 +297,7 @@ const ExplorePage = () => {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {properties.map(prop => <PropertyCard key={prop.id} property={prop} />)}
+                  {properties.map(prop => <PropertyCard key={prop._id || prop.id} property={prop} />)}
                 </div>
               )
             ) : (
@@ -222,7 +306,7 @@ const ExplorePage = () => {
                 <img src="/images/no-results.svg" alt="No Data" className="w-64 h-64 mb-6 opacity-80" />
                 <h3 className="text-2xl font-bold text-gray-800">No Properties Found</h3>
                 <p className="text-gray-500 mt-2">Try adjusting your filters or search for a different area.</p>
-                <button onClick={() => setBudget(25000)} className="mt-6 text-indigo-600 font-semibold hover:underline">
+                <button onClick={handleResetFilters} className="mt-6 text-indigo-600 font-semibold hover:underline">
                   Clear Filters
                 </button>
               </div>

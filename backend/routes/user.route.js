@@ -11,7 +11,8 @@ import {
     getUserEnquiries,
     getFavouriteProperties,
     verifyUserRequest,
-    editUserDocument
+    editUserDocument,
+    toggleFavorite
 } from "../controllers/user.controller.js"
 
 const router = Router()
@@ -134,6 +135,17 @@ router.route("/tenant/enquiries").get(getUserEnquiries)
 router.route("/tenant/favourites").get(getFavouriteProperties)
 
 /**
+ * POST /api/users/favorites/:propertyId
+ * Toggle property as favorite
+ * 
+ * Headers:
+ *   Authorization: Bearer <accessToken>
+ * 
+ * Response: Updated favorites list
+ */
+router.route("/favorites/:propertyId").post(toggleFavorite)
+
+/**
  * POST /api/users/verify-request
  * Submit verification request with documents
  * 
@@ -151,7 +163,7 @@ router.route("/tenant/favourites").get(getFavouriteProperties)
  * Response: Updated user object with verification status
  */
 router.route("/verify-request").post(
-    upload.fields([{ name: "documents", maxCount: 2 }]),
+    upload.fields([{ name: "documents", maxCount: 5 }]),
     verifyUserRequest
 )
 

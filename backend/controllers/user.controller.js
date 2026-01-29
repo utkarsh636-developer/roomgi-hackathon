@@ -325,12 +325,13 @@ const getUserEnquiries = asyncHandler(async (req, res) => {
 const getFavouriteProperties = asyncHandler(async (req, res) => {
     const userId = req.user?._id
     const role = req.user?.role
-    if (role !== "tenant") {
-        throw new ApiError(403, "Unauthorized")
-    }
+    // Allow both tenants and owners to have favorites, or just check generic auth
+    // if (role !== "tenant") {
+    //     throw new ApiError(403, "Unauthorized")
+    // }
     const user = await User.findById(userId)
         .populate({
-            path: "favourites",
+            path: "favorites",
             options: { sort: { createdAt: -1 } }
         })
 
@@ -341,11 +342,42 @@ const getFavouriteProperties = asyncHandler(async (req, res) => {
     return res.status(200).json(
         new ApiResponse(
             200,
-            user.favourites || [],
+            user.favorites || [],
             "Favourite properties fetched successfully"
         )
     )
 })
+
+const toggleFavorite = asyncHandler(async (req, res) => {
+    const { propertyId } = req.params;
+    const userId = req.user?._id;
+
+    const user = await User.findById(userId);
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    // Check if propertyId exists in favorites using string comparison
+    const isFavorite = user.favorites.some(id => id.toString() === propertyId);
+
+    if (isFavorite) {
+        // Remove from favorites
+        user.favorites = user.favorites.filter(id => id.toString() !== propertyId);
+    } else {
+        // Add to favorites
+        user.favorites.push(propertyId);
+    }
+
+    await user.save({ validateBeforeSave: false });
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            user.favorites,
+            isFavorite ? "Removed from favorites" : "Added to favorites"
+        )
+    );
+});
 
 const verifyUserRequest = asyncHandler(async (req, res) => {
     const { documentTypes } = req.body
@@ -516,5 +548,6 @@ export {
     getUserEnquiries,
     getFavouriteProperties,
     verifyUserRequest,
-    editUserDocument
+    editUserDocument,
+    toggleFavorite
 }

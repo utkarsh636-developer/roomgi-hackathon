@@ -94,8 +94,9 @@ router.use(verifyJWT)
  * 
  * Response: Created property object
  */
+// Increase limit to allow controller to handle validation error gracefully
 router.route("/add").post(
-    upload.fields([{ name: "images", maxCount: 4 }]),
+    upload.array("images", 10),
     createProperty
 )
 
