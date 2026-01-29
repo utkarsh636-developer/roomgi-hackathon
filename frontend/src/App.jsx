@@ -14,7 +14,6 @@ import PropertyManagement from './components/PropertyManagement';
 import ReportsManagement from './components/ReportsManagement';
 import VerificationQueue from './components/VerificationQueue';
 import AdminAnalytics from './components/AdminAnalytics';
-import AdminLoginPage from './components/AdminLoginPage';
 import OwnerLanding from './components/OwnerLanding';
 import OwnerDashboard from './components/OwnerDashboard';
 import ProfilePage from './components/ProfilePage';
@@ -136,7 +135,7 @@ function App() {
         }
       />
 
-      <Route path="/admin/login" element={<AdminLoginPage />} />
+
 
       {/* Redirect /admin to /admin/dashboard */}
       <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />

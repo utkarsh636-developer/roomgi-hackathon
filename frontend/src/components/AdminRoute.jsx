@@ -6,7 +6,7 @@ const AdminRoute = ({ children }) => {
     const user = authService.getCurrentUser();
 
     if (!user) {
-        return <Navigate to="/admin/login" replace />;
+        return <Navigate to="/login" replace />;
     }
 
     if (user.role !== 'admin') {
