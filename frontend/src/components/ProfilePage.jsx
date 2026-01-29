@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { User, Mail, Phone as PhoneIcon, Camera, Save, ShieldCheck, CheckCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { User, Mail, Phone as PhoneIcon, Camera, Save, ShieldCheck, CheckCircle, AlertCircle, Clock } from 'lucide-react';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import authService from '../services/authService';
@@ -113,6 +114,79 @@ const ProfilePage = () => {
                                     </span>
                                 </div>
                             </div>
+
+                            {/* Verification Alerts */}
+                            {(() => {
+                                let status = user?.verification?.status;
+                                const rejectionReason = user?.verification?.rejectionReason;
+                                const hasDocs = user?.documents?.length > 0;
+
+                                // Treat 'pending' users with no documents as 'unverified' to fix legacy data issues
+                                if (status === 'pending' && !hasDocs) {
+                                    status = 'unverified';
+                                }
+
+                                if (status === 'rejected') {
+                                    return (
+                                        <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-8 flex items-start gap-4">
+                                            <AlertCircle className="text-red-600 shrink-0 mt-1" />
+                                            <div>
+                                                <h3 className="font-bold text-red-800">Identity Verification Rejected</h3>
+                                                <p className="text-sm text-red-700 mt-1">
+                                                    Your identity verification was rejected.
+                                                    <span className="block mt-1">Reason: {rejectionReason || "Documents invalid or unclear."}</span>
+                                                    <Link to="/verification" className="font-bold underline cursor-pointer mt-2 inline-block">Re-upload Identity Documents</Link>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    );
+                                }
+
+                                if (!status || status === 'unverified') {
+                                    return (
+                                        <div className="bg-orange-50 border border-orange-200 rounded-2xl p-4 mb-8 flex items-start gap-4">
+                                            <AlertCircle className="text-orange-600 shrink-0 mt-1" />
+                                            <div>
+                                                <h3 className="font-bold text-orange-800">Complete your verification</h3>
+                                                <p className="text-sm text-orange-700 mt-1">
+                                                    Please verify your identity to build trust.
+                                                    <Link to="/verification" className="font-bold underline cursor-pointer ml-1">Upload Identity Documents</Link>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    );
+                                }
+
+                                if (status === 'approved') {
+                                    return (
+                                        <div className="bg-green-50 border border-green-200 rounded-2xl p-4 mb-8 flex items-start gap-4">
+                                            <CheckCircle className="text-green-600 shrink-0 mt-1" />
+                                            <div>
+                                                <h3 className="font-bold text-green-800">Identity Verified</h3>
+                                                <p className="text-sm text-green-700 mt-1">
+                                                    Your identity has been verified. You can now use all platform features.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    );
+                                }
+
+                                if (status === 'pending') {
+                                    return (
+                                        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-8 flex items-start gap-4">
+                                            <Clock className="text-blue-600 shrink-0 mt-1" />
+                                            <div>
+                                                <h3 className="font-bold text-blue-800">Identity Verification Under Scrutiny</h3>
+                                                <p className="text-sm text-blue-700 mt-1">
+                                                    Your identity documents have been submitted and are currently under scrutiny. This usually takes 24-48 hours.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    );
+                                }
+
+                                return null;
+                            })()}
 
                             <h1 className="text-3xl font-bold text-gray-900 mb-1 flex items-center gap-3">
                                 {user.username}

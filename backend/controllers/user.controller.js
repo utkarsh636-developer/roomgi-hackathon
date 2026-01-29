@@ -90,7 +90,10 @@ const registerUser = asyncHandler(async (req, res) => {
         email,
         password,
         role,
-        phoneNumber
+        phoneNumber,
+        verification: {
+            status: "unverified"
+        }
     })
 
     const { accessToken, refreshToken } =

@@ -26,7 +26,7 @@ const VerificationPage = () => {
             try {
                 const currentUser = await authService.fetchCurrentUser();
                 if (currentUser?.data?.verification?.status === 'approved') {
-                    navigate('/owner-dashboard');
+                    navigate(currentUser.data.role === 'owner' ? '/owner-dashboard' : '/profile');
                 }
             } catch (e) {
                 console.error("Failed to check status", e);
@@ -70,7 +70,13 @@ const VerificationPage = () => {
 
             await authService.verifyRequest(data);
             alert('Verification request submitted successfully!');
-            navigate('/owner-dashboard');
+
+            // Fetch latest user data to determine redirect
+            const currentUser = await authService.getCurrentUser();
+            // Fallback to local storage if user state isn't updated instantly? 
+            // Better to rely on the role passing or refetch
+            const role = currentUser?.role || 'tenant';
+            navigate(role === 'owner' ? '/owner-dashboard' : '/profile');
         } catch (err) {
             console.error('Verification Error:', err);
             const errorMessage = err.response?.data?.message || err.message || 'Failed to submit verification request.';

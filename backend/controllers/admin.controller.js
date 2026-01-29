@@ -64,7 +64,7 @@ const toggleVerifyUser = asyncHandler(async (req, res) => {
         throw new ApiError(404, "User not found")
     }
 
-    if (status && !["pending", "approved", "rejected"].includes(status)) {
+    if (status && !["unverified", "pending", "approved", "rejected"].includes(status)) {
         throw new ApiError(400, "Invalid status")
     }
 
@@ -103,7 +103,7 @@ const toggleVerifyProperty = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Property not found")
     }
 
-    if (status && !["pending", "approved", "rejected"].includes(status)) {
+    if (status && !["unverified", "pending", "approved", "rejected"].includes(status)) {
         throw new ApiError(400, "Invalid status")
     }
 
