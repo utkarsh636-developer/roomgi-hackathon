@@ -1,12 +1,12 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import authService from './services/authService';
 import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
 import Landing from './components/Landing';
 import ExplorePage from './components/ExplorePage';
 import PropertyDetailsPage from './components/PropertyDetailsPage';
 import ProtectedRoute from './components/ProtectedRoute';
-<<<<<<< HEAD
 import AdminRoute from './components/AdminRoute';
 import NewAdminDashboard from './components/NewAdminDashboard';
 import UserManagement from './components/UserManagement';
@@ -14,8 +14,7 @@ import PropertyManagement from './components/PropertyManagement';
 import ReportsManagement from './components/ReportsManagement';
 import VerificationQueue from './components/VerificationQueue';
 import AdminAnalytics from './components/AdminAnalytics';
-=======
-import authService from './services/authService';
+import AdminLoginPage from './components/AdminLoginPage';
 import OwnerLanding from './components/OwnerLanding';
 import OwnerDashboard from './components/OwnerDashboard';
 import ProfilePage from './components/ProfilePage';
@@ -29,7 +28,6 @@ const HomeRoute = () => {
   }
   return <Landing />;
 };
->>>>>>> main
 
 function App() {
   return (
@@ -87,7 +85,7 @@ function App() {
           </ProtectedRoute>
         }
       />
-      
+
       {/* Admin Routes */}
       <Route
         path="/admin/dashboard"
@@ -137,9 +135,12 @@ function App() {
           </AdminRoute>
         }
       />
-      
+
+      <Route path="/admin/login" element={<AdminLoginPage />} />
+
       {/* Redirect /admin to /admin/dashboard */}
       <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+      <Route path="/admin-dashboard" element={<Navigate to="/admin/dashboard" replace />} />
     </Routes>
   );
 }

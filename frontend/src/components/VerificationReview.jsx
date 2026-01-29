@@ -15,7 +15,7 @@ const VerificationReview = () => {
         // Simulate API call
         setTimeout(() => {
             alert(`Request ${type === 'approve' ? 'Approved' : type === 'reject' ? 'Rejected' : 'Marked Partial'} Successfully!`);
-            navigate('/admin-dashboard');
+            navigate('/admin/dashboard');
         }, 1000);
     };
 
@@ -25,7 +25,7 @@ const VerificationReview = () => {
             {/* Header */}
             <div className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center shrink-0">
                 <div className="flex items-center gap-4">
-                    <Link to="/admin-dashboard" className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 transition-colors">
+                    <Link to="/admin/dashboard" className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 transition-colors">
                         <ChevronLeft size={24} />
                     </Link>
                     <div>

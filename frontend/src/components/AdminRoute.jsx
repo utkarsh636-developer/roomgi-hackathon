@@ -4,15 +4,15 @@ import authService from '../services/authService';
 
 const AdminRoute = ({ children }) => {
     const user = authService.getCurrentUser();
-    
+
     if (!user) {
-        return <Navigate to="/login" replace />;
+        return <Navigate to="/admin/login" replace />;
     }
-    
+
     if (user.role !== 'admin') {
         return <Navigate to="/" replace />;
     }
-    
+
     return children;
 };
 
