@@ -38,6 +38,7 @@ const AddPropertyPage = () => {
         securityDeposit: '',
         capacity: '',
         description: '',
+        preferences: '',
         amenities: []
     });
 
@@ -61,6 +62,7 @@ const AddPropertyPage = () => {
                         securityDeposit: property.securityDeposit,
                         capacity: property.capacity.total,
                         description: property.description,
+                        preferences: property.preferences || '',
                         amenities: property.amenities || []
                     });
 
@@ -132,6 +134,7 @@ const AddPropertyPage = () => {
             data.append('title', formData.title);
             data.append('type', formData.type);
             data.append('description', formData.description);
+            data.append('preferences', formData.preferences);
             data.append('rent', formData.rent);
             data.append('securityDeposit', formData.securityDeposit);
 
@@ -264,6 +267,17 @@ const AddPropertyPage = () => {
                                     rows="4"
                                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary outline-none transition-all resize-none"
                                     required
+                                />
+                            </div>
+                            <div className="mt-6">
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Preferences / House Rules</label>
+                                <textarea
+                                    name="preferences"
+                                    value={formData.preferences}
+                                    onChange={handleInputChange}
+                                    placeholder="e.g. No smoking inside, Vegetarian preferred..."
+                                    rows="3"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary outline-none transition-all resize-none"
                                 />
                             </div>
                         </section>

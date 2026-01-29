@@ -127,8 +127,8 @@ const PropertyDetailsPage = () => {
     const highlights = [
         { label: 'Type', value: property.type },
         { label: 'Capacity', value: `${property.capacity?.total || 'N/A'} Person(s)` },
-        { label: 'Preference', value: property.preferences || 'Any' },
-        { label: 'City', value: property.location?.city }
+        { label: 'City', value: property.location?.city },
+        { label: 'State', value: property.location?.state }
     ];
 
     return (
@@ -268,6 +268,16 @@ const PropertyDetailsPage = () => {
                                     <p className="text-gray-500 italic">No specific amenities listed.</p>
                                 )}
                             </div>
+
+                            {/* Preferences / House Rules */}
+                            {property.preferences && (
+                                <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+                                    <h3 className="text-xl font-bold text-gray-900 mb-4">House Rules & Preferences</h3>
+                                    <p className="text-gray-600 leading-relaxed whitespace-pre-line">
+                                        {property.preferences}
+                                    </p>
+                                </div>
+                            )}
 
                             {/* Reviews Section */}
                             <ReviewSection propertyId={id} />
