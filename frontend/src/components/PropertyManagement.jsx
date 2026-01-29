@@ -56,28 +56,33 @@ const PropertyManagement = () => {
         <AdminLayout>
             <div className="space-y-6">
                 {/* Header */}
-                <div>
-                    <h2 className="text-2xl font-bold text-white">Property Management</h2>
-                    <p className="text-slate-400 text-sm mt-1">Manage and moderate property listings</p>
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h2 className="text-2xl font-bold text-gray-900">Property Management</h2>
+                        <p className="text-gray-500 text-sm mt-1">Manage and moderate property listings</p>
+                    </div>
+                    <div className="px-4 py-2 bg-white border border-gray-100 rounded-xl text-gray-500 text-sm shadow-sm">
+                        Total Properties: <span className="font-bold text-gray-900">{properties.length}</span>
+                    </div>
                 </div>
 
                 {/* Filters */}
-                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4">
+                <div className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
                     <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                         <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                             <input
                                 type="text"
                                 placeholder="Search properties..."
                                 value={filters.search}
                                 onChange={(e) => handleFilterChange('search', e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 bg-black/30 border border-white/10 rounded-lg text-white placeholder-brand-bg/50 focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                                className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
                             />
                         </div>
                         <select
                             value={filters.type}
                             onChange={(e) => handleFilterChange('type', e.target.value)}
-                            className="px-4 py-2 bg-black/30 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                            className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
                         >
                             <option value="">All Types</option>
                             <option value="flat">Flat</option>
@@ -89,12 +94,12 @@ const PropertyManagement = () => {
                             placeholder="City"
                             value={filters.city}
                             onChange={(e) => handleFilterChange('city', e.target.value)}
-                            className="px-4 py-2 bg-black/30 border border-white/10 rounded-lg text-white placeholder-brand-bg/50 focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                            className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
                         />
                         <select
                             value={filters.verificationStatus}
                             onChange={(e) => handleFilterChange('verificationStatus', e.target.value)}
-                            className="px-4 py-2 bg-black/30 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                            className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
                         >
                             <option value="">All Verification</option>
                             <option value="pending">Pending</option>
@@ -104,7 +109,7 @@ const PropertyManagement = () => {
                         <select
                             value={filters.isBlocked}
                             onChange={(e) => handleFilterChange('isBlocked', e.target.value)}
-                            className="px-4 py-2 bg-black/30 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                            className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
                         >
                             <option value="">All Status</option>
                             <option value="false">Active</option>
@@ -121,9 +126,9 @@ const PropertyManagement = () => {
                         </div>
                     ) : properties.length > 0 ? (
                         properties.map((property) => (
-                            <div key={property._id} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden hover:border-brand-primary/30 transition-all duration-300">
+                            <div key={property._id} className="bg-white border border-gray-100 rounded-xl overflow-hidden hover:border-brand-primary/30 hover:shadow-md transition-all duration-300">
                                 {/* Property Image */}
-                                <div className="relative h-48 bg-gradient-to-br from-brand-secondary/20 to-brand-primary/20">
+                                <div className="relative h-48 bg-gray-100">
                                     {property.images?.[0]?.url ? (
                                         <img
                                             src={property.images[0].url}
@@ -132,7 +137,7 @@ const PropertyManagement = () => {
                                         />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center">
-                                            <MapPin size={48} className="text-slate-600" />
+                                            <MapPin size={48} className="text-gray-300" />
                                         </div>
                                     )}
                                     <div className="absolute top-3 right-3">
@@ -144,8 +149,8 @@ const PropertyManagement = () => {
                                 <div className="p-4">
                                     <div className="flex items-start justify-between mb-3">
                                         <div>
-                                            <h3 className="font-bold text-white capitalize">{property.type}</h3>
-                                            <p className="text-sm text-slate-400 flex items-center gap-1 mt-1">
+                                            <h3 className="font-bold text-gray-900 capitalize">{property.type}</h3>
+                                            <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
                                                 <MapPin size={14} />
                                                 {property.location?.city}
                                             </p>
@@ -154,14 +159,14 @@ const PropertyManagement = () => {
                                     </div>
 
                                     <div className="flex items-center justify-between text-sm mb-3">
-                                        <span className="text-slate-400">Rent</span>
-                                        <span className="font-bold text-white">₹{property.rent?.toLocaleString()}/mo</span>
+                                        <span className="text-gray-500">Rent</span>
+                                        <span className="font-bold text-gray-900">₹{property.rent?.toLocaleString()}/mo</span>
                                     </div>
 
                                     <div className="flex items-center gap-2 mb-3 text-xs">
-                                        <div className="flex items-center gap-1 text-slate-400">
+                                        <div className="flex items-center gap-1 text-gray-500">
                                             <span>Owner:</span>
-                                            <span className="text-white">{property.owner?.username}</span>
+                                            <span className="text-gray-900 font-medium">{property.owner?.username}</span>
                                         </div>
                                     </div>
 
@@ -169,8 +174,8 @@ const PropertyManagement = () => {
                                         <button
                                             onClick={() => handleBlockToggle(property._id)}
                                             className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${property.isBlocked
-                                                    ? 'bg-green-600/10 text-green-400 hover:bg-green-600/20 border border-green-600/20'
-                                                    : 'bg-red-600/10 text-red-400 hover:bg-red-600/20 border border-red-600/20'
+                                                ? 'bg-green-100 text-green-600 hover:bg-green-200 border border-green-200'
+                                                : 'bg-red-100 text-red-600 hover:bg-red-200 border border-red-200'
                                                 }`}
                                         >
                                             {property.isBlocked ? <><CheckCircle size={16} className="inline mr-1" /> Unblock</> : <><Ban size={16} className="inline mr-1" /> Block</>}
@@ -180,7 +185,7 @@ const PropertyManagement = () => {
                             </div>
                         ))
                     ) : (
-                        <div className="col-span-full text-center py-12 text-slate-400">
+                        <div className="col-span-full text-center py-12 text-gray-500">
                             No properties found
                         </div>
                     )}
@@ -188,25 +193,25 @@ const PropertyManagement = () => {
 
                 {/* Pagination */}
                 {pagination.totalPages > 1 && (
-                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl px-6 py-4 flex items-center justify-between">
-                        <p className="text-sm text-slate-400">
+                    <div className="bg-white border border-gray-100 rounded-xl px-6 py-4 flex items-center justify-between shadow-sm">
+                        <p className="text-sm text-gray-500">
                             Showing {((pagination.currentPage - 1) * 20) + 1} to {Math.min(pagination.currentPage * 20, pagination.totalCount)} of {pagination.totalCount} properties
                         </p>
                         <div className="flex items-center gap-2">
                             <button
                                 onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage - 1 }))}
                                 disabled={pagination.currentPage === 1}
-                                className="p-2 rounded-lg bg-white/5 text-slate-300 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                className="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
                                 <ChevronLeft size={20} />
                             </button>
-                            <span className="text-sm text-slate-300">
+                            <span className="text-sm text-gray-600">
                                 Page {pagination.currentPage} of {pagination.totalPages}
                             </span>
                             <button
                                 onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage + 1 }))}
                                 disabled={pagination.currentPage === pagination.totalPages}
-                                className="p-2 rounded-lg bg-white/5 text-slate-300 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                className="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
                                 <ChevronRight size={20} />
                             </button>

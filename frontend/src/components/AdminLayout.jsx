@@ -27,16 +27,16 @@ const AdminLayout = ({ children }) => {
     ];
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-brand-dark via-[#2c301b] to-black font-sans flex">
+        <div className="min-h-screen bg-brand-bg font-montserrat flex">
             {/* Sidebar */}
-            <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-brand-dark/95 backdrop-blur-xl border-r border-white/10 transform transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}>
+            <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 shadow-sm transform transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}>
                 <div className="flex flex-col h-full">
                     {/* Logo */}
-                    <div className="p-6 border-b border-white/10">
+                    <div className="p-6 border-b border-gray-100">
                         <h2 className="text-2xl font-bold text-brand-primary">
                             RoomGi Admin
                         </h2>
-                        <p className="text-xs text-slate-400 mt-1">Management Portal</p>
+                        <p className="text-xs text-gray-500 mt-1">Management Portal</p>
                     </div>
 
                     {/* Navigation */}
@@ -49,8 +49,8 @@ const AdminLayout = ({ children }) => {
                                     key={item.path}
                                     to={item.path}
                                     className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200 ${isActive
-                                        ? 'bg-brand-primary text-white shadow-lg shadow-brand-dark/30'
-                                        : 'text-brand-bg/60 hover:text-white hover:bg-white/5'
+                                        ? 'bg-brand-primary text-white shadow-lg shadow-brand-dark/20'
+                                        : 'text-gray-600 hover:text-brand-primary hover:bg-brand-primary/5'
                                         }`}
                                 >
                                     <Icon size={20} />
@@ -61,19 +61,19 @@ const AdminLayout = ({ children }) => {
                     </nav>
 
                     {/* User Profile & Logout */}
-                    <div className="p-4 border-t border-white/10">
-                        <div className="flex items-center gap-3 mb-3 p-3 rounded-xl bg-white/5">
+                    <div className="p-4 border-t border-gray-200">
+                        <div className="flex items-center gap-3 mb-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
                             <div className="w-10 h-10 rounded-full bg-brand-primary flex items-center justify-center text-white font-bold">
                                 {user?.username?.[0]?.toUpperCase() || 'A'}
                             </div>
                             <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-white truncate">{user?.username || 'Admin'}</p>
-                                <p className="text-xs text-slate-400 truncate">{user?.email || ''}</p>
+                                <p className="text-sm font-medium text-gray-900 truncate">{user?.username || 'Admin'}</p>
+                                <p className="text-xs text-gray-500 truncate">{user?.email || ''}</p>
                             </div>
                         </div>
                         <button
                             onClick={handleLogout}
-                            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-red-600/10 text-red-400 hover:bg-red-600/20 border border-red-600/20 transition-all duration-200 font-medium"
+                            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 border border-red-100 transition-all duration-200 font-medium"
                         >
                             <LogOut size={18} />
                             <span>Logout</span>
@@ -85,15 +85,15 @@ const AdminLayout = ({ children }) => {
             {/* Main Content */}
             <div className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'lg:ml-64' : ''}`}>
                 {/* Top Bar */}
-                <header className="sticky top-0 z-40 bg-brand-dark/80 backdrop-blur-xl border-b border-white/10">
+                <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-gray-200">
                     <div className="flex items-center justify-between px-6 py-4">
                         <button
                             onClick={() => setSidebarOpen(!sidebarOpen)}
-                            className="lg:hidden p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/50 transition-colors"
+                            className="lg:hidden p-2 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors"
                         >
                             {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
                         </button>
-                        <h1 className="text-xl font-bold text-white">
+                        <h1 className="text-xl font-bold text-gray-900">
                             {navItems.find(item => item.path === location.pathname)?.label || 'Admin Panel'}
                         </h1>
                         <div className="w-10" /> {/* Spacer for alignment */}

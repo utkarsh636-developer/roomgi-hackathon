@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Eye, Ban, CheckCircle, XCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Filter, Eye, Ban, CheckCircle, XCircle, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import StatusBadge from './admin/StatusBadge';
 import adminService from '../services/adminService';
@@ -57,28 +57,31 @@ const UserManagement = () => {
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                        <h2 className="text-2xl font-bold text-white">User Management</h2>
-                        <p className="text-slate-400 text-sm mt-1">Manage and moderate platform users</p>
+                        <h2 className="text-2xl font-bold text-gray-900">User Management</h2>
+                        <p className="text-gray-500 text-sm mt-1">Manage and moderate platform users</p>
+                    </div>
+                    <div className="px-4 py-2 bg-white border border-gray-100 rounded-xl text-gray-500 text-sm shadow-sm">
+                        Total Users: <span className="font-bold text-gray-900">{users.length}</span>
                     </div>
                 </div>
 
                 {/* Filters */}
-                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4">
+                <div className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                             <input
                                 type="text"
                                 placeholder="Search users..."
                                 value={filters.search}
                                 onChange={(e) => handleFilterChange('search', e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 bg-black/30 border border-white/10 rounded-lg text-white placeholder-brand-bg/50 focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                                className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
                             />
                         </div>
                         <select
                             value={filters.role}
                             onChange={(e) => handleFilterChange('role', e.target.value)}
-                            className="px-4 py-2 bg-black/30 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                            className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
                         >
                             <option value="">All Roles</option>
                             <option value="tenant">Tenant</option>
@@ -88,7 +91,7 @@ const UserManagement = () => {
                         <select
                             value={filters.verificationStatus}
                             onChange={(e) => handleFilterChange('verificationStatus', e.target.value)}
-                            className="px-4 py-2 bg-black/30 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                            className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
                         >
                             <option value="">All Verification Status</option>
                             <option value="pending">Pending</option>
@@ -98,7 +101,7 @@ const UserManagement = () => {
                         <select
                             value={filters.isBlocked}
                             onChange={(e) => handleFilterChange('isBlocked', e.target.value)}
-                            className="px-4 py-2 bg-black/30 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                            className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
                         >
                             <option value="">All Status</option>
                             <option value="false">Active</option>
@@ -108,20 +111,20 @@ const UserManagement = () => {
                 </div>
 
                 {/* Users Table */}
-                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden">
+                <div className="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm">
                     <div className="overflow-x-auto">
                         <table className="w-full">
-                            <thead className="bg-brand-dark border-b border-white/10">
+                            <thead className="bg-gray-50 border-b border-gray-100">
                                 <tr>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">User</th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">Role</th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">Verification</th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">Status</th>
-                                    <th className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">Joined</th>
-                                    <th className="px-6 py-4 text-right text-xs font-bold text-slate-300 uppercase tracking-wider">Actions</th>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">User</th>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Role</th>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Verification</th>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Joined</th>
+                                    <th className="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-white/10">
+                            <tbody className="divide-y divide-gray-100">
                                 {loading ? (
                                     <tr>
                                         <td colSpan="6" className="px-6 py-12 text-center">
@@ -132,15 +135,15 @@ const UserManagement = () => {
                                     </tr>
                                 ) : users.length > 0 ? (
                                     users.map((user) => (
-                                        <tr key={user._id} className="hover:bg-white/5 transition-colors">
+                                        <tr key={user._id} className="hover:bg-gray-50 transition-colors">
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-10 h-10 rounded-full bg-brand-primary flex items-center justify-center text-white font-bold">
                                                         {user.username?.[0]?.toUpperCase()}
                                                     </div>
                                                     <div>
-                                                        <p className="font-medium text-white">{user.username}</p>
-                                                        <p className="text-xs text-slate-400">{user.email}</p>
+                                                        <p className="font-medium text-gray-900">{user.username}</p>
+                                                        <p className="text-xs text-gray-500">{user.email}</p>
                                                     </div>
                                                 </div>
                                             </td>
@@ -155,7 +158,7 @@ const UserManagement = () => {
                                             <td className="px-6 py-4">
                                                 <StatusBadge status={user.isBlocked} type="block" />
                                             </td>
-                                            <td className="px-6 py-4 text-sm text-slate-400">
+                                            <td className="px-6 py-4 text-sm text-gray-500">
                                                 {new Date(user.createdAt).toLocaleDateString()}
                                             </td>
                                             <td className="px-6 py-4">
@@ -163,8 +166,8 @@ const UserManagement = () => {
                                                     <button
                                                         onClick={() => handleBlockToggle(user._id)}
                                                         className={`p-2 rounded-lg transition-colors ${user.isBlocked
-                                                                ? 'bg-green-600/10 text-green-400 hover:bg-green-600/20 border border-green-600/20'
-                                                                : 'bg-red-600/10 text-red-400 hover:bg-red-600/20 border border-red-600/20'
+                                                            ? 'bg-green-100 text-green-600 hover:bg-green-200 border border-green-200'
+                                                            : 'bg-red-100 text-red-600 hover:bg-red-200 border border-red-200'
                                                             }`}
                                                         title={user.isBlocked ? 'Unblock User' : 'Block User'}
                                                     >
@@ -176,7 +179,7 @@ const UserManagement = () => {
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan="6" className="px-6 py-12 text-center text-slate-400">
+                                        <td colSpan="6" className="px-6 py-12 text-center text-gray-500">
                                             No users found
                                         </td>
                                     </tr>
@@ -187,25 +190,25 @@ const UserManagement = () => {
 
                     {/* Pagination */}
                     {pagination.totalPages > 1 && (
-                        <div className="px-6 py-4 border-t border-white/10 flex items-center justify-between">
-                            <p className="text-sm text-slate-400">
+                        <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
+                            <p className="text-sm text-gray-500">
                                 Showing {((pagination.currentPage - 1) * 20) + 1} to {Math.min(pagination.currentPage * 20, pagination.totalCount)} of {pagination.totalCount} users
                             </p>
                             <div className="flex items-center gap-2">
                                 <button
                                     onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage - 1 }))}
                                     disabled={pagination.currentPage === 1}
-                                    className="p-2 rounded-lg bg-white/5 text-slate-300 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                    className="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                 >
                                     <ChevronLeft size={20} />
                                 </button>
-                                <span className="text-sm text-slate-300">
+                                <span className="text-sm text-gray-600">
                                     Page {pagination.currentPage} of {pagination.totalPages}
                                 </span>
                                 <button
                                     onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage + 1 }))}
                                     disabled={pagination.currentPage === pagination.totalPages}
-                                    className="p-2 rounded-lg bg-white/5 text-slate-300 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                    className="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                 >
                                     <ChevronRight size={20} />
                                 </button>

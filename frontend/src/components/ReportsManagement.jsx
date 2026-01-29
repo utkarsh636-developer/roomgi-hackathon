@@ -48,19 +48,19 @@ const ReportsManagement = () => {
             <div className="space-y-6">
                 {/* Header */}
                 <div>
-                    <h2 className="text-2xl font-bold text-white">Reports Management</h2>
-                    <p className="text-slate-400 text-sm mt-1">Review and manage user and property reports</p>
+                    <h2 className="text-2xl font-bold text-gray-900">Reports Management</h2>
+                    <p className="text-gray-500 text-sm mt-1">Review and manage user and property reports</p>
                 </div>
 
                 {/* Tabs and Filters */}
-                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4">
+                <div className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
                     <div className="flex flex-col md:flex-row justify-between gap-4">
                         <div className="flex gap-2">
                             <button
                                 onClick={() => setActiveTab('all')}
                                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${activeTab === 'all'
-                                        ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white'
-                                        : 'bg-white/5 text-brand-bg/60 hover:bg-white/10'
+                                    ? 'bg-brand-primary text-white shadow-md'
+                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                     }`}
                             >
                                 All Reports
@@ -68,8 +68,8 @@ const ReportsManagement = () => {
                             <button
                                 onClick={() => setActiveTab('user')}
                                 className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${activeTab === 'user'
-                                        ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white'
-                                        : 'bg-white/5 text-brand-bg/60 hover:bg-white/10'
+                                    ? 'bg-brand-primary text-white shadow-md'
+                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                     }`}
                             >
                                 <User size={16} /> User Reports
@@ -77,8 +77,8 @@ const ReportsManagement = () => {
                             <button
                                 onClick={() => setActiveTab('property')}
                                 className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${activeTab === 'property'
-                                        ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white'
-                                        : 'bg-white/5 text-brand-bg/60 hover:bg-white/10'
+                                    ? 'bg-brand-primary text-white shadow-md'
+                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                     }`}
                             >
                                 <Building2 size={16} /> Property Reports
@@ -87,7 +87,7 @@ const ReportsManagement = () => {
                         <select
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value)}
-                            className="px-4 py-2 bg-black/30 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                            className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
                         >
                             <option value="">All Status</option>
                             <option value="pending">Pending</option>
@@ -105,7 +105,7 @@ const ReportsManagement = () => {
                         </div>
                     ) : reports.length > 0 ? (
                         reports.map((report) => (
-                            <div key={report._id} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:border-brand-primary/30 transition-all">
+                            <div key={report._id} className="bg-white border border-gray-100 rounded-xl p-6 hover:border-brand-primary/30 transition-all shadow-sm">
                                 <div className="flex items-start justify-between gap-4">
                                     <div className="flex-1">
                                         {/* Report Header */}
@@ -122,43 +122,43 @@ const ReportsManagement = () => {
                                                     <span className="px-2 py-0.5 bg-brand-primary/10 text-brand-primary text-xs font-bold rounded border border-brand-primary/20">
                                                         {report.targetModel}
                                                     </span>
-                                                    <span className="text-slate-500">•</span>
-                                                    <span className="text-sm font-medium text-white">{report.reason}</span>
+                                                    <span className="text-gray-400">•</span>
+                                                    <span className="text-sm font-medium text-gray-900">{report.reason}</span>
                                                 </div>
-                                                <p className="text-xs text-slate-400 mt-1">
+                                                <p className="text-xs text-gray-500 mt-1">
                                                     Reported by: {report.reporter?.username || 'Unknown'} • {new Date(report.createdAt).toLocaleDateString()}
                                                 </p>
                                             </div>
                                         </div>
 
                                         {/* Report Message */}
-                                        <p className="text-slate-300 mb-3">{report.message}</p>
+                                        <p className="text-gray-700 mb-3">{report.message}</p>
 
                                         {/* Target Info */}
-                                        <div className="bg-white/5 rounded-lg p-3 mb-3">
-                                            <p className="text-xs text-slate-400 mb-1">Reported {report.targetModel}:</p>
+                                        <div className="bg-gray-50 border border-gray-100 rounded-lg p-3 mb-3">
+                                            <p className="text-xs text-gray-500 mb-1">Reported {report.targetModel}:</p>
                                             {report.targetModel === 'User' && report.targetUser ? (
                                                 <div className="flex items-center gap-2">
                                                     <div className="w-8 h-8 rounded-full bg-brand-primary flex items-center justify-center text-white text-sm font-bold">
                                                         {report.targetUser.username?.[0]?.toUpperCase()}
                                                     </div>
                                                     <div>
-                                                        <p className="text-sm font-medium text-white">{report.targetUser.username}</p>
-                                                        <p className="text-xs text-slate-400">{report.targetUser.email}</p>
+                                                        <p className="text-sm font-medium text-gray-900">{report.targetUser.username}</p>
+                                                        <p className="text-xs text-gray-500">{report.targetUser.email}</p>
                                                     </div>
                                                 </div>
                                             ) : report.targetModel === 'Property' && report.targetProperty ? (
                                                 <div className="flex items-center gap-2">
-                                                    <div className="w-8 h-8 rounded-lg bg-brand-primary flex items-center justify-center">
-                                                        <Building2 size={16} className="text-white" />
+                                                    <div className="w-8 h-8 rounded-lg bg-gray-200 flex items-center justify-center text-gray-500">
+                                                        <Building2 size={16} />
                                                     </div>
                                                     <div>
-                                                        <p className="text-sm font-medium text-white capitalize">{report.targetProperty.type}</p>
-                                                        <p className="text-xs text-slate-400">{report.targetProperty.location?.city}</p>
+                                                        <p className="text-sm font-medium text-gray-900 capitalize">{report.targetProperty.type}</p>
+                                                        <p className="text-xs text-gray-500">{report.targetProperty.location?.city}</p>
                                                     </div>
                                                 </div>
                                             ) : (
-                                                <p className="text-sm text-slate-400">Target not found</p>
+                                                <p className="text-sm text-gray-500">Target not found</p>
                                             )}
                                         </div>
 
@@ -171,13 +171,13 @@ const ReportsManagement = () => {
                                         <div className="flex flex-col gap-2">
                                             <button
                                                 onClick={() => handleStatusUpdate(report._id, 'resolved')}
-                                                className="px-4 py-2 bg-green-600/10 text-green-400 hover:bg-green-600/20 border border-green-600/20 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+                                                className="px-4 py-2 bg-green-50 text-green-600 hover:bg-green-100 border border-green-200 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
                                             >
                                                 <CheckCircle size={16} /> Resolve
                                             </button>
                                             <button
                                                 onClick={() => handleStatusUpdate(report._id, 'dismissed')}
-                                                className="px-4 py-2 bg-slate-600/10 text-slate-400 hover:bg-slate-600/20 border border-slate-600/20 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+                                                className="px-4 py-2 bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-200 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
                                             >
                                                 <XCircle size={16} /> Dismiss
                                             </button>
@@ -187,8 +187,8 @@ const ReportsManagement = () => {
                             </div>
                         ))
                     ) : (
-                        <div className="text-center py-12 text-slate-400">
-                            <AlertTriangle size={48} className="mx-auto mb-3 opacity-50" />
+                        <div className="text-center py-12 text-gray-500">
+                            <AlertTriangle size={48} className="mx-auto mb-3 opacity-30" />
                             <p>No reports found</p>
                         </div>
                     )}
@@ -196,25 +196,25 @@ const ReportsManagement = () => {
 
                 {/* Pagination */}
                 {pagination.totalPages > 1 && (
-                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl px-6 py-4 flex items-center justify-between">
-                        <p className="text-sm text-slate-400">
+                    <div className="bg-white border border-gray-100 rounded-xl px-6 py-4 flex items-center justify-between shadow-sm">
+                        <p className="text-sm text-gray-500">
                             Showing {((pagination.currentPage - 1) * 20) + 1} to {Math.min(pagination.currentPage * 20, pagination.totalCount)} of {pagination.totalCount} reports
                         </p>
                         <div className="flex items-center gap-2">
                             <button
                                 onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage - 1 }))}
                                 disabled={pagination.currentPage === 1}
-                                className="p-2 rounded-lg bg-white/5 text-slate-300 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                className="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
                                 <ChevronLeft size={20} />
                             </button>
-                            <span className="text-sm text-slate-300">
+                            <span className="text-sm text-gray-600">
                                 Page {pagination.currentPage} of {pagination.totalPages}
                             </span>
                             <button
                                 onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage + 1 }))}
                                 disabled={pagination.currentPage === pagination.totalPages}
-                                className="p-2 rounded-lg bg-white/5 text-slate-300 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                className="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
                                 <ChevronRight size={20} />
                             </button>

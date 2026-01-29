@@ -47,7 +47,7 @@ const NewAdminDashboard = () => {
                 <div className="flex items-center justify-center min-h-[60vh]">
                     <div className="text-center">
                         <div className="w-16 h-16 border-4 border-brand-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                        <p className="text-brand-bg/60">Loading dashboard...</p>
+                        <p className="text-gray-500">Loading dashboard...</p>
                     </div>
                 </div>
             </AdminLayout>
@@ -60,7 +60,7 @@ const NewAdminDashboard = () => {
                 {/* Welcome Section */}
                 <div className="bg-gradient-to-r from-brand-primary to-brand-secondary rounded-2xl p-6 shadow-xl">
                     <h2 className="text-2xl font-bold text-white mb-2">Welcome back, Admin! 👋</h2>
-                    <p className="text-brand-bg/90">Here's what's happening with your platform today.</p>
+                    <p className="text-brand-cream/90">Here's what's happening with your platform today.</p>
                 </div>
 
                 {/* Stats Grid */}
@@ -110,16 +110,16 @@ const NewAdminDashboard = () => {
                 {/* Pending Verifications Section */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* Pending User Verifications */}
-                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden">
-                        <div className="p-6 border-b border-white/10">
+                    <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
+                        <div className="p-6 border-b border-gray-100">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                                    <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
                                         <CheckCircle className="text-brand-primary" size={20} />
                                         Pending User Verifications
                                     </h3>
-                                    <p className="text-sm text-brand-bg/60 mt-1">
-                                        {stats?.pendingUserVerifications || 0} users awaiting review
+                                    <p className="text-sm text-gray-500 mt-1">
+                                        {stats?.pendingUserVerifications || 0} users documents not submitted
                                     </p>
                                 </div>
                                 <Link
@@ -130,18 +130,18 @@ const NewAdminDashboard = () => {
                                 </Link>
                             </div>
                         </div>
-                        <div className="divide-y divide-white/10">
+                        <div className="divide-y divide-gray-100">
                             {pendingUsers.length > 0 ? (
                                 pendingUsers.map((user) => (
-                                    <div key={user._id} className="p-4 hover:bg-white/5 transition-colors">
+                                    <div key={user._id} className="p-4 hover:bg-gray-50 transition-colors">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold">
                                                     {user.username?.[0]?.toUpperCase()}
                                                 </div>
                                                 <div>
-                                                    <p className="font-medium text-white">{user.username}</p>
-                                                    <p className="text-xs text-slate-400">{user.email}</p>
+                                                    <p className="font-medium text-gray-900">{user.username}</p>
+                                                    <p className="text-xs text-gray-500">{user.email}</p>
                                                 </div>
                                             </div>
                                             <Link
@@ -163,16 +163,16 @@ const NewAdminDashboard = () => {
                     </div>
 
                     {/* Pending Property Verifications */}
-                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden">
-                        <div className="p-6 border-b border-white/10">
+                    <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
+                        <div className="p-6 border-b border-gray-100">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                                    <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
                                         <Building2 className="text-purple-400" size={20} />
                                         Pending Property Verifications
                                     </h3>
-                                    <p className="text-sm text-brand-bg/60 mt-1">
-                                        {stats?.pendingPropertyVerifications || 0} properties awaiting review
+                                    <p className="text-sm text-gray-500 mt-1">
+                                        {stats?.pendingPropertyVerifications || 0} property documents not submitted
                                     </p>
                                 </div>
                                 <Link
@@ -183,18 +183,18 @@ const NewAdminDashboard = () => {
                                 </Link>
                             </div>
                         </div>
-                        <div className="divide-y divide-white/10">
+                        <div className="divide-y divide-gray-100">
                             {pendingProperties.length > 0 ? (
                                 pendingProperties.map((property) => (
-                                    <div key={property._id} className="p-4 hover:bg-slate-700/30 transition-colors">
+                                    <div key={property._id} className="p-4 hover:bg-gray-50 transition-colors">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
                                                     <Building2 size={20} className="text-white" />
                                                 </div>
                                                 <div>
-                                                    <p className="font-medium text-white capitalize">{property.type}</p>
-                                                    <p className="text-xs text-slate-400">{property.location?.city}</p>
+                                                    <p className="font-medium text-gray-900 capitalize">{property.type}</p>
+                                                    <p className="text-xs text-gray-500">{property.location?.city}</p>
                                                 </div>
                                             </div>
                                             <Link
@@ -217,15 +217,15 @@ const NewAdminDashboard = () => {
                 </div>
 
                 {/* Recent Reports */}
-                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden">
-                    <div className="p-6 border-b border-white/10">
+                <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
+                    <div className="p-6 border-b border-gray-100">
                         <div className="flex items-center justify-between">
                             <div>
-                                <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                                <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
                                     <AlertTriangle className="text-orange-400" size={20} />
                                     Recent Reports
                                 </h3>
-                                <p className="text-sm text-slate-400 mt-1">Latest reports requiring attention</p>
+                                <p className="text-sm text-gray-500 mt-1">Latest reports requiring attention</p>
                             </div>
                             <Link
                                 to="/admin/reports"
@@ -235,23 +235,23 @@ const NewAdminDashboard = () => {
                             </Link>
                         </div>
                     </div>
-                    <div className="divide-y divide-white/10">
+                    <div className="divide-y divide-gray-100">
                         {recentReports.length > 0 ? (
                             recentReports.map((report) => (
-                                <div key={report._id} className="p-4 hover:bg-slate-700/30 transition-colors">
+                                <div key={report._id} className="p-4 hover:bg-gray-50 transition-colors">
                                     <div className="flex items-start justify-between gap-4">
                                         <div className="flex-1">
                                             <div className="flex items-center gap-2 mb-2">
                                                 <span className="px-2 py-0.5 bg-orange-500/10 text-orange-400 text-xs font-bold rounded border border-orange-500/20">
                                                     {report.targetModel}
                                                 </span>
-                                                <span className="text-slate-500">•</span>
-                                                <span className="text-xs text-slate-400">
+                                                <span className="text-gray-300">•</span>
+                                                <span className="text-xs text-gray-400">
                                                     {report.reason}
                                                 </span>
                                             </div>
-                                            <p className="text-sm text-slate-300 line-clamp-2">{report.message}</p>
-                                            <p className="text-xs text-slate-500 mt-2">
+                                            <p className="text-sm text-gray-700 line-clamp-2">{report.message}</p>
+                                            <p className="text-xs text-gray-500 mt-2">
                                                 Reported by: {report.reporter?.username || 'Unknown'}
                                             </p>
                                         </div>
@@ -277,27 +277,27 @@ const NewAdminDashboard = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Link
                         to="/admin/users"
-                        className="p-6 bg-gradient-to-br from-brand-primary/20 to-brand-primary/5 border border-brand-primary/30 rounded-xl hover:border-brand-primary/50 transition-all duration-300 group"
+                        className="p-6 bg-white border border-gray-100 rounded-xl hover:border-brand-primary/50 hover:shadow-md transition-all duration-300 group"
                     >
                         <Users className="text-brand-primary mb-3 group-hover:scale-110 transition-transform" size={32} />
-                        <h4 className="text-white font-bold mb-1">Manage Users</h4>
-                        <p className="text-brand-bg/60 text-sm">View, block, and verify users</p>
+                        <h4 className="text-gray-900 font-bold mb-1">Manage Users</h4>
+                        <p className="text-gray-500 text-sm">View, block, and verify users</p>
                     </Link>
                     <Link
                         to="/admin/properties"
-                        className="p-6 bg-gradient-to-br from-brand-secondary/20 to-brand-secondary/5 border border-brand-secondary/30 rounded-xl hover:border-brand-secondary/50 transition-all duration-300 group"
+                        className="p-6 bg-white border border-gray-100 rounded-xl hover:border-brand-secondary/50 hover:shadow-md transition-all duration-300 group"
                     >
                         <Building2 className="text-brand-secondary mb-3 group-hover:scale-110 transition-transform" size={32} />
-                        <h4 className="text-white font-bold mb-1">Manage Properties</h4>
-                        <p className="text-brand-bg/60 text-sm">View, block, and verify properties</p>
+                        <h4 className="text-gray-900 font-bold mb-1">Manage Properties</h4>
+                        <p className="text-gray-500 text-sm">View, block, and verify properties</p>
                     </Link>
                     <Link
                         to="/admin/analytics"
-                        className="p-6 bg-gradient-to-br from-green-600/20 to-green-600/5 border border-green-600/30 rounded-xl hover:border-green-600/50 transition-all duration-300 group"
+                        className="p-6 bg-white border border-gray-100 rounded-xl hover:border-green-600/50 hover:shadow-md transition-all duration-300 group"
                     >
-                        <TrendingUp className="text-green-400 mb-3 group-hover:scale-110 transition-transform" size={32} />
-                        <h4 className="text-white font-bold mb-1">View Analytics</h4>
-                        <p className="text-slate-400 text-sm">Insights and trends</p>
+                        <TrendingUp className="text-green-500 mb-3 group-hover:scale-110 transition-transform" size={32} />
+                        <h4 className="text-gray-900 font-bold mb-1">View Analytics</h4>
+                        <p className="text-gray-500 text-sm">Insights and trends</p>
                     </Link>
                 </div>
             </div>
