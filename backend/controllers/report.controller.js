@@ -164,10 +164,24 @@ const deleteReport = asyncHandler(async (req, res) => {
     );
 });
 
+const getUserReports = asyncHandler(async (req, res) => {
+    const userId = req.user?._id;
+
+    const reports = await Report.find({ reporter: userId })
+        .populate("targetUser", "username")
+        .populate("targetProperty", "name location")
+        .sort({ createdAt: -1 });
+
+    return res.status(200).json(
+        new ApiResponse(200, reports, "User reports fetched successfully")
+    );
+});
+
 export {
     createReport,
     getAllReports,
     getReportById,
     changeReportStatus,
-    deleteReport
+    deleteReport,
+    getUserReports
 };

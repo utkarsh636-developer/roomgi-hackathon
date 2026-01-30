@@ -13,7 +13,8 @@ import propertyService from '../services/propertyService';
 import authService from '../services/authService';
 import enquiryService from '../services/enquiryService';
 import ReviewSection from './ReviewSection';
-import { Send, X, Edit, Trash2 } from 'lucide-react'; // Add Send and X icons
+import { Send, X, Edit, Trash2, AlertTriangle } from 'lucide-react'; // Add AlertTriangle
+import reportService from '../services/reportService';
 
 // Helper for Lucide imports if missing
 const Sun = ({ size, className }) => <div className={className}>☀️</div>;
@@ -245,6 +246,123 @@ const EnquiryModal = ({ isOpen, onClose, property, user, existingEnquiry }) => {
 };
 
 
+const ReportModal = ({ isOpen, onClose, property, user }) => {
+    const [reason, setReason] = useState('');
+    const [message, setMessage] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
+    const [error, setError] = useState(null);
+
+    if (!isOpen) return null;
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setError(null);
+
+        try {
+            await reportService.createReport({
+                targetModel: 'Property',
+                targetId: property._id,
+                reason,
+                message
+            });
+            setSuccess(true);
+            setTimeout(() => {
+                onClose();
+                setSuccess(false);
+                setReason('');
+                setMessage('');
+            }, 2000);
+        } catch (err) {
+            setError(err.message || 'Failed to submit report.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+                <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                    <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                        <AlertTriangle className="text-red-500" size={24} /> Report Property
+                    </h3>
+                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
+                        <X size={24} />
+                    </button>
+                </div>
+
+                <div className="p-6">
+                    {success ? (
+                        <div className="flex flex-col items-center justify-center py-8 text-center">
+                            <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-4">
+                                <CheckCircle size={32} />
+                            </div>
+                            <h4 className="text-xl font-bold text-gray-900 mb-2">Report Submitted</h4>
+                            <p className="text-gray-500">Thank you for helping us keep our community safe.</p>
+                        </div>
+                    ) : (
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Reason</label>
+                                <select
+                                    required
+                                    value={reason}
+                                    onChange={(e) => setReason(e.target.value)}
+                                    className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-red-500 focus:ring-2 focus:ring-red-200 outline-none transition-all"
+                                >
+                                    <option value="">Select a reason</option>
+                                    <option value="Spam">Spam</option>
+                                    <option value="Inaccurate Information">Inaccurate Information</option>
+                                    <option value="Offensive Content">Offensive Content</option>
+                                    <option value="Fraud/Scam">Fraud/Scam</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Details</label>
+                                <textarea
+                                    required
+                                    value={message}
+                                    onChange={(e) => setMessage(e.target.value)}
+                                    placeholder="Please provide more details about the issue..."
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-red-500 focus:ring-2 focus:ring-red-200 outline-none transition-all min-h-[100px] resize-none"
+                                />
+                            </div>
+
+                            {error && (
+                                <div className="p-3 bg-red-50 text-red-600 text-sm rounded-lg">
+                                    {error}
+                                </div>
+                            )}
+
+                            <div className="flex gap-3 pt-2">
+                                <button
+                                    type="button"
+                                    onClick={onClose}
+                                    className="flex-1 py-3 px-4 rounded-xl border border-gray-200 text-gray-700 font-bold hover:bg-gray-50 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={loading}
+                                    className="flex-1 py-3 px-4 rounded-xl bg-red-500 text-white font-bold hover:bg-red-600 transition-colors disabled:opacity-70 flex items-center justify-center gap-2"
+                                >
+                                    {loading ? 'Submitting...' : 'Submit Report'}
+                                </button>
+                            </div>
+                        </form>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+
 const PropertyDetailsPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -253,8 +371,10 @@ const PropertyDetailsPage = () => {
     const [error, setError] = useState(null);
     const [isGalleryOpen, setIsGalleryOpen] = useState(false);
     const [isEnquiryModalOpen, setIsEnquiryModalOpen] = useState(false);
+    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
     const [user, setUser] = useState(authService.getCurrentUser());
     const [existingEnquiry, setExistingEnquiry] = useState(null);
+    const [hasReported, setHasReported] = useState(false);
 
     useEffect(() => {
         const fetchProperty = async () => {
@@ -290,6 +410,27 @@ const PropertyDetailsPage = () => {
 
         checkExistingEnquiry();
     }, [user, property]);
+
+    useEffect(() => {
+        const checkReportStatus = async () => {
+            if (user && property) {
+                try {
+                    const response = await reportService.getMyReports();
+                    const reports = response.data || [];
+
+                    const found = reports.find(r => {
+                        const targetId = r.targetProperty?._id || r.targetProperty;
+                        return targetId?.toString() === property._id?.toString();
+                    });
+
+                    setHasReported(!!found);
+                } catch (err) {
+                    console.error("Failed to check report status:", err);
+                }
+            }
+        };
+        checkReportStatus();
+    }, [user, property, isReportModalOpen]); // Re-check when modal closes
 
     const handleDeleteEnquiry = async () => {
         if (!existingEnquiry) return;
@@ -376,6 +517,13 @@ const PropertyDetailsPage = () => {
                 property={property}
                 user={user}
                 existingEnquiry={existingEnquiry}
+            />
+
+            <ReportModal
+                isOpen={isReportModalOpen}
+                onClose={() => setIsReportModalOpen(false)}
+                property={property}
+                user={user}
             />
 
             <main className="flex-grow pt-24 pb-12">
@@ -604,6 +752,27 @@ const PropertyDetailsPage = () => {
                                 <p className="text-xs text-center text-gray-400 mt-4">
                                     By contacting, you agree to our Terms & Privacy Policy.
                                 </p>
+
+                                <div className="mt-4 pt-4 border-t border-gray-100 text-center">
+                                    {hasReported ? (
+                                        <div className="text-xs text-green-600 flex items-center justify-center gap-1 mx-auto font-medium">
+                                            <CheckCircle size={12} /> Report Submitted
+                                        </div>
+                                    ) : (
+                                        <button
+                                            onClick={() => {
+                                                if (!user) {
+                                                    navigate('/login', { state: { from: `/property/${id}` } });
+                                                    return;
+                                                }
+                                                setIsReportModalOpen(true);
+                                            }}
+                                            className="text-xs text-gray-400 hover:text-red-500 flex items-center justify-center gap-1 mx-auto transition-colors"
+                                        >
+                                            <AlertTriangle size={12} /> Report this property
+                                        </button>
+                                    )}
+                                </div>
 
                             </div>
                         </div>

@@ -5,7 +5,8 @@ import {
     getAllReports,
     getReportById,
     changeReportStatus,
-    deleteReport
+    deleteReport,
+    getUserReports
 } from "../controllers/report.controller.js"
 
 const router = Router()
@@ -31,6 +32,13 @@ router.use(verifyJWT)
  * Response: Created report object
  */
 router.route("/create").post(createReport)
+
+/**
+ * GET /api/reports/my-reports
+ * Get all reports created by the current user
+ */
+router.route("/my-reports").get(getUserReports)
+
 
 // ==================== ADMIN ONLY ROUTES ====================
 
