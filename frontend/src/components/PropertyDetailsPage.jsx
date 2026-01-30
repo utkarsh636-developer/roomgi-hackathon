@@ -633,7 +633,7 @@ const PropertyDetailsPage = () => {
 
                 {/* Photo Gallery Grid - Fixed Layout */}
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
-                    <div className="grid grid-cols-1 md:grid-cols-4 h-[400px] md:h-[500px] rounded-3xl overflow-hidden shadow-xl bg-gray-200">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-1 h-[400px] md:h-[500px] rounded-3xl overflow-hidden shadow-xl bg-gray-200">
                         {/* Main Large Image (Left Half) */}
                         <div className="md:col-span-2 md:row-span-2 relative group cursor-pointer overflow-hidden" onClick={() => setIsGalleryOpen(true)}>
                             <img src={galleryImages[0]} alt="Main" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />

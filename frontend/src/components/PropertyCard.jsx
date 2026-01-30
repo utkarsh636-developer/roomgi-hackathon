@@ -60,7 +60,7 @@ const PropertyCard = ({ property }) => {
   const handleViewOnMap = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (location?.coordinates?.coordinates) {
       const [lng, lat] = location.coordinates.coordinates;
       // Open in Google Maps
