@@ -212,5 +212,37 @@ export {
     getEnquiryByTenantId,
     getEnquiryByOwnerId,
     acceptEnquiry,
-    rejectEnquiry
+    rejectEnquiry,
+    updateEnquiry
 };
+
+const updateEnquiry = asyncHandler(async (req, res) => {
+    const { enquiryId } = req.params;
+    const { message } = req.body;
+    const userId = req.user?._id;
+
+    if (!message) {
+        throw new ApiError(400, "Message is required");
+    }
+
+    const enquiry = await Enquiry.findById(enquiryId);
+    if (!enquiry) {
+        throw new ApiError(404, "Enquiry not found");
+    }
+
+    if (enquiry.user.toString() !== userId.toString()) {
+        throw new ApiError(403, "Unauthorized to update this enquiry");
+    }
+
+    // Optional: Prevent update if already contacted/rejected?
+    // if (enquiry.status !== 'pending') {
+    //     throw new ApiError(400, "Cannot update processed enquiry");
+    // }
+
+    enquiry.message = message;
+    await enquiry.save();
+
+    return res.status(200).json(
+        new ApiResponse(200, enquiry, "Enquiry updated successfully")
+    );
+});

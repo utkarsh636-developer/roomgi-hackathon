@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
     MapPin, Wifi, Wind, Coffee, Share2, Heart, Star,
     CheckCircle, ArrowLeft, Calendar, User, ShieldCheck,
@@ -8,8 +8,12 @@ import {
 } from 'lucide-react';
 import Navbar from './Navbar';
 import Footer from './Footer';
+
 import propertyService from '../services/propertyService';
+import authService from '../services/authService';
+import enquiryService from '../services/enquiryService';
 import ReviewSection from './ReviewSection';
+import { Send, X, Edit, Trash2 } from 'lucide-react'; // Add Send and X icons
 
 // Helper for Lucide imports if missing
 const Sun = ({ size, className }) => <div className={className}>☀️</div>;
@@ -50,16 +54,207 @@ const AMENITY_ICONS = {
     "internet_high_speed": Wifi,
     "pet_friendly": Dog, // Need import
     "smoking_allowed": Cigarette,
+
     "drinking_allowed": Wine
+};
+
+const EnquiryModal = ({ isOpen, onClose, property, user, existingEnquiry }) => {
+    const [message, setMessage] = useState('');
+    const [contactDetails, setContactDetails] = useState({
+        name: user?.username || '',
+        email: user?.email || '',
+        phone: user?.phoneNumber || ''
+    });
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
+    const [error, setError] = useState(null);
+
+    // Update state when user prop changes
+    useEffect(() => {
+        if (user) {
+            setContactDetails({
+                name: user.username || '',
+                email: user.email || '',
+                phone: user.phoneNumber || ''
+            });
+        }
+    }, [user]);
+
+    // Pre-fill message if editing
+    useEffect(() => {
+        if (existingEnquiry) {
+            setMessage(existingEnquiry.message || '');
+        } else {
+            setMessage('');
+        }
+    }, [existingEnquiry, isOpen]);
+
+    if (!isOpen) return null;
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setContactDetails(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setError(null);
+
+        try {
+            if (existingEnquiry) {
+                await enquiryService.updateEnquiry(existingEnquiry._id, { message });
+            } else {
+                await enquiryService.createEnquiry({
+                    propertyId: property._id,
+                    message: message,
+                    name: contactDetails.name,
+                    email: contactDetails.email,
+                    phone: contactDetails.phone
+                });
+            }
+            setSuccess(true);
+            setTimeout(() => {
+                onClose();
+                setSuccess(false);
+                if (!existingEnquiry) setMessage('');
+            }, 2000);
+        } catch (err) {
+            setError(err.message || 'Failed to send enquiry.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+                <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                    <h3 className="text-xl font-bold text-gray-800">{existingEnquiry ? 'Edit Enquiry' : 'Contact Owner'}</h3>
+                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
+                        <X size={24} />
+                    </button>
+                </div>
+
+                <div className="p-6">
+                    {success ? (
+                        <div className="flex flex-col items-center justify-center py-8 text-center">
+                            <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-4">
+                                <CheckCircle size={32} />
+                            </div>
+                            <h4 className="text-xl font-bold text-gray-900 mb-2">{existingEnquiry ? 'Enquiry Updated!' : 'Enquiry Sent!'}</h4>
+                            <p className="text-gray-500">The owner has been notified and will contact you shortly.</p>
+                        </div>
+                    ) : (
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            {!existingEnquiry && (
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">To</label>
+                                    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                                        <div className="w-10 h-10 rounded-full bg-brand-primary/10 text-brand-primary flex items-center justify-center font-bold">
+                                            {property.owner?.username?.charAt(0).toUpperCase()}
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-gray-900">{property.owner?.username}</p>
+                                            <p className="text-xs text-gray-500">Property Owner</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {!existingEnquiry && (
+                                <>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                                            <input
+                                                type="text"
+                                                name="name"
+                                                required
+                                                value={contactDetails.name}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20 outline-none transition-all"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                                            <input
+                                                type="tel"
+                                                name="phone"
+                                                required
+                                                value={contactDetails.phone}
+                                                onChange={handleChange}
+                                                className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20 outline-none transition-all"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                        <input
+                                            type="email"
+                                            name="email"
+                                            required
+                                            value={contactDetails.email}
+                                            onChange={handleChange}
+                                            className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20 outline-none transition-all"
+                                        />
+                                    </div>
+                                </>
+                            )}
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">{existingEnquiry ? 'Update Message' : 'Your Message'}</label>
+                                <textarea
+                                    required
+                                    value={message}
+                                    onChange={(e) => setMessage(e.target.value)}
+                                    placeholder="Hi, I'm interested in this property. Is it still available?"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20 outline-none transition-all min-h-[100px] resize-none"
+                                />
+                            </div>
+
+                            {error && (
+                                <div className="p-3 bg-red-50 text-red-600 text-sm rounded-lg">
+                                    {error}
+                                </div>
+                            )}
+
+                            <div className="flex gap-3 pt-2">
+                                <button
+                                    type="button"
+                                    onClick={onClose}
+                                    className="flex-1 py-3 px-4 rounded-xl border border-gray-200 text-gray-700 font-bold hover:bg-gray-50 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={loading}
+                                    className="flex-1 py-3 px-4 rounded-xl bg-brand-primary text-white font-bold hover:bg-brand-secondary transition-colors disabled:opacity-70 flex items-center justify-center gap-2"
+                                >
+                                    {loading ? (existingEnquiry ? 'Updating...' : 'Sending...') : <><Send size={18} /> {existingEnquiry ? 'Update Enquiry' : 'Send Enquiry'}</>}
+                                </button>
+                            </div>
+                        </form>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
 };
 
 
 const PropertyDetailsPage = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
     const [property, setProperty] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+    const [isEnquiryModalOpen, setIsEnquiryModalOpen] = useState(false);
+    const [user, setUser] = useState(authService.getCurrentUser());
+    const [existingEnquiry, setExistingEnquiry] = useState(null);
 
     useEffect(() => {
         const fetchProperty = async () => {
@@ -78,6 +273,37 @@ const PropertyDetailsPage = () => {
             fetchProperty();
         }
     }, [id]);
+
+    useEffect(() => {
+        const checkExistingEnquiry = async () => {
+            if (user && property) {
+                try {
+                    const response = await enquiryService.getEnquiriesByTenant();
+                    const enquiries = response.data;
+                    const found = enquiries.find(e => e.property?._id === property._id);
+                    setExistingEnquiry(found || null);
+                } catch (err) {
+                    console.error("Failed to check existing enquiries:", err);
+                }
+            }
+        };
+
+        checkExistingEnquiry();
+    }, [user, property]);
+
+    const handleDeleteEnquiry = async () => {
+        if (!existingEnquiry) return;
+        if (window.confirm("Are you sure you want to delete your enquiry?")) {
+            try {
+                await enquiryService.deleteEnquiry(existingEnquiry._id);
+                setExistingEnquiry(null);
+                // alert("Enquiry deleted successfully.");
+            } catch (err) {
+                console.error("Failed to delete enquiry:", err);
+                alert("Failed to delete enquiry.");
+            }
+        }
+    };
 
     if (loading) {
         return (
@@ -134,6 +360,23 @@ const PropertyDetailsPage = () => {
     return (
         <div className="flex flex-col min-h-screen bg-brand-bg font-montserrat">
             <Navbar />
+
+            <EnquiryModal
+                isOpen={isEnquiryModalOpen}
+                onClose={() => {
+                    setIsEnquiryModalOpen(false);
+                    // Refresh enquiry state on close
+                    if (user && property) {
+                        enquiryService.getEnquiriesByTenant().then(res => {
+                            const found = res.data.find(e => e.property?._id === property._id);
+                            setExistingEnquiry(found || null);
+                        });
+                    }
+                }}
+                property={property}
+                user={user}
+                existingEnquiry={existingEnquiry}
+            />
 
             <main className="flex-grow pt-24 pb-12">
                 {/* Gallery Modal */}
@@ -326,10 +569,37 @@ const PropertyDetailsPage = () => {
                                     {/* <div className="space-y-3 p-4 bg-gray-50 rounded-2xl border border-gray-100 text-sm"> ... </div> */}
                                 </div>
 
-                                <button className="w-full flex items-center justify-center gap-2 bg-brand-primary hover:bg-brand-secondary text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-brand-dark/20 transition-all hover:scale-[1.02] active:scale-[0.98] group">
-                                    <Phone size={20} className="group-hover:animate-pulse" />
-                                    Contact Owner
-                                </button>
+                                {existingEnquiry ? (
+                                    <div className="flex gap-3">
+                                        <button
+                                            onClick={() => setIsEnquiryModalOpen(true)}
+                                            className="flex-1 flex items-center justify-center gap-2 bg-brand-primary hover:bg-brand-secondary text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-brand-dark/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                                        >
+                                            <Edit size={20} />
+                                            Edit
+                                        </button>
+                                        <button
+                                            onClick={handleDeleteEnquiry}
+                                            className="flex-none flex items-center justify-center gap-2 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 py-4 px-4 rounded-xl font-bold text-lg shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
+                                        >
+                                            <Trash2 size={20} />
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <button
+                                        onClick={() => {
+                                            if (!user) {
+                                                navigate('/login', { state: { from: `/property/${id}` } });
+                                                return;
+                                            }
+                                            setIsEnquiryModalOpen(true);
+                                        }}
+                                        className="w-full flex items-center justify-center gap-2 bg-brand-primary hover:bg-brand-secondary text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-brand-dark/20 transition-all hover:scale-[1.02] active:scale-[0.98] group"
+                                    >
+                                        <Phone size={20} className="group-hover:animate-pulse" />
+                                        Contact Owner
+                                    </button>
+                                )}
 
                                 <p className="text-xs text-center text-gray-400 mt-4">
                                     By contacting, you agree to our Terms & Privacy Policy.

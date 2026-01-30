@@ -7,7 +7,8 @@ import {
     getEnquiryByTenantId,
     getEnquiryByOwnerId,
     acceptEnquiry,
-    rejectEnquiry
+    rejectEnquiry,
+    updateEnquiry
 } from "../controllers/enquiry.controller.js"
 
 const router = Router()
@@ -92,6 +93,26 @@ router.route("/:enquiryId")
      * Response: Success message
      */
     .delete(deleteEnquiry)
+    /**
+     * PATCH /api/enquiries/:enquiryId
+     * Update an enquiry
+     * 
+     * Headers:
+     *   Authorization: Bearer <accessToken>
+     * 
+     * URL Parameters:
+     *   enquiryId: string (MongoDB ObjectId)
+     * 
+     * Request Body (JSON):
+     * {
+     *   "message": "string (required)"
+     * }
+     * 
+     * Note: Only accessible by enquiry creator (tenant)
+     * 
+     * Response: Updated enquiry object
+     */
+    .patch(updateEnquiry)
 
 /**
  * PATCH /api/enquiries/:enquiryId/accept
