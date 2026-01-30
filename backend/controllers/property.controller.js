@@ -598,7 +598,12 @@ const getPropertiesByQueries = asyncHandler(async (req, res) => {
     } = req.query;
 
     // Build match filters for non-geospatial fields
-    const matchFilter = {};
+    const matchFilter = {
+        isBlocked: false // Only show non-blocked properties
+    };
+
+    console.log("DEBUG: Search Query Params:", req.query);
+    console.log("DEBUG: Applied Match Filter:", JSON.stringify(matchFilter, null, 2));
 
     if (type) matchFilter.type = type;
     if (city) matchFilter['location.city'] = city;
