@@ -6,6 +6,9 @@ import {
     Bath, BedDouble, Home, Maximize, Phone, Utensils, Car, Thermometer, Camera, Dumbbell, Activity,
     Zap, Tv, Droplets, Cigarette, Wine
 } from 'lucide-react';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import Navbar from './Navbar';
 import Footer from './Footer';
 
@@ -15,6 +18,14 @@ import enquiryService from '../services/enquiryService';
 import ReviewSection from './ReviewSection';
 import { Send, X, Edit, Trash2, AlertTriangle } from 'lucide-react'; // Add AlertTriangle
 import reportService from '../services/reportService';
+
+// Fix Leaflet default marker icon
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
 
 // Helper for Lucide imports if missing
 const Sun = ({ size, className }) => <div className={className}>☀️</div>;
@@ -707,6 +718,64 @@ const PropertyDetailsPage = () => {
                                     <p className="text-gray-600 leading-relaxed whitespace-pre-line">
                                         {property.preferences}
                                     </p>
+                                </div>
+                            )}
+
+                            {/* Location Map */}
+                            {property.location?.coordinates?.coordinates && (
+                                <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+                                    <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                                        <MapPin className="text-brand-primary" size={24} />
+                                        Property Location
+                                    </h3>
+                                    <div className="mb-4">
+                                        <p className="text-gray-600 text-sm flex items-start gap-2">
+                                            <MapPin className="text-brand-primary mt-0.5 flex-shrink-0" size={16} />
+                                            <span>
+                                                {property.location.addressLine}, {property.location.city}, {property.location.state} - {property.location.pincode}
+                                            </span>
+                                        </p>
+                                    </div>
+                                    <div className="rounded-2xl overflow-hidden border border-gray-200 shadow-sm h-[400px]">
+                                        <MapContainer
+                                            center={[property.location.coordinates.coordinates[1], property.location.coordinates.coordinates[0]]}
+                                            zoom={15}
+                                            style={{ height: '100%', width: '100%' }}
+                                            scrollWheelZoom={false}
+                                        >
+                                            <TileLayer
+                                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                            />
+                                            <Marker position={[property.location.coordinates.coordinates[1], property.location.coordinates.coordinates[0]]}>
+                                                <Popup>
+                                                    <div className="text-center">
+                                                        <p className="font-bold text-gray-900">{property.title || property.type}</p>
+                                                        <p className="text-xs text-gray-600 mt-1">{property.location.addressLine}</p>
+                                                        <a
+                                                            href={`https://www.google.com/maps?q=${property.location.coordinates.coordinates[1]},${property.location.coordinates.coordinates[0]}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="text-brand-primary text-xs font-semibold mt-2 inline-block hover:underline"
+                                                        >
+                                                            Open in Google Maps →
+                                                        </a>
+                                                    </div>
+                                                </Popup>
+                                            </Marker>
+                                        </MapContainer>
+                                    </div>
+                                    <div className="mt-4 flex justify-center">
+                                        <a
+                                            href={`https://www.google.com/maps?q=${property.location.coordinates.coordinates[1]},${property.location.coordinates.coordinates[0]}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-2 px-4 py-2 bg-brand-primary text-white rounded-xl font-semibold hover:bg-brand-secondary transition-colors"
+                                        >
+                                            <MapPin size={18} />
+                                            Get Directions
+                                        </a>
+                                    </div>
                                 </div>
                             )}
 

@@ -61,11 +61,23 @@ const deleteReview = async (reviewId) => {
     }
 };
 
+const getOwnerReviews = async () => {
+    try {
+        const response = await axios.get(`${API_URL}/reviews/owner`, {
+            headers: getAuthHeader()
+        });
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || error.message;
+    }
+};
+
 const reviewService = {
     createReview,
     getUserReviews,
     updateReview,
-    deleteReview
+    deleteReview,
+    getOwnerReviews
 };
 
 export default reviewService;

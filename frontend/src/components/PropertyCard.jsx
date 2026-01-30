@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, Wifi, Wind, Coffee, BadgeCheck, Heart, Share2, Phone } from 'lucide-react';
+import { MapPin, Wifi, Wind, Coffee, BadgeCheck, Heart, Share2, Phone, Map } from 'lucide-react';
 import authService from '../services/authService';
 
 const PropertyCard = ({ property }) => {
@@ -16,7 +16,8 @@ const PropertyCard = ({ property }) => {
     gender,
     images = [],
     isVerified,
-    amenities = []
+    amenities = [],
+    distanceInKm // Distance from search point (if coordinate search was used)
   } = property;
 
   // Normalize data
@@ -56,6 +57,19 @@ const PropertyCard = ({ property }) => {
     }
   };
 
+  const handleViewOnMap = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (location?.coordinates?.coordinates) {
+      const [lng, lat] = location.coordinates.coordinates;
+      // Open in Google Maps
+      window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank');
+    } else {
+      alert('Location coordinates not available');
+    }
+  };
+
   return (
     <div className="group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
       {/* Image Container */}
@@ -71,6 +85,14 @@ const PropertyCard = ({ property }) => {
           <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1 shadow-sm border border-green-50">
             <BadgeCheck className="w-4 h-4 text-blue-500 fill-blue-50" />
             <span className="text-xs font-bold text-gray-700 font-montserrat tracking-wide">VERIFIED</span>
+          </div>
+        )}
+
+        {/* Distance Badge (if available) */}
+        {distanceInKm && (
+          <div className="absolute top-3 left-3 bg-green-500/95 backdrop-blur-sm px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
+            <MapPin className="w-3.5 h-3.5 text-white" />
+            <span className="text-xs font-bold text-white tracking-wide">{distanceInKm} km away</span>
           </div>
         )}
 
@@ -97,12 +119,22 @@ const PropertyCard = ({ property }) => {
             {title || name}
           </h3>
           {(!user || user.role !== 'owner') && (
-            <button
-              onClick={handleLike}
-              className={`transition-colors ${isLiked ? 'text-red-500 fill-current' : 'text-gray-400 hover:text-pink-500'}`}
-            >
-              <Heart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={handleViewOnMap}
+                className="transition-colors text-gray-400 hover:text-brand-primary"
+                title="View on map"
+              >
+                <Map className="w-5 h-5" />
+              </button>
+              <button
+                onClick={handleLike}
+                className={`transition-colors ${isLiked ? 'text-red-500 fill-current' : 'text-gray-400 hover:text-pink-500'}`}
+                title={isLiked ? 'Remove from favorites' : 'Add to favorites'}
+              >
+                <Heart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
+              </button>
+            </div>
           )}
         </div>
 

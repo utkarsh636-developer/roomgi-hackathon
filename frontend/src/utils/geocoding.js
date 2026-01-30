@@ -23,7 +23,9 @@ export const searchAddress = async (query) => {
             displayName: result.display_name,
             lat: parseFloat(result.lat),
             lon: parseFloat(result.lon),
-            address: result.address || {}
+            address: result.address || {},
+            osm_type: result.osm_type,
+            osm_id: result.osm_id
         }));
     } catch (error) {
         console.error('Address search error:', error);

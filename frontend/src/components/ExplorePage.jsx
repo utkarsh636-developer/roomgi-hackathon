@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import PropertyCard from './PropertyCard';
 import PropertyMapView from './PropertyMapView';
-import { Map, List, Filter, Search, Loader } from 'lucide-react';
+import MapSearchModal from './MapSearchModal';
+import { Map, List, Filter, Search, Loader, MapPin } from 'lucide-react';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import propertyService from '../services/propertyService';
@@ -54,6 +55,11 @@ const ExplorePage = () => {
   const [showMap, setShowMap] = useState(false);
   const [showAllAmenities, setShowAllAmenities] = useState(false);
 
+  // Map Search State
+  const [mapSearchActive, setMapSearchActive] = useState(false);
+  const [mapSearchParams, setMapSearchParams] = useState(null); // { lat, lng, radius }
+  const [showMapSearchModal, setShowMapSearchModal] = useState(false);
+
   /* ------------------------------------------------------------
    * FETCH LOGIC
    * ------------------------------------------------------------ */
@@ -62,7 +68,7 @@ const ExplorePage = () => {
       fetchProperties();
     }, 500);
     return () => clearTimeout(timeoutId);
-  }, [budget, searchQuery, selectedType, selectedAmenities]);
+  }, [budget, searchQuery, selectedType, selectedAmenities, mapSearchParams]);
 
   const fetchProperties = async () => {
     try {
@@ -86,6 +92,21 @@ const ExplorePage = () => {
 
       if (selectedAmenities.length > 0) {
         params.amenities = selectedAmenities.join(',');
+      }
+
+      // Add map search parameters if active
+      if (mapSearchParams) {
+        if (mapSearchParams.lat && mapSearchParams.lng) {
+          // Address search with lat/lng/radius
+          params.lat = mapSearchParams.lat;
+          params.lng = mapSearchParams.lng;
+          params.maxDistance = mapSearchParams.radius;
+        } else {
+          // Location search with city/state/pincode
+          if (mapSearchParams.city) params.city = mapSearchParams.city;
+          if (mapSearchParams.state) params.state = mapSearchParams.state;
+          if (mapSearchParams.pincode) params.pincode = mapSearchParams.pincode;
+        }
       }
 
       const data = await propertyService.getAllProperties(params);
@@ -121,6 +142,19 @@ const ExplorePage = () => {
     setSearchQuery('');
     setSelectedType('');
     setSelectedAmenities([]);
+    setMapSearchParams(null);
+    setMapSearchActive(false);
+  };
+
+  const handleApplyMapSearch = (searchData) => {
+    setMapSearchParams(searchData);
+    setMapSearchActive(true);
+    setShowMapSearchModal(false);
+  };
+
+  const handleClearMapSearch = () => {
+    setMapSearchParams(null);
+    setMapSearchActive(false);
   };
 
   const FilterContent = () => (
@@ -193,6 +227,33 @@ const ExplorePage = () => {
         >
           {showAllAmenities ? 'Show Less' : 'Show More...'}
         </button>
+      </FilterSection>
+
+      <FilterSection title="Location Search">
+        <button
+          onClick={() => setShowMapSearchModal(true)}
+          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-brand-primary to-brand-secondary text-white rounded-xl font-semibold hover:shadow-lg transition-all"
+        >
+          <MapPin className="w-5 h-5" />
+          {mapSearchActive ? 'Update Map Search' : 'Search by Map'}
+        </button>
+        {mapSearchActive && (
+          <div className="mt-3 p-3 bg-brand-primary/10 rounded-lg border border-brand-primary/20">
+            <p className="text-sm text-gray-700 font-medium flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-brand-primary" />
+              {mapSearchParams.radius 
+                ? `Searching within ${mapSearchParams.radius}km radius`
+                : `Searching in ${mapSearchParams.city || mapSearchParams.state || mapSearchParams.pincode}`
+              }
+            </p>
+            <button
+              onClick={handleClearMapSearch}
+              className="text-xs text-brand-primary font-semibold mt-2 hover:underline"
+            >
+              Clear location search
+            </button>
+          </div>
+        )}
       </FilterSection>
     </div>
   );
@@ -302,6 +363,14 @@ const ExplorePage = () => {
         </div>
       </div>
       <Footer />
+
+      {/* Map Search Modal */}
+      <MapSearchModal
+        isOpen={showMapSearchModal}
+        onClose={() => setShowMapSearchModal(false)}
+        onApplySearch={handleApplyMapSearch}
+        initialLocation={mapSearchParams}
+      />
     </div>
   );
 };

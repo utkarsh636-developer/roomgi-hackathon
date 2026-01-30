@@ -5,13 +5,27 @@ import {
     createReview,
     deleteReview,
     updateReview,
-    getReviewsByUserId
+    getReviewsByUserId,
+    getReviewsByOwner
 } from "../controllers/review.controller.js"
 
 const router = Router()
 
 // ==================== PROTECTED ROUTES (All review routes require authentication) ====================
 router.use(verifyJWT)
+
+/**
+ * GET /api/reviews/owner
+ * Get all reviews for properties owned by the logged-in owner
+ * 
+ * Headers:
+ *   Authorization: Bearer <accessToken>
+ * 
+ * Role Required: owner
+ * 
+ * Response: Array of review objects with populated property and user details
+ */
+router.route("/owner").get(getReviewsByOwner)
 
 /**
  * GET /api/reviews/user/:userId

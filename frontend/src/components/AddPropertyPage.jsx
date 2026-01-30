@@ -1,11 +1,22 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import propertyService from '../services/propertyService';
-import LocationPicker from './LocationPicker';
-import { Upload, X, Home, MapPin, IndianRupee, Loader, CheckSquare, Square, Map } from 'lucide-react';
+import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import { searchAddress } from '../utils/geocoding';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import { Upload, X, Home, MapPin, IndianRupee, Loader, CheckSquare, Square, Search, Navigation } from 'lucide-react';
+
+// Fix for default marker icon
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+    iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
 
 const AMENITIES_LIST = [
     "wifi", "ac", "non_ac", "furnished", "semi_furnished", "unfurnished",
@@ -16,16 +27,59 @@ const AMENITIES_LIST = [
     "tv_cable", "internet_high_speed", "pet_friendly", "smoking_allowed", "drinking_allowed"
 ];
 
+// Draggable marker component
+const DraggableMarker = ({ position, onPositionChange }) => {
+    const markerRef = useRef(null);
+
+    const eventHandlers = {
+        dragend() {
+            const marker = markerRef.current;
+            if (marker != null) {
+                const newPos = marker.getLatLng();
+                onPositionChange([newPos.lat, newPos.lng]);
+            }
+        },
+    };
+
+    return (
+        <Marker
+            draggable={true}
+            eventHandlers={eventHandlers}
+            position={position}
+            ref={markerRef}
+        />
+    );
+};
+
+// Component to update map view
+const MapUpdater = ({ center, zoom }) => {
+    const map = useMap();
+    
+    useEffect(() => {
+        map.setView(center, zoom);
+    }, [center, zoom, map]);
+    
+    return null;
+};
+
 const AddPropertyPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [fetching, setFetching] = useState(false);
+    const [geocoding, setGeocoding] = useState(false);
     const [error, setError] = useState('');
     const [images, setImages] = useState([]);
     const [existingImages, setExistingImages] = useState([]);
-    const [showLocationPicker, setShowLocationPicker] = useState(false);
-    const [coordinates, setCoordinates] = useState(null);
+    
+    // Location states
+    const [coordinates, setCoordinates] = useState({ lat: 28.6139, lng: 77.2090 }); // Default to Delhi
+    const [zoom, setZoom] = useState(13);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
+    const [isSearching, setIsSearching] = useState(false);
+    const [manualLat, setManualLat] = useState('28.6139');
+    const [manualLng, setManualLng] = useState('77.2090');
 
     const [formData, setFormData] = useState({
         title: '',
@@ -48,7 +102,6 @@ const AddPropertyPage = () => {
                 setFetching(true);
                 try {
                     const response = await propertyService.getPropertyById(id);
-                    console.log("Fetched Property for Edit:", response.data);
                     const property = response.data;
 
                     setFormData({
@@ -69,6 +122,17 @@ const AddPropertyPage = () => {
                     if (property.images && property.images.length > 0) {
                         setExistingImages(property.images);
                     }
+
+                    // Set coordinates if available
+                    if (property.location?.coordinates) {
+                        const coords = {
+                            lat: property.location.coordinates.coordinates[1],
+                            lng: property.location.coordinates.coordinates[0]
+                        };
+                        setCoordinates(coords);
+                        setManualLat(coords.lat.toString());
+                        setManualLng(coords.lng.toString());
+                    }
                 } catch (err) {
                     console.error('Failed to fetch property details:', err);
                     setError('Failed to load property details.');
@@ -79,6 +143,22 @@ const AddPropertyPage = () => {
             fetchProperty();
         }
     }, [id]);
+
+    // Search for addresses with debounce
+    useEffect(() => {
+        const timeoutId = setTimeout(async () => {
+            if (searchQuery.length >= 2) {
+                setIsSearching(true);
+                const results = await searchAddress(searchQuery);
+                setSearchResults(results);
+                setIsSearching(false);
+            } else {
+                setSearchResults([]);
+            }
+        }, 500);
+
+        return () => clearTimeout(timeoutId);
+    }, [searchQuery]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -112,15 +192,85 @@ const AddPropertyPage = () => {
         setExistingImages(prev => prev.filter((_, i) => i !== index));
     };
 
-    const handleLocationSelect = (locationData) => {
-        setCoordinates(locationData.coordinates);
+    const handleMarkerDrag = async (newPosition) => {
+        const coords = { lat: newPosition[0], lng: newPosition[1] };
+        setCoordinates(coords);
+        setManualLat(coords.lat.toFixed(6));
+        setManualLng(coords.lng.toFixed(6));
+        
+        // Reverse geocode
+        await reverseGeocode(coords);
+    };
+
+    const handleSearchResultClick = async (result) => {
+        const coords = { lat: parseFloat(result.lat), lng: parseFloat(result.lon) };
+        setCoordinates(coords);
+        setManualLat(coords.lat.toFixed(6));
+        setManualLng(coords.lng.toFixed(6));
+        setZoom(16);
+        setSearchQuery('');
+        setSearchResults([]);
+        
+        // Auto-fill address fields from search result
+        const addr = result.address || {};
         setFormData(prev => ({
             ...prev,
-            address: locationData.address || prev.address,
-            city: locationData.city || prev.city,
-            state: locationData.state || prev.state,
-            pincode: locationData.pincode || prev.pincode
+            address: result.displayName.split(',').slice(0, 3).join(','),
+            city: addr.city || addr.town || addr.village || prev.city,
+            state: addr.state || prev.state,
+            pincode: addr.postcode || prev.pincode
         }));
+    };
+
+    const handleManualCoordinates = () => {
+        const lat = parseFloat(manualLat);
+        const lng = parseFloat(manualLng);
+        
+        if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+            const coords = { lat, lng };
+            setCoordinates(coords);
+            setZoom(16);
+            reverseGeocode(coords);
+        } else {
+            alert('Please enter valid coordinates (Lat: -90 to 90, Lng: -180 to 180)');
+        }
+    };
+
+    const reverseGeocode = async (coords) => {
+        setGeocoding(true);
+        try {
+            const response = await fetch(
+                `https://nominatim.openstreetmap.org/reverse?format=json&lat=${coords.lat}&lon=${coords.lng}&addressdetails=1`,
+                {
+                    headers: {
+                        'User-Agent': 'RoomGi Property Registration'
+                    }
+                }
+            );
+            
+            if (response.ok) {
+                const data = await response.json();
+                const address = data.address;
+                
+                const addressLine = [
+                    address.house_number,
+                    address.road || address.street,
+                    address.neighbourhood || address.suburb
+                ].filter(Boolean).join(', ');
+                
+                setFormData(prev => ({
+                    ...prev,
+                    address: addressLine || data.display_name.split(',').slice(0, 2).join(','),
+                    city: address.city || address.town || address.village || address.county || prev.city,
+                    state: address.state || prev.state,
+                    pincode: address.postcode || prev.pincode
+                }));
+            }
+        } catch (error) {
+            console.error('Reverse geocoding failed:', error);
+        } finally {
+            setGeocoding(false);
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -137,32 +287,28 @@ const AddPropertyPage = () => {
             data.append('preferences', formData.preferences);
             data.append('rent', formData.rent);
             data.append('securityDeposit', formData.securityDeposit);
-
-            // Backend keys
             data.append('capacity.total', formData.capacity);
-
-            // Location keys - flat strings
             data.append('address', formData.address);
             data.append('city', formData.city);
             data.append('state', formData.state);
             data.append('pincode', formData.pincode);
 
-            // Coordinates - use selected coordinates or default
-            if (coordinates) {
-                data.append('coordinates.lng', coordinates.lng);
-                data.append('coordinates.lat', coordinates.lat);
-            } else {
-                // Default coordinates (Delhi) if not selected
-                data.append('coordinates.lng', '77.2090');
-                data.append('coordinates.lat', '28.6139');
+            // Coordinates - must be selected on map
+            if (!coordinates || !coordinates.lat || !coordinates.lng) {
+                setError('Please select property location on the map');
+                setLoading(false);
+                return;
             }
+            
+            data.append('coordinates.lng', coordinates.lng);
+            data.append('coordinates.lat', coordinates.lat);
 
             // Amenities
             formData.amenities.forEach((amenity) => {
                 data.append('amenities', amenity);
             });
 
-            // Handle Existing Images (Keep vs Delete)
+            // Handle Existing Images
             const keptPublicIds = existingImages.map(img => img.publicId);
             data.append('keptPublicIds', JSON.stringify(keptPublicIds));
 
@@ -180,7 +326,7 @@ const AddPropertyPage = () => {
             navigate('/owner-dashboard');
         } catch (err) {
             console.error('Property Form Error:', err);
-            setError(err.message || `Failed to ${id ? 'update' : 'add'} property.Please try again.`);
+            setError(err.message || `Failed to ${id ? 'update' : 'add'} property. Please try again.`);
         } finally {
             setLoading(false);
         }
@@ -321,26 +467,126 @@ const AddPropertyPage = () => {
 
                         {/* Location */}
                         <section>
-                            <div className="flex items-center justify-between mb-4 border-b pb-2">
-                                <h3 className="text-lg font-bold text-gray-900">Location</h3>
-                                <button
-                                    type="button"
-                                    onClick={() => setShowLocationPicker(true)}
-                                    className="flex items-center gap-2 px-4 py-2 bg-brand-primary text-white text-sm font-semibold rounded-lg hover:bg-brand-secondary transition-colors"
-                                >
-                                    <Map className="w-4 h-4" />
-                                    Select on Map
-                                </button>
+                            <h3 className="text-lg font-bold text-gray-900 mb-4 border-b pb-2">Location <span className="text-red-500">*</span></h3>
+                            
+                            {/* Search and Manual Input */}
+                            <div className="mb-4 space-y-3">
+                                {/* Address Search */}
+                                <div className="relative">
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                    <input
+                                        type="text"
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        placeholder="Search for address..."
+                                        className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary outline-none transition-all"
+                                    />
+                                    {isSearching && (
+                                        <Loader className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 animate-spin text-brand-primary" />
+                                    )}
+                                </div>
+
+                                {/* Search Results */}
+                                {searchResults.length > 0 && (
+                                    <div className="border-t border-gray-100 max-h-60 overflow-y-auto bg-white rounded-b-xl shadow-lg">
+                                        {searchResults.map((result, idx) => {
+                                            const addr = result.address || {};
+                                            const city = addr.city || addr.town || addr.village || '';
+                                            const state = addr.state || '';
+                                            const pincode = addr.postcode || '';
+                                            
+                                            return (
+                                                <button
+                                                    key={idx}
+                                                    type="button"
+                                                    onClick={() => handleSearchResultClick(result)}
+                                                    className="w-full p-3 text-left hover:bg-brand-primary/5 transition-colors border-b border-gray-50 last:border-0"
+                                                >
+                                                    <div className="flex items-start gap-3">
+                                                        <MapPin className="w-4 h-4 text-brand-primary mt-1 flex-shrink-0" />
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="text-sm text-gray-900 font-medium truncate">
+                                                                {result.displayName}
+                                                            </p>
+                                                            <div className="flex gap-3 mt-1 text-xs text-gray-500">
+                                                                {city && <span className="flex items-center gap-1">🏙️ {city}</span>}
+                                                                {state && <span className="flex items-center gap-1">🗺️ {state}</span>}
+                                                                {pincode && <span className="flex items-center gap-1">📮 {pincode}</span>}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+
+                                {/* Manual Coordinates Input */}
+                                <div className="flex gap-2">
+                                    <div className="flex-1">
+                                        <input
+                                            type="text"
+                                            value={manualLat}
+                                            onChange={(e) => setManualLat(e.target.value)}
+                                            placeholder="Latitude"
+                                            className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary outline-none text-sm"
+                                        />
+                                    </div>
+                                    <div className="flex-1">
+                                        <input
+                                            type="text"
+                                            value={manualLng}
+                                            onChange={(e) => setManualLng(e.target.value)}
+                                            placeholder="Longitude"
+                                            className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary outline-none text-sm"
+                                        />
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={handleManualCoordinates}
+                                        className="px-4 py-2 bg-brand-primary text-white rounded-lg hover:bg-brand-secondary transition-colors flex items-center gap-2"
+                                    >
+                                        <Navigation size={16} />
+                                        Go
+                                    </button>
+                                </div>
                             </div>
 
-                            {coordinates && (
-                                <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-xl flex items-center gap-2">
+                            {/* Interactive Map */}
+                            <div className="mb-6">
+                                <label className="block text-sm font-bold text-gray-700 mb-2">
+                                    Drag the marker or click on the map to set exact location
+                                </label>
+                                <div className="rounded-xl overflow-hidden border-2 border-gray-200 shadow-sm" style={{ height: '400px' }}>
+                                    <MapContainer
+                                        center={[coordinates.lat, coordinates.lng]}
+                                        zoom={zoom}
+                                        style={{ height: '100%', width: '100%' }}
+                                    >
+                                        <TileLayer
+                                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                        />
+                                        <MapUpdater center={[coordinates.lat, coordinates.lng]} zoom={zoom} />
+                                        <DraggableMarker 
+                                            position={[coordinates.lat, coordinates.lng]} 
+                                            onPositionChange={handleMarkerDrag}
+                                        />
+                                    </MapContainer>
+                                </div>
+                                <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-xl flex items-center gap-2">
                                     <MapPin className="w-4 h-4 text-green-600" />
                                     <span className="text-sm text-green-800 font-medium">
-                                        Location selected: {coordinates.lat.toFixed(4)}, {coordinates.lng.toFixed(4)}
+                                        Selected: {coordinates.lat.toFixed(6)}, {coordinates.lng.toFixed(6)}
                                     </span>
+                                    {geocoding && (
+                                        <span className="ml-auto flex items-center gap-1 text-xs text-blue-600">
+                                            <Loader className="w-3 h-3 animate-spin" />
+                                            Fetching address...
+                                        </span>
+                                    )}
                                 </div>
-                            )}
+                            </div>
 
                             <div className="mb-6">
                                 <label className="block text-sm font-bold text-gray-700 mb-2">Address Line</label>
@@ -473,7 +719,7 @@ const AddPropertyPage = () => {
                                         <div key={index} className="relative group aspect-square rounded-lg overflow-hidden border border-gray-200">
                                             <img
                                                 src={URL.createObjectURL(file)}
-                                                alt={`Preview ${index} `}
+                                                alt={`Preview ${index}`}
                                                 className="w-full h-full object-cover"
                                             />
                                             <button
@@ -510,14 +756,6 @@ const AddPropertyPage = () => {
             </main>
 
             <Footer />
-
-            {showLocationPicker && (
-                <LocationPicker
-                    onLocationSelect={handleLocationSelect}
-                    onClose={() => setShowLocationPicker(false)}
-                    initialPosition={coordinates ? [coordinates.lat, coordinates.lng] : undefined}
-                />
-            )}
         </div>
     );
 };

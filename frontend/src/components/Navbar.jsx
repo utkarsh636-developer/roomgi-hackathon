@@ -69,7 +69,7 @@ const Navbar = () => {
                   : 'border-white text-white hover:bg-white/10'
                   }`}
               >
-                List Property
+                Dashboard
               </Link>
             )}
 
@@ -148,7 +148,7 @@ const Navbar = () => {
                     {/* Owner sees List Property in Mobile too */}
                     {user.role === 'owner' && (
                       <Link to="/become-host" onClick={() => setIsOpen(false)} className="col-span-2 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-white bg-indigo-600 shadow-lg shadow-indigo-200">
-                        List Property
+                        Dashboard
                       </Link>
                     )}
                     <button onClick={() => { handleLogout(); setIsOpen(false); }} className="col-span-2 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-white bg-red-500 shadow-lg">
@@ -162,7 +162,7 @@ const Navbar = () => {
                       Login
                     </Link>
                     <Link to="/login" onClick={() => setIsOpen(false)} className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-white bg-indigo-600 shadow-lg shadow-indigo-200">
-                      List Property
+                      Dashboard
                     </Link>
                   </>
                 )}

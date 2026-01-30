@@ -4,7 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { Review } from "../models/review.model.js";
 import { Property } from "../models/property.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import { cloudinary , extractPublicId} from "../utils/cloudinary.js";
+import { cloudinary, extractPublicId } from "../utils/cloudinary.js";
 
 const createReview = asyncHandler(async (req, res) => {
     const { propertyId, rating, comment } = req.body
@@ -258,10 +258,39 @@ const getReviewsByUserId = asyncHandler(async (req, res) => {
 
     if (role !== "tenant") throw new ApiError(403, "Unauthorized");
 
-    const reviews = await Review.find({ user: userId });
+    const reviews = await Review.find({ user: userId }).populate('property', 'name title type location');
 
     return res.status(200).json(
         new ApiResponse(200, reviews, "Reviews fetched successfully")
+    );
+});
+
+const getReviewsByOwner = asyncHandler(async (req, res) => {
+    const userId = req.user?._id;
+    const role = req.user?.role;
+
+    if (role !== "owner") {
+        throw new ApiError(403, "Unauthorized - Owner access only");
+    }
+
+    // Find all properties owned by this user
+    const properties = await Property.find({ owner: userId }).select('_id');
+    const propertyIds = properties.map(p => p._id);
+
+    // Find all reviews for these properties
+    const reviews = await Review.find({ property: { $in: propertyIds } })
+        .populate({
+            path: 'property',
+            select: 'name title type location images'
+        })
+        .populate({
+            path: 'user',
+            select: 'username profileImage'
+        })
+        .sort({ createdAt: -1 });
+
+    return res.status(200).json(
+        new ApiResponse(200, reviews, "Reviews for your properties fetched successfully")
     );
 });
 
@@ -269,5 +298,6 @@ export {
     createReview,
     deleteReview,
     updateReview,
-    getReviewsByUserId
+    getReviewsByUserId,
+    getReviewsByOwner
 }

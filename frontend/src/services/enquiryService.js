@@ -66,12 +66,25 @@ const deleteEnquiry = async (enquiryId) => {
     }
 };
 
+const respondToEnquiry = async (enquiryId, reply) => {
+    try {
+        const response = await axios.patch(`${API_URL}/enquiries/${enquiryId}/accept`,
+            { reply },
+            { headers: getAuthHeader() }
+        );
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || error.message;
+    }
+};
+
 const enquiryService = {
     createEnquiry,
     getEnquiriesByOwner,
     getEnquiriesByTenant,
     updateEnquiry,
-    deleteEnquiry
+    deleteEnquiry,
+    respondToEnquiry
 };
 
 export default enquiryService;
