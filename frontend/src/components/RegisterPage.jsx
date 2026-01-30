@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
-import { User, Mail, Lock, Phone, AlertCircle, Loader2, Building2, UserCircle } from 'lucide-react';
+import { User, Mail, Lock, Phone, AlertCircle, Loader2, Building2, UserCircle, Eye, EyeOff } from 'lucide-react';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -14,6 +14,7 @@ const RegisterPage = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -24,6 +25,21 @@ const RegisterPage = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
+
+    // Validation
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(formData.phoneNumber)) {
+      setError('Phone number must be exactly 10 digits.');
+      setLoading(false);
+      return;
+    }
+
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
+    if (!passwordRegex.test(formData.password)) {
+      setError('Password must be at least 8 characters long and contain at least one uppercase letter, one number, and one symbol.');
+      setLoading(false);
+      return;
+    }
 
     try {
       await authService.register(formData);
@@ -117,7 +133,7 @@ const RegisterPage = () => {
                 value={formData.phoneNumber}
                 onChange={handleChange}
                 className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-primary focus:bg-white outline-none transition-all"
-                placeholder="+91 98765 43210"
+                placeholder="9876543210"
               />
               <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
             </div>
@@ -127,15 +143,22 @@ const RegisterPage = () => {
             <label className="block text-sm font-bold text-gray-700 mb-1.5">Password</label>
             <div className="relative">
               <input
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 name="password"
                 required
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-primary focus:bg-white outline-none transition-all"
+                className="w-full pl-10 pr-10 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-primary focus:bg-white outline-none transition-all"
                 placeholder="Create a strong password"
               />
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
           </div>
 
