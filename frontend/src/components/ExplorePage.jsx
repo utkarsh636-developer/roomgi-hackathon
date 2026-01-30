@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropertyCard from './PropertyCard';
 import PropertyMapView from './PropertyMapView';
 import MapSearchModal from './MapSearchModal';
-import { Map, List, Filter, Search, Loader, MapPin } from 'lucide-react';
+import { Map, List, Filter, Search, Loader, MapPin, X } from 'lucide-react';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import propertyService from '../services/propertyService';
@@ -229,32 +229,7 @@ const ExplorePage = () => {
         </button>
       </FilterSection>
 
-      <FilterSection title="Location Search">
-        <button
-          onClick={() => setShowMapSearchModal(true)}
-          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-brand-primary to-brand-secondary text-white rounded-xl font-semibold hover:shadow-lg transition-all"
-        >
-          <MapPin className="w-5 h-5" />
-          {mapSearchActive ? 'Update Map Search' : 'Search by Map'}
-        </button>
-        {mapSearchActive && (
-          <div className="mt-3 p-3 bg-brand-primary/10 rounded-lg border border-brand-primary/20">
-            <p className="text-sm text-gray-700 font-medium flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-brand-primary" />
-              {mapSearchParams.radius 
-                ? `Searching within ${mapSearchParams.radius}km radius`
-                : `Searching in ${mapSearchParams.city || mapSearchParams.state || mapSearchParams.pincode}`
-              }
-            </p>
-            <button
-              onClick={handleClearMapSearch}
-              className="text-xs text-brand-primary font-semibold mt-2 hover:underline"
-            >
-              Clear location search
-            </button>
-          </div>
-        )}
-      </FilterSection>
+
     </div>
   );
 
@@ -272,17 +247,44 @@ const ExplorePage = () => {
             </h1>
           </div>
 
-          <div className="flex gap-3 w-full md:w-auto">
+          <div className="flex items-center gap-3 w-full md:w-auto">
             {/* Search Bar */}
-            <div className="relative flex-grow md:w-80">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search by city, area, college..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary transition-all outline-none"
-              />
+            {/* Location Search (Replaces Search Bar) */}
+            {/* Location Search (Replaces Search Bar) */}
+            <div className="relative flex-grow md:flex-grow-0 z-20">
+              {!mapSearchActive ? (
+                <button
+                  onClick={() => setShowMapSearchModal(true)}
+                  className="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-brand-primary text-white rounded-lg font-medium hover:shadow-lg hover:bg-brand-primary/90 transition-all text-sm"
+                >
+                  <MapPin className="w-4 h-4" />
+                  Search by Map
+                </button>
+              ) : (
+                <div className="flex items-center bg-brand-primary text-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all">
+                  <button
+                    onClick={() => setShowMapSearchModal(true)}
+                    className="flex items-center gap-2 px-4 py-3 hover:bg-white/10 transition-colors text-sm font-medium"
+                    title="Update Search Location"
+                  >
+                    <MapPin className="w-4 h-4" />
+                    <span className="max-w-[150px] truncate">
+                      {mapSearchParams.radius
+                        ? `Within ${mapSearchParams.radius}km`
+                        : (mapSearchParams.city || mapSearchParams.state || 'Location Selected')
+                      }
+                    </span>
+                  </button>
+                  <div className="w-[1px] h-5 bg-white/20"></div>
+                  <button
+                    onClick={handleClearMapSearch}
+                    className="px-3 py-3 hover:bg-white/10 transition-colors"
+                    title="Clear Search"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Map Toggle (Desktop) */}
