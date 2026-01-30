@@ -17,11 +17,14 @@ const createTransporter = () => {
 export const sendEmail = async ({ to, subject, text, html }) => {
     const transporter = createTransporter();
 
+    console.log(`\n📧 Initiating email send to: ${to}`);
+    console.log(`   Internal Creds Check: User=${!!process.env.EMAIL_USER}, Pass=${!!process.env.EMAIL_PASS ? 'Yes' : 'No'}`);
+
     if (!transporter) {
-        console.log("\n⚠️  [MOCK EMAIL SERVICE] Email verification skipped (Missing credentials)");
-        console.log(`To: ${to}`);
-        console.log(`Subject: ${subject}`);
-        console.log(`Content: ${text || 'HTML Content'}\n`);
+        console.log("⚠️  [MOCK EMAIL SERVICE] Email verification skipped (Missing credentials in .env)");
+        console.log(`   To: ${to}`);
+        console.log(`   Subject: ${subject}`);
+        console.log(`   Content Preview: ${text ? text.substring(0, 50) + '...' : 'HTML Content'}\n`);
         return;
     }
 
@@ -33,9 +36,12 @@ export const sendEmail = async ({ to, subject, text, html }) => {
             text,
             html
         });
-        console.log(`✅ Email sent to ${to}: ${info.messageId}`);
+        console.log(`✅ Email sent successfully! MessageID: ${info.messageId}`);
     } catch (error) {
-        console.error("❌ Failed to send email:", error);
+        console.error("❌ Failed to send email via Gmail:");
+        console.error(`   Error Code: ${error.code}`);
+        console.error(`   Error Message: ${error.message}`);
+        if (error.response) console.error(`   Response: ${error.response}`);
     }
 };
 
