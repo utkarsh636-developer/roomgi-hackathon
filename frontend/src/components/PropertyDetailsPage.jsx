@@ -375,6 +375,7 @@ const PropertyDetailsPage = () => {
     const [user, setUser] = useState(authService.getCurrentUser());
     const [existingEnquiry, setExistingEnquiry] = useState(null);
     const [hasReported, setHasReported] = useState(false);
+    const [isLiked, setIsLiked] = useState(false);
 
     useEffect(() => {
         const fetchProperty = async () => {
@@ -431,6 +432,40 @@ const PropertyDetailsPage = () => {
         };
         checkReportStatus();
     }, [user, property, isReportModalOpen]); // Re-check when modal closes
+
+    useEffect(() => {
+        const checkLikedStatus = () => {
+            if (user && user.favorites && property) {
+                const liked = user.favorites.includes(property._id);
+                setIsLiked(liked);
+            }
+        };
+        checkLikedStatus();
+    }, [user, property]);
+
+    const handleLike = async () => {
+        if (!user) {
+            alert("Please login to like properties.");
+            return;
+        }
+
+        try {
+            // Optimistic UI update
+            const newLikedState = !isLiked;
+            setIsLiked(newLikedState);
+
+            const response = await authService.toggleFavorite(property._id);
+
+            // Update local user state to reflect new favorites list
+            const updatedUser = authService.getCurrentUser();
+            setUser(updatedUser);
+
+        } catch (err) {
+            console.error("Failed to toggle like:", err);
+            setIsLiked(!isLiked); // Revert on error
+            alert("Failed to update favorite status.");
+        }
+    };
 
     const handleDeleteEnquiry = async () => {
         if (!existingEnquiry) return;
@@ -570,9 +605,14 @@ const PropertyDetailsPage = () => {
                             </div>
                         </div>
                         <div className="flex gap-3">
-                            <button className="p-3 bg-white border border-gray-200 rounded-full shadow-sm hover:bg-gray-50 hover:text-red-500 transition-colors">
-                                <Heart size={20} />
-                            </button>
+                            {(!user || user.role !== 'owner') && (
+                                <button
+                                    onClick={handleLike}
+                                    className={`p-3 bg-white border border-gray-200 rounded-full shadow-sm hover:bg-gray-50 transition-colors ${isLiked ? 'text-red-500' : 'text-gray-400 hover:text-red-500'}`}
+                                >
+                                    <Heart size={20} className={isLiked ? 'fill-current' : ''} />
+                                </button>
+                            )}
                             <button className="p-3 bg-white border border-gray-200 rounded-full shadow-sm hover:bg-gray-50 hover:text-brand-primary transition-colors">
                                 <Share2 size={20} />
                             </button>
