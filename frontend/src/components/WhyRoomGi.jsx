@@ -63,8 +63,8 @@ const WhyRoomGi = () => {
                                         <UserCheck size={20} />
                                     </div>
                                     <div>
-                                        <h4 className="font-bold text-white text-lg">100% Verified Owners</h4>
-                                        <p className="text-gray-400">Strict ID and property document verification for every lister.</p>
+                                        <h4 className="font-bold text-gray-900 text-lg">100% Verified Owners</h4>
+                                        <p className="text-gray-600">Strict ID and property document verification for every lister.</p>
                                     </div>
                                 </li>
                                 <li className="flex items-start gap-4">
@@ -72,8 +72,8 @@ const WhyRoomGi = () => {
                                         <CheckCircle size={20} />
                                     </div>
                                     <div>
-                                        <h4 className="font-bold text-white text-lg">Authentic Listings</h4>
-                                        <p className="text-gray-400">Verified locations and recent photos. What you see is what you get.</p>
+                                        <h4 className="font-bold text-gray-900 text-lg">Authentic Listings</h4>
+                                        <p className="text-gray-600">Verified locations and recent photos. What you see is what you get.</p>
                                     </div>
                                 </li>
                                 <li className="flex items-start gap-4">
@@ -81,8 +81,8 @@ const WhyRoomGi = () => {
                                         <Lock size={20} />
                                     </div>
                                     <div>
-                                        <h4 className="font-bold text-white text-lg">Zero Brokerage</h4>
-                                        <p className="text-gray-400">Connect directly with owners. No middlemen, no extra costs.</p>
+                                        <h4 className="font-bold text-gray-900 text-lg">Zero Brokerage</h4>
+                                        <p className="text-gray-600">Connect directly with owners. No middlemen, no extra costs.</p>
                                     </div>
                                 </li>
                             </ul>
