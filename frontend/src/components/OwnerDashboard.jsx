@@ -9,10 +9,12 @@ import Navbar from './Navbar';
 import Footer from './Footer';
 import authService from '../services/authService';
 import propertyService from '../services/propertyService';
+import enquiryService from '../services/enquiryService';
 import EnquiryList from './owner/EnquiryList';
 
 const OwnerDashboard = () => {
     const [properties, setProperties] = useState([]);
+    const [enquiries, setEnquiries] = useState([]); // Add enquiries state
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -23,13 +25,15 @@ const OwnerDashboard = () => {
     React.useEffect(() => {
         const fetchData = async () => {
             try {
-                const [propsRes, userRes] = await Promise.all([
+                // Fetch properties, user, and enquiries
+                const [propsRes, userRes, enquiriesRes] = await Promise.all([
                     propertyService.getOwnerProperties(),
-                    authService.fetchCurrentUser()
+                    authService.fetchCurrentUser(),
+                    enquiryService.getEnquiriesByOwner()
                 ]);
                 setProperties(propsRes.data || []);
-                // Unwrap the user data from the API response
                 setUser(userRes.data || null);
+                setEnquiries(enquiriesRes.data || []);
             } catch (err) {
                 console.error("Failed to fetch dashboard data:", err);
                 setError("Failed to load dashboard data.");
@@ -229,8 +233,8 @@ const OwnerDashboard = () => {
                         <button
                             onClick={() => setActiveTab('properties')}
                             className={`pb-3 px-4 text-sm font-bold flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'properties'
-                                    ? 'border-brand-primary text-brand-primary'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                                ? 'border-brand-primary text-brand-primary'
+                                : 'border-transparent text-gray-500 hover:text-gray-700'
                                 }`}
                         >
                             <Home size={18} /> My Properties <span className="px-2 py-0.5 rounded-full bg-gray-100 text-xs">{properties.length}</span>
@@ -238,11 +242,11 @@ const OwnerDashboard = () => {
                         <button
                             onClick={() => setActiveTab('enquiries')}
                             className={`pb-3 px-4 text-sm font-bold flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'enquiries'
-                                    ? 'border-brand-primary text-brand-primary'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                                ? 'border-brand-primary text-brand-primary'
+                                : 'border-transparent text-gray-500 hover:text-gray-700'
                                 }`}
                         >
-                            <MessageSquare size={18} /> Enquiries
+                            <MessageSquare size={18} /> Enquiries <span className="px-2 py-0.5 rounded-full bg-gray-100 text-xs">{enquiries.length}</span>
                         </button>
                     </div>
 
@@ -294,10 +298,6 @@ const OwnerDashboard = () => {
                                                     <p className="font-bold text-gray-900">₹{property.rent?.toLocaleString()}</p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-xs text-gray-400 font-bold uppercase">Views</p>
-                                                    <p className="font-bold text-gray-900">{property.views || 0}</p>
-                                                </div>
-                                                <div>
                                                     <p className="text-xs text-gray-400 font-bold uppercase">Status</p>
                                                     <p className={`font-bold ${property.status === 'available' ? 'text-green-600' : 'text-red-600'} capitalize`}>
                                                         {property.status}
@@ -343,7 +343,7 @@ const OwnerDashboard = () => {
                             </div>
                         </div>
                     ) : (
-                        <EnquiryList />
+                        <EnquiryList enquiries={enquiries} />
                     )}
 
                 </div>

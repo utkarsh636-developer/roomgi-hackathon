@@ -2,43 +2,29 @@ import React, { useState, useEffect } from 'react';
 import { Mail, Phone, Calendar, User, ArrowRight, MessageSquare, AlertCircle } from 'lucide-react';
 import enquiryService from '../../services/enquiryService';
 
-const EnquiryList = () => {
-    const [enquiries, setEnquiries] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+const EnquiryList = ({ enquiries = [] }) => {
+    // const [enquiries, setEnquiries] = useState([]); // Moved to parent
+    // const [loading, setLoading] = useState(true); // Handled by parent
+    // const [error, setError] = useState(null); // Handled by parent
 
-    useEffect(() => {
-        const fetchEnquiries = async () => {
-            try {
-                const response = await enquiryService.getEnquiriesByOwner();
-                setEnquiries(response.data || []);
-            } catch (err) {
-                console.error("Failed to fetch enquiries:", err);
-                setError("Failed to load enquiries.");
-            } finally {
-                setLoading(false);
-            }
-        };
+    // useEffect(() => {
+    //     const fetchEnquiries = async () => {
+    //         try {
+    //             const response = await enquiryService.getEnquiriesByOwner();
+    //             setEnquiries(response.data || []);
+    //         } catch (err) {
+    //             console.error("Failed to fetch enquiries:", err);
+    //             setError("Failed to load enquiries.");
+    //         } finally {
+    //             setLoading(false);
+    //         }
+    //     };
+    //     fetchEnquiries();
+    // }, []);
 
-        fetchEnquiries();
-    }, []);
-
-    if (loading) {
-        return (
-            <div className="flex justify-center items-center py-20">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-primary"></div>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="bg-red-50 p-6 rounded-2xl border border-red-100 text-center">
-                <AlertCircle className="mx-auto text-red-500 mb-2" size={32} />
-                <p className="text-red-600 font-medium">{error}</p>
-            </div>
-        );
-    }
+    // Loading and Error states are now managed by OwnerDashboard
+    // if (loading) return ...
+    // if (error) return ...
 
     if (enquiries.length === 0) {
         return (
