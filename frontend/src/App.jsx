@@ -14,6 +14,7 @@ import PropertyManagement from './components/PropertyManagement';
 import ReportsManagement from './components/ReportsManagement';
 import VerificationQueue from './components/VerificationQueue';
 import AdminAnalytics from './components/AdminAnalytics';
+import WhyRoomGi from './components/WhyRoomGi'; // Import WhyRoomGi
 
 import OwnerLanding from './components/OwnerLanding';
 import OwnerDashboard from './components/OwnerDashboard';
@@ -97,6 +98,7 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route path="/why-roomgi" element={<WhyRoomGi />} />
 
       {/* Admin Routes */}
       <Route

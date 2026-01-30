@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ShieldCheck, Users, Star, ArrowRight } from 'lucide-react';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import WhyRoomGi from './WhyRoomGi';
 
 import authService from '../services/authService';
 
@@ -86,7 +87,7 @@ const Landing = () => {
       </div>
 
       {/* Trust Strip / Stats Section */}
-      <div className="bg-white py-16 border-b border-gray-100 relative z-20">
+      <div className="bg-white py-16 relative z-20">
         <div className="max-w-screen-xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
 
           <div className="group p-8 rounded-3xl bg-slate-50 hover:bg-brand-primary/10 transition-colors border border-slate-100 hover:border-brand-primary/20">
@@ -115,6 +116,9 @@ const Landing = () => {
 
         </div>
       </div>
+      {/* Why RoomGi Section */}
+      <WhyRoomGi />
+
       <Footer />
     </div>
   );
