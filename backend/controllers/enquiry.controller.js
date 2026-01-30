@@ -4,6 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { Enquiry } from "../models/enquiry.model.js";
 import { Property } from "../models/property.model.js";
 import { User } from "../models/user.model.js";
+import { sendEmail, sendSMS } from "../utils/notification.service.js";
 
 const createEnquiry = asyncHandler(async (req, res) => {
     const { propertyId, message, name, email, phone } = req.body;
@@ -36,6 +37,28 @@ const createEnquiry = asyncHandler(async (req, res) => {
     await User.findByIdAndUpdate(userId, {
         $push: { enquiries: enquiry._id }
     });
+
+    // Notify Owner
+    const owner = await User.findById(property.owner);
+    if (owner) {
+        const messageText = `Hello ${owner.username}, you have a new enquiry from ${name} regarding your property "${property.title || property.type}".\n\nMessage: "${message}"\n\nCheck your dashboard for details.`;
+
+        // Send Email
+        await sendEmail({
+            to: owner.email,
+            subject: `New Enquiry for ${property.title || 'Property'}`,
+            text: messageText,
+            html: `<p>Hello <strong>${owner.username}</strong>,</p><p>You have a new enquiry from <strong>${name}</strong> regarding your property <strong>${property.title || property.type}</strong>.</p><blockquote>"${message}"</blockquote><p>Contact: ${phone}, ${email}</p><a href="${process.env.CORS_ORIGIN}/owner/dashboard">View Dashboard</a>`
+        });
+
+        // Send SMS
+        if (owner.phoneNumber) {
+            await sendSMS({
+                to: owner.phoneNumber,
+                message: `New Enquiry from ${name}: ${message.substring(0, 50)}... Log in to view details.`
+            });
+        }
+    }
 
     return res.status(201).json(
         new ApiResponse(201, enquiry, "Enquiry created successfully")
@@ -173,6 +196,30 @@ const acceptEnquiry = asyncHandler(async (req, res) => {
 
     await enquiry.save()
 
+    // Notify Tenant
+    const tenant = await User.findById(enquiry.user);
+    // Populate property for details
+    const property = await Property.findById(enquiry.property);
+
+    if (tenant) {
+        const subject = `Response to your enquiry for ${property?.title || 'Property'}`;
+        const emailContent = `<p>Hello <strong>${tenant.username}</strong>,</p><p>The owner has responded to your enquiry for <strong>${property?.title || 'property'}</strong>.</p><p><strong>Owner's Reply:</strong></p><blockquote>"${reply}"</blockquote><p>For more details, visit your profile.</p>`;
+
+        await sendEmail({
+            to: tenant.email,
+            subject: subject,
+            text: `Owner replied: "${reply}"`,
+            html: emailContent
+        });
+
+        if (tenant.phoneNumber) {
+            await sendSMS({
+                to: tenant.phoneNumber,
+                message: `Owner replied to your enquiry: "${reply.substring(0, 50)}..."`
+            });
+        }
+    }
+
     return res.status(200).json(
         new ApiResponse(200, enquiry, "Enquiry accepted and reply sent")
     )
@@ -199,6 +246,28 @@ const rejectEnquiry = asyncHandler(async (req, res) => {
     enquiry.reply = ""
 
     await enquiry.save()
+
+    // Notify Tenant
+    const tenant = await User.findById(enquiry.user);
+    const property = await Property.findById(enquiry.property);
+
+    if (tenant) {
+        const subject = `Update on your enquiry for ${property?.title || 'Property'}`;
+
+        await sendEmail({
+            to: tenant.email,
+            subject: subject,
+            text: `Your enquiry for ${property?.title || 'property'} was not accepted at this time.`,
+            html: `<p>Hello <strong>${tenant.username}</strong>,</p><p>The owner has reviewed your enquiry for <strong>${property?.title || 'property'}</strong>.</p><p>Unfortunately, the enquiry was rejected/closed by the owner.</p>`
+        });
+
+        if (tenant.phoneNumber) {
+            await sendSMS({
+                to: tenant.phoneNumber,
+                message: `Your enquiry for ${property?.title || 'property'} was declined by the owner.`
+            });
+        }
+    }
 
     return res.status(200).json(
         new ApiResponse(200, enquiry, "Enquiry rejected successfully")
