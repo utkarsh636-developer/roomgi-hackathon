@@ -667,7 +667,7 @@ For support, email your-email@example.com or create an issue in the repository.
 
 <div align="center">
 
-**Made with ❤️ by the RoomGi Team**
+**Made with ❤️ by the Team Coding Warriors**
 
 ⭐ Star this repo if you find it helpful!
 
