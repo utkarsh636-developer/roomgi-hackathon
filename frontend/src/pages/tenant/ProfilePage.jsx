@@ -161,7 +161,7 @@ const ProfilePage = () => {
 
             <main className="flex-grow pt-28 pb-12 px-4">
                 <div className="max-w-6xl mx-auto">
-                    
+
                     {/* Delete Confirmation Modal */}
                     {showDeleteModal && (
                         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
@@ -236,7 +236,10 @@ const ProfilePage = () => {
                                     </span>
                                 )}
                             </h1>
-                            <p className="text-sm sm:text-base text-gray-500 mb-6 sm:mb-8 break-all">{user.email}</p>
+                            <p className="text-sm sm:text-base text-gray-500 mb-6 sm:mb-8 break-all flex items-center gap-2">
+                                <Mail size={16} className="shrink-0" />
+                                {user.email}
+                            </p>
 
                             {/* Tabs */}
                             <div className="border-b border-gray-200 mb-6 sm:mb-8 -mx-4 sm:mx-0 px-4 sm:px-0">
@@ -247,11 +250,10 @@ const ProfilePage = () => {
                                             <button
                                                 key={tab.id}
                                                 onClick={() => setActiveTab(tab.id)}
-                                                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${
-                                                    activeTab === tab.id
-                                                        ? 'text-brand-primary border-b-2 border-brand-primary'
-                                                        : 'text-gray-500 hover:text-gray-700'
-                                                }`}
+                                                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${activeTab === tab.id
+                                                    ? 'text-brand-primary border-b-2 border-brand-primary'
+                                                    : 'text-gray-500 hover:text-gray-700'
+                                                    }`}
                                             >
                                                 <Icon size={16} className="sm:w-[18px] sm:h-[18px]" />
                                                 <span className="hidden sm:inline">{tab.label}</span>
@@ -277,11 +279,11 @@ const ProfilePage = () => {
                             )}
 
                             {activeTab === 'favourites' && <FavouritesTab />}
-                            
+
                             {activeTab === 'properties' && user.role === 'owner' && (
-                                <OwnerPropertyList 
-                                    properties={ownerProperties} 
-                                    onDeleteClick={handleDeleteClick} 
+                                <OwnerPropertyList
+                                    properties={ownerProperties}
+                                    onDeleteClick={handleDeleteClick}
                                     user={user}
                                 />
                             )}
@@ -397,7 +399,7 @@ const ProfileTab = ({ user, username, setUsername, phoneNumber, setPhoneNumber, 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
                         <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <div className="absolute inset-y-0 left-0 w-10 flex items-center justify-center pointer-events-none">
                                 <User size={20} className="text-gray-400" />
                             </div>
                             <input
@@ -413,7 +415,7 @@ const ProfileTab = ({ user, username, setUsername, phoneNumber, setPhoneNumber, 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
                         <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <div className="absolute inset-y-0 left-0 w-10 flex items-center justify-center pointer-events-none">
                                 <PhoneIcon size={20} className="text-gray-400" />
                             </div>
                             <input
@@ -429,7 +431,7 @@ const ProfileTab = ({ user, username, setUsername, phoneNumber, setPhoneNumber, 
                     <div className="md:col-span-2">
                         <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
                         <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <div className="absolute inset-y-0 left-0 w-10 flex items-center justify-center pointer-events-none">
                                 <Mail size={20} className="text-gray-400" />
                             </div>
                             <input
@@ -438,8 +440,8 @@ const ProfileTab = ({ user, username, setUsername, phoneNumber, setPhoneNumber, 
                                 disabled
                                 className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl bg-gray-50 text-gray-500 cursor-not-allowed"
                             />
-                            <p className="text-xs text-gray-400 mt-1 ml-1">Email cannot be changed</p>
                         </div>
+                        <p className="text-xs text-gray-400 mt-1 ml-1">Email cannot be changed</p>
                     </div>
                 </div>
 
@@ -581,20 +583,19 @@ const EnquiriesTab = () => {
                                 {enquiry.property?.name || enquiry.property?.title || 'Property'}
                             </Link>
                             <p className="text-sm text-gray-500 mt-1">
-                                {new Date(enquiry.createdAt).toLocaleDateString('en-IN', { 
-                                    year: 'numeric', 
-                                    month: 'long', 
-                                    day: 'numeric' 
+                                {new Date(enquiry.createdAt).toLocaleDateString('en-IN', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
                                 })}
                             </p>
                         </div>
                         <div className="flex items-center gap-2">
-                            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${
-                                enquiry.status === 'pending' ? 'bg-yellow-100 text-yellow-700 border border-yellow-200' :
+                            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${enquiry.status === 'pending' ? 'bg-yellow-100 text-yellow-700 border border-yellow-200' :
                                 enquiry.status === 'contacted' ? 'bg-green-100 text-green-700 border border-green-200' :
-                                enquiry.status === 'rejected' ? 'bg-red-100 text-red-700 border border-red-200' :
-                                'bg-gray-100 text-gray-700 border border-gray-200'
-                            }`}>
+                                    enquiry.status === 'rejected' ? 'bg-red-100 text-red-700 border border-red-200' :
+                                        'bg-gray-100 text-gray-700 border border-gray-200'
+                                }`}>
                                 {enquiry.status === 'pending' && <Clock size={14} />}
                                 {enquiry.status === 'contacted' && <CheckCircle size={14} />}
                                 {enquiry.status === 'rejected' && <XCircle size={14} />}
@@ -616,7 +617,7 @@ const EnquiriesTab = () => {
                             </button>
                         </div>
                     </div>
-                    
+
                     {editingEnquiry === enquiry._id ? (
                         <div className="space-y-3">
                             <textarea
@@ -643,7 +644,7 @@ const EnquiriesTab = () => {
                     ) : (
                         <p className="text-gray-700 mb-4">{enquiry.message}</p>
                     )}
-                    
+
                     {/* Owner's Reply */}
                     {enquiry.reply && (
                         <div className="bg-brand-primary/5 p-4 rounded-xl border border-brand-primary/20 mt-4">
@@ -702,7 +703,7 @@ const ReviewsTab = () => {
             const formData = new FormData();
             formData.append('rating', editRating);
             formData.append('comment', editComment);
-            
+
             await reviewService.updateReview(reviewId, formData);
             setEditingReview(null);
             fetchReviews();
@@ -776,10 +777,10 @@ const ReviewsTab = () => {
                                     </div>
                                 )}
                                 <span className="text-sm text-gray-500">
-                                    {new Date(review.createdAt).toLocaleDateString('en-IN', { 
-                                        year: 'numeric', 
-                                        month: 'short', 
-                                        day: 'numeric' 
+                                    {new Date(review.createdAt).toLocaleDateString('en-IN', {
+                                        year: 'numeric',
+                                        month: 'short',
+                                        day: 'numeric'
                                     })}
                                 </span>
                             </div>
@@ -801,7 +802,7 @@ const ReviewsTab = () => {
                             </button>
                         </div>
                     </div>
-                    
+
                     {editingReview === review._id ? (
                         <div className="space-y-3">
                             <textarea
@@ -829,7 +830,7 @@ const ReviewsTab = () => {
                     ) : (
                         <p className="text-gray-700">{review.comment}</p>
                     )}
-                    
+
                     {review.images && review.images.length > 0 && (
                         <div className="flex gap-2 mt-4">
                             {review.images.map((img, idx) => (

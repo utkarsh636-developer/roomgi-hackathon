@@ -11,6 +11,7 @@ import Landing from './pages/tenant/Landing';
 import ExplorePage from './pages/tenant/ExplorePage';
 import PropertyDetailsPage from './pages/tenant/PropertyDetailsPage';
 import ProfilePage from './pages/tenant/ProfilePage';
+import AboutPage from './components/shared/AboutPage';
 
 // Owner Pages
 import OwnerLanding from './pages/owner/OwnerLanding';
@@ -108,6 +109,7 @@ function App() {
         }
       />
       <Route path="/why-roomgi" element={<WhyRoomGi />} />
+      <Route path="/about" element={<AboutPage />} />
 
       {/* Admin Routes */}
       <Route

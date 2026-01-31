@@ -4,7 +4,7 @@ import {
     MapPin, Wifi, Wind, Coffee, Share2, Heart, Star,
     CheckCircle, ArrowLeft, Calendar, User, ShieldCheck,
     Bath, BedDouble, Home, Maximize, Phone, Utensils, Car, Thermometer, Camera, Dumbbell, Activity,
-    Zap, Tv, Droplets, Cigarette, Wine
+    Zap, Tv, Droplets, Cigarette, Wine, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
@@ -387,6 +387,51 @@ const PropertyDetailsPage = () => {
     const [existingEnquiry, setExistingEnquiry] = useState(null);
     const [hasReported, setHasReported] = useState(false);
     const [isLiked, setIsLiked] = useState(false);
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+    // Carousel Handlers
+    const nextImage = (e) => {
+        e?.stopPropagation();
+        setCurrentImageIndex((prev) => (prev === displayImages.length - 1 ? 0 : prev + 1));
+    };
+
+    const prevImage = (e) => {
+        e?.stopPropagation();
+        setCurrentImageIndex((prev) => (prev === 0 ? displayImages.length - 1 : prev - 1));
+    };
+
+    const goToImage = (index, e) => {
+        e?.stopPropagation();
+        setCurrentImageIndex(index);
+    };
+
+    // Swipe Support
+    const [touchStart, setTouchStart] = useState(null);
+    const [touchEnd, setTouchEnd] = useState(null);
+
+    const minSwipeDistance = 50;
+
+    const onTouchStart = (e) => {
+        setTouchEnd(null);
+        setTouchStart(e.targetTouches[0].clientX);
+    };
+
+    const onTouchMove = (e) => {
+        setTouchEnd(e.targetTouches[0].clientX);
+    };
+
+    const onTouchEnd = () => {
+        if (!touchStart || !touchEnd) return;
+        const distance = touchStart - touchEnd;
+        const isLeftSwipe = distance > minSwipeDistance;
+        const isRightSwipe = distance < -minSwipeDistance;
+        if (isLeftSwipe) {
+            nextImage();
+        }
+        if (isRightSwipe) {
+            prevImage();
+        }
+    };
 
     useEffect(() => {
         const fetchProperty = async () => {
@@ -632,37 +677,62 @@ const PropertyDetailsPage = () => {
                 </div>
 
                 {/* Photo Gallery Grid - Fixed Layout */}
+                {/* Photo Gallery - Swipe Card Layout */}
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-1 h-[400px] md:h-[500px] rounded-3xl overflow-hidden shadow-xl bg-gray-200">
-                        {/* Main Large Image (Left Half) */}
-                        <div className="md:col-span-2 md:row-span-2 relative group cursor-pointer overflow-hidden" onClick={() => setIsGalleryOpen(true)}>
-                            <img src={galleryImages[0]} alt="Main" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                            <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
-                        </div>
+                    <div className="relative w-full h-[400px] md:h-[600px] rounded-3xl overflow-hidden shadow-xl bg-gray-200 group"
+                        onTouchStart={onTouchStart}
+                        onTouchMove={onTouchMove}
+                        onTouchEnd={onTouchEnd}
+                    >
+                        {/* Main Image */}
+                        <div className="w-full h-full relative cursor-pointer" onClick={() => setIsGalleryOpen(true)}>
+                            <img
+                                src={displayImages[currentImageIndex]}
+                                alt={`Property View ${currentImageIndex + 1}`}
+                                className="w-full h-full object-cover transition-transform duration-500 ease-in-out"
+                            />
 
-                        {/* Right column top image */}
-                        <div className="hidden md:block relative group cursor-pointer overflow-hidden" onClick={() => setIsGalleryOpen(true)}>
-                            <img src={galleryImages[1]} alt="Sub 1" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                        </div>
+                            {/* Overlay Gradient */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-60"></div>
 
-                        {/* Right column top-right image */}
-                        <div className="hidden md:block relative group cursor-pointer overflow-hidden" onClick={() => setIsGalleryOpen(true)}>
-                            <img src={galleryImages[2]} alt="Sub 2" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                        </div>
-
-                        {/* Right column bottom image */}
-                        <div className="hidden md:block relative group cursor-pointer overflow-hidden" onClick={() => setIsGalleryOpen(true)}>
-                            <img src={galleryImages[3]} alt="Sub 3" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                        </div>
-
-                        {/* View All Overlay Button Image */}
-                        <div className="hidden md:block relative group cursor-pointer overflow-hidden" onClick={() => setIsGalleryOpen(true)}>
-                            <img src={galleryImages[4]} alt="Sub 4" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center hover:bg-black/50 transition-colors">
-                                <span className="text-white font-bold flex items-center gap-2">
-                                    <Maximize size={18} /> View All Photos
-                                </span>
+                            {/* View Full Gallery Button */}
+                            <div className="absolute top-4 right-4 z-10">
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); setIsGalleryOpen(true); }}
+                                    className="bg-white/20 backdrop-blur-md hover:bg-white/30 text-white px-4 py-2 rounded-full flex items-center gap-2 text-sm font-semibold transition-all border border-white/10"
+                                >
+                                    <Maximize size={16} /> View All ({displayImages.length})
+                                </button>
                             </div>
+                        </div>
+
+                        {/* Navigation Buttons (Desktop) */}
+                        <button
+                            onClick={prevImage}
+                            className="absolute top-1/2 left-4 -translate-y-1/2 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white p-3 rounded-full transition-all border border-white/10 hidden md:flex items-center justify-center group-hover:bg-white/30"
+                        >
+                            <ChevronLeft size={28} />
+                        </button>
+
+                        <button
+                            onClick={nextImage}
+                            className="absolute top-1/2 right-4 -translate-y-1/2 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white p-3 rounded-full transition-all border border-white/10 hidden md:flex items-center justify-center group-hover:bg-white/30"
+                        >
+                            <ChevronRight size={28} />
+                        </button>
+
+                        {/* Indicators (Dots) */}
+                        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                            {displayImages.map((_, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={(e) => goToImage(idx, e)}
+                                    className={`w-2.5 h-2.5 rounded-full transition-all ${currentImageIndex === idx
+                                        ? 'bg-white w-8'
+                                        : 'bg-white/50 hover:bg-white/80'
+                                        }`}
+                                />
+                            ))}
                         </div>
                     </div>
                 </div>
