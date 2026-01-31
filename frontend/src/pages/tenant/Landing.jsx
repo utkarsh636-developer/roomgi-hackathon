@@ -74,7 +74,7 @@ const Landing = () => {
           {/* Decorative blurred blob */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-primary/20 rounded-full blur-[100px] opacity-70 pointer-events-none"></div>
 
-          <div className="absolute inset-0 lg:left-0 lg:top-0 lg:bottom-0 lg:right-0 p-4 lg:p-4 lg:pl-0 flex items-center justify-center">
+          <div className="absolute inset-0 lg:left-0 lg:top-0 lg:bottom-0 lg:right-0 p-4 lg:pt-4 lg:pr-4 lg:pl-0 lg:pb-20 flex items-center justify-center">
             <img
               src="/images/landing-page3.jpg"
               alt="Student Housing"
