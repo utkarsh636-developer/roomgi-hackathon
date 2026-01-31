@@ -15,6 +15,7 @@ import ReportsManagement from './components/ReportsManagement';
 import VerificationQueue from './components/VerificationQueue';
 import AdminAnalytics from './components/AdminAnalytics';
 import WhyRoomGi from './components/WhyRoomGi'; // Import WhyRoomGi
+import AboutPage from './components/AboutPage';
 
 import OwnerLanding from './components/OwnerLanding';
 import OwnerDashboard from './components/OwnerDashboard';
@@ -99,6 +100,7 @@ function App() {
         }
       />
       <Route path="/why-roomgi" element={<WhyRoomGi />} />
+      <Route path="/about" element={<AboutPage />} />
 
       {/* Admin Routes */}
       <Route
