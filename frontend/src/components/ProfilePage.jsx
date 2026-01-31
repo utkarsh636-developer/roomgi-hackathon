@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { User, Mail, Phone as PhoneIcon, Camera, Save, ShieldCheck, CheckCircle, AlertCircle, Clock, Heart, MessageSquare, Star, Edit, Trash2, X, Home, LayoutDashboard } from 'lucide-react';
+import { User, Mail, Phone as PhoneIcon, Camera, Save, ShieldCheck, CheckCircle, AlertCircle, Clock, Heart, MessageSquare, Star, Edit, Trash2, X, XCircle, Home, LayoutDashboard } from 'lucide-react';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import authService from '../services/authService';
@@ -119,6 +119,15 @@ const ProfilePage = () => {
     const cancelDelete = () => {
         setShowDeleteModal(false);
         setPropertyToDelete(null);
+    };
+
+    const fetchOwnerEnquiries = async () => {
+        try {
+            const enquiriesRes = await enquiryService.getEnquiriesByOwner();
+            setOwnerEnquiries(enquiriesRes.data || []);
+        } catch (err) {
+            console.error("Failed to fetch enquiries:", err);
+        }
     };
 
     if (loading) {
@@ -278,7 +287,7 @@ const ProfilePage = () => {
 
                             {activeTab === 'enquiries' && (
                                 user.role === 'owner' ? (
-                                    <EnquiryList enquiries={ownerEnquiries} />
+                                    <EnquiryList enquiries={ownerEnquiries} onEnquiryUpdate={fetchOwnerEnquiries} />
                                 ) : (
                                     <EnquiriesTab />
                                 )
@@ -579,11 +588,15 @@ const EnquiriesTab = () => {
                             </p>
                         </div>
                         <div className="flex items-center gap-2">
-                            <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                                enquiry.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                                enquiry.status === 'responded' ? 'bg-green-100 text-green-700' :
-                                'bg-gray-100 text-gray-700'
+                            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${
+                                enquiry.status === 'pending' ? 'bg-yellow-100 text-yellow-700 border border-yellow-200' :
+                                enquiry.status === 'contacted' ? 'bg-green-100 text-green-700 border border-green-200' :
+                                enquiry.status === 'rejected' ? 'bg-red-100 text-red-700 border border-red-200' :
+                                'bg-gray-100 text-gray-700 border border-gray-200'
                             }`}>
+                                {enquiry.status === 'pending' && <Clock size={14} />}
+                                {enquiry.status === 'contacted' && <CheckCircle size={14} />}
+                                {enquiry.status === 'rejected' && <XCircle size={14} />}
                                 {enquiry.status}
                             </span>
                             <button
@@ -630,10 +643,19 @@ const EnquiriesTab = () => {
                         <p className="text-gray-700 mb-4">{enquiry.message}</p>
                     )}
                     
-                    {enquiry.response && (
-                        <div className="bg-brand-bg p-4 rounded-xl border-l-4 border-brand-primary mt-4">
-                            <p className="text-sm font-semibold text-gray-700 mb-1">Owner's Response:</p>
-                            <p className="text-gray-600">{enquiry.response}</p>
+                    {/* Owner's Reply */}
+                    {enquiry.reply && (
+                        <div className="bg-brand-primary/5 p-4 rounded-xl border border-brand-primary/20 mt-4">
+                            <p className="text-xs font-bold text-brand-primary mb-1">Owner's Reply:</p>
+                            <p className="text-gray-700">{enquiry.reply}</p>
+                            <p className="text-xs text-gray-500 mt-2">Replied on {new Date(enquiry.updatedAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                        </div>
+                    )}
+
+                    {/* Rejection Notice */}
+                    {enquiry.status === 'rejected' && !enquiry.reply && (
+                        <div className="bg-red-50 p-4 rounded-xl border border-red-200 mt-4">
+                            <p className="text-sm font-bold text-red-700">This enquiry was rejected by the owner.</p>
                         </div>
                     )}
                 </div>

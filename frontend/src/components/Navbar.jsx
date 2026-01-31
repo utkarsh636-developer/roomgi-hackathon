@@ -8,7 +8,7 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const showWhiteBg = isScrolled || (location.pathname !== '/' && location.pathname !== '/home');
+  const showWhiteBg = isScrolled || (location.pathname !== '/' && location.pathname !== '/home' && location.pathname !== '/owner');
 
   // Auth state
   const user = authService.getCurrentUser();

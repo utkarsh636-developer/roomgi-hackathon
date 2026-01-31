@@ -51,6 +51,15 @@ const OwnerDashboard = () => {
         fetchData();
     }, []);
 
+    const fetchEnquiries = async () => {
+        try {
+            const enquiriesRes = await enquiryService.getEnquiriesByOwner();
+            setEnquiries(enquiriesRes.data || []);
+        } catch (err) {
+            console.error("Failed to fetch enquiries:", err);
+        }
+    };
+
     const handleDeleteClick = (id) => {
         setPropertyToDelete(id);
         setShowDeleteModal(true);
@@ -272,7 +281,7 @@ const OwnerDashboard = () => {
                             onDeleteClick={handleDeleteClick} 
                         />
                     ) : activeTab === 'enquiries' ? (
-                        <EnquiryList enquiries={enquiries} />
+                        <EnquiryList enquiries={enquiries} onEnquiryUpdate={fetchEnquiries} />
                     ) : (
                         <ReviewsList reviews={reviews} />
                     )}

@@ -6,14 +6,13 @@ import Footer from './Footer';
 
 const OwnerLanding = () => {
     return (
-        <div className="min-h-screen bg-white font-montserrat flex flex-col">
+        <div className="flex flex-col min-h-screen bg-white">
             <Navbar />
-            <div className="flex-grow pt-20">
 
-                {/* Hero Section */}
-                <div className="relative bg-brand-dark text-white overflow-hidden">
-                    <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&q=80&w=1920')] bg-cover bg-center opacity-10"></div>
-                    <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 flex flex-col md:flex-row items-center gap-12">
+            {/* Hero Section */}
+            <div className="relative w-full min-h-screen flex flex-col bg-brand-dark text-white overflow-hidden pt-24 lg:pt-28">
+                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&q=80&w=1920')] bg-cover bg-center opacity-10"></div>
+                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 flex flex-col md:flex-row items-center gap-12">
                         <div className="w-full md:w-1/2 space-y-6">
                             <span className="inline-block py-1 px-3 rounded-full bg-brand-primary/20 text-brand-cream text-sm font-semibold border border-brand-primary/30">
                                 For Property Owners
@@ -76,8 +75,8 @@ const OwnerLanding = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>
                 </div>
+            </div>
 
                 {/* Stats Section */}
                 <div className="bg-brand-cream py-12 border-b border-brand-dark/10">
@@ -198,7 +197,6 @@ const OwnerLanding = () => {
                     </div>
                 </div>
 
-            </div>
             <Footer />
         </div>
     );
