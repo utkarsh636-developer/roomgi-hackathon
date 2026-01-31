@@ -4,7 +4,7 @@ import {
     LayoutDashboard, Users, Building2, AlertTriangle,
     CheckCircle, BarChart3, LogOut, Menu, X
 } from 'lucide-react';
-import authService from '../services/authService';
+import authService from '../../services/authService';
 
 const AdminLayout = ({ children }) => {
     const [sidebarOpen, setSidebarOpen] = React.useState(true);

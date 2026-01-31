@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import { Search, MapPin, X, Loader } from 'lucide-react';
-import { searchAddress, getAddressFromCoords } from '../utils/geocoding';
+import { searchAddress, getAddressFromCoords } from '../../utils/geocoding';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 

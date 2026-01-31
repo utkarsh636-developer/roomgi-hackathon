@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { AlertTriangle, User, Building2, ChevronLeft, ChevronRight, CheckCircle, XCircle } from 'lucide-react';
-import AdminLayout from './AdminLayout';
-import StatusBadge from './admin/StatusBadge';
-import adminService from '../services/adminService';
+import AdminLayout from '../../components/layout/AdminLayout';
+import StatusBadge from '../../components/admin/StatusBadge';
+import adminService from '../../services/adminService';
 
 const ReportsManagement = () => {
     const [reports, setReports] = useState([]);

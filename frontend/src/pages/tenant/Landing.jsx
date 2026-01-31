@@ -1,11 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ShieldCheck, Users, Star, ArrowRight } from 'lucide-react';
-import Navbar from './Navbar';
-import Footer from './Footer';
-import WhyRoomGi from './WhyRoomGi';
+import Navbar from '../../components/layout/Navbar';
+import Footer from '../../components/layout/Footer';
+import WhyRoomGi from '../../components/shared/WhyRoomGi';
 
-import authService from '../services/authService';
+import authService from '../../services/authService';
 
 const Landing = () => {
   const user = authService.getCurrentUser();

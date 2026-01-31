@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Ban, CheckCircle, ChevronLeft, ChevronRight, MapPin } from 'lucide-react';
-import AdminLayout from './AdminLayout';
-import StatusBadge from './admin/StatusBadge';
-import adminService from '../services/adminService';
+import AdminLayout from '../../components/layout/AdminLayout';
+import StatusBadge from '../../components/admin/StatusBadge';
+import adminService from '../../services/adminService';
 
 const PropertyManagement = () => {
     const [properties, setProperties] = useState([]);

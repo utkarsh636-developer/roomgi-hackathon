@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { User, Mail, Phone as PhoneIcon, Camera, Save, ShieldCheck, CheckCircle, AlertCircle, Clock, Heart, MessageSquare, Star, Edit, Trash2, X, XCircle, Home, LayoutDashboard } from 'lucide-react';
-import Navbar from './Navbar';
-import Footer from './Footer';
-import authService from '../services/authService';
-import enquiryService from '../services/enquiryService';
-import reviewService from '../services/reviewService';
-import propertyService from '../services/propertyService';
-import PropertyCard from './PropertyCard';
-import OwnerPropertyList from './owner/OwnerPropertyList';
-import EnquiryList from './owner/EnquiryList';
-import ReviewsList from './owner/ReviewsList';
+import Navbar from '../../components/layout/Navbar';
+import Footer from '../../components/layout/Footer';
+import authService from '../../services/authService';
+import enquiryService from '../../services/enquiryService';
+import reviewService from '../../services/reviewService';
+import propertyService from '../../services/propertyService';
+import PropertyCard from '../../components/property/PropertyCard';
+import OwnerPropertyList from '../../components/owner/OwnerPropertyList';
+import EnquiryList from '../../components/owner/EnquiryList';
+import ReviewsList from '../../components/owner/ReviewsList';
 
 const ProfilePage = () => {
     const [user, setUser] = useState(null);
@@ -200,61 +200,62 @@ const ProfilePage = () => {
                             <div className="absolute inset-0 bg-[#d47e30]/30 mix-blend-overlay"></div>
                         </div>
 
-                        <div className="px-8 pb-8">
-                            <div className="relative flex justify-between items-end -mt-12 mb-6">
+                        <div className="px-4 sm:px-6 md:px-8 pb-8">
+                            <div className="relative flex flex-col sm:flex-row justify-between items-start sm:items-end -mt-12 mb-6 gap-4">
                                 <div className="relative">
-                                    <div className="w-24 h-24 rounded-2xl bg-white p-1 shadow-lg">
+                                    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white p-1 shadow-lg">
                                         <div className="w-full h-full rounded-xl bg-gray-200 overflow-hidden relative group">
                                             {previewImage ? (
                                                 <img src={previewImage} alt="Profile" className="w-full h-full object-cover" />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center bg-brand-bg text-brand-primary/50">
-                                                    <User size={40} />
+                                                    <User size={32} className="sm:w-10 sm:h-10" />
                                                 </div>
                                             )}
                                             {activeTab === 'profile' && (
                                                 <label className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                                                    <Camera className="text-white" size={24} />
+                                                    <Camera className="text-white" size={20} />
                                                     <input type="file" className="hidden" accept="image/*" onChange={handleImageChange} />
                                                 </label>
                                             )}
                                         </div>
                                     </div>
                                 </div>
-                                <div className="mb-2">
+                                <div className="mb-0 sm:mb-2">
                                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${user.role === 'owner' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
                                         {user.role} Account
                                     </span>
                                 </div>
                             </div>
 
-                            <h1 className="text-3xl font-bold text-gray-900 mb-1 flex items-center gap-3">
-                                {user.username}
+                            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 flex flex-wrap items-center gap-2 sm:gap-3">
+                                <span className="break-all">{user.username}</span>
                                 {user.verification?.status === 'approved' && (
-                                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold bg-green-100 text-green-700 border border-green-200">
-                                        <CheckCircle size={16} /> Verified
+                                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs sm:text-sm font-bold bg-green-100 text-green-700 border border-green-200">
+                                        <CheckCircle size={14} className="sm:w-4 sm:h-4" /> Verified
                                     </span>
                                 )}
                             </h1>
-                            <p className="text-gray-500 mb-8">{user.email}</p>
+                            <p className="text-sm sm:text-base text-gray-500 mb-6 sm:mb-8 break-all">{user.email}</p>
 
                             {/* Tabs */}
-                            <div className="border-b border-gray-200 mb-8">
-                                <div className="flex gap-2 overflow-x-auto">
+                            <div className="border-b border-gray-200 mb-6 sm:mb-8 -mx-4 sm:mx-0 px-4 sm:px-0">
+                                <div className="flex gap-1 sm:gap-2 overflow-x-auto scrollbar-hide">
                                     {tabs.map(tab => {
                                         const Icon = tab.icon;
                                         return (
                                             <button
                                                 key={tab.id}
                                                 onClick={() => setActiveTab(tab.id)}
-                                                className={`flex items-center gap-2 px-6 py-3 font-semibold transition-all whitespace-nowrap ${
+                                                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${
                                                     activeTab === tab.id
                                                         ? 'text-brand-primary border-b-2 border-brand-primary'
                                                         : 'text-gray-500 hover:text-gray-700'
                                                 }`}
                                             >
-                                                <Icon size={18} />
-                                                {tab.label}
+                                                <Icon size={16} className="sm:w-[18px] sm:h-[18px]" />
+                                                <span className="hidden sm:inline">{tab.label}</span>
+                                                <span className="sm:hidden">{tab.label.replace('My ', '').replace('Tenant ', '')}</span>
                                             </button>
                                         );
                                     })}

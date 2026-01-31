@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Users, Building2, CheckCircle, XCircle, Eye, FileText, Maximize2 } from 'lucide-react';
-import AdminLayout from './AdminLayout';
-import StatusBadge from './admin/StatusBadge';
-import adminService from '../services/adminService';
+import AdminLayout from '../../components/layout/AdminLayout';
+import StatusBadge from '../../components/admin/StatusBadge';
+import adminService from '../../services/adminService';
 
 const DocumentPreviewModal = ({ url, type, onClose }) => {
     if (!url) return null;

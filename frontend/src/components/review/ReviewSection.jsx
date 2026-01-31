@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Star, MoreVertical, Trash2, Edit2, Image as ImageIcon, X, Send } from 'lucide-react';
-import authService from '../services/authService';
-import reviewService from '../services/reviewService';
-import propertyService from '../services/propertyService';
+import authService from '../../services/authService';
+import reviewService from '../../services/reviewService';
+import propertyService from '../../services/propertyService';
 
 const ReviewSection = ({ propertyId }) => {
     const [reviews, setReviews] = useState([]);

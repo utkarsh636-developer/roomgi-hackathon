@@ -1,27 +1,36 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import authService from './services/authService';
-import LoginPage from './components/LoginPage';
-import RegisterPage from './components/RegisterPage';
-import Landing from './components/Landing';
-import ExplorePage from './components/ExplorePage';
-import PropertyDetailsPage from './components/PropertyDetailsPage';
-import ProtectedRoute from './components/ProtectedRoute';
-import AdminRoute from './components/AdminRoute';
-import NewAdminDashboard from './components/NewAdminDashboard';
-import UserManagement from './components/UserManagement';
-import PropertyManagement from './components/PropertyManagement';
-import ReportsManagement from './components/ReportsManagement';
-import VerificationQueue from './components/VerificationQueue';
-import AdminAnalytics from './components/AdminAnalytics';
-import WhyRoomGi from './components/WhyRoomGi'; // Import WhyRoomGi
 
-import OwnerLanding from './components/OwnerLanding';
-import OwnerDashboard from './components/OwnerDashboard';
-import ProfilePage from './components/ProfilePage';
-import AddPropertyPage from './components/AddPropertyPage';
-import VerificationPage from './components/VerificationPage';
-import PropertyVerificationPage from './components/PropertyVerificationPage';
+// Auth Pages
+import LoginPage from './pages/auth/LoginPage';
+import RegisterPage from './pages/auth/RegisterPage';
+
+// Tenant Pages
+import Landing from './pages/tenant/Landing';
+import ExplorePage from './pages/tenant/ExplorePage';
+import PropertyDetailsPage from './pages/tenant/PropertyDetailsPage';
+import ProfilePage from './pages/tenant/ProfilePage';
+
+// Owner Pages
+import OwnerLanding from './pages/owner/OwnerLanding';
+import OwnerDashboard from './pages/owner/OwnerDashboard';
+import AddPropertyPage from './pages/owner/AddPropertyPage';
+import VerificationPage from './pages/owner/VerificationPage';
+
+// Admin Pages
+import NewAdminDashboard from './pages/admin/NewAdminDashboard';
+import UserManagement from './pages/admin/UserManagement';
+import PropertyManagement from './pages/admin/PropertyManagement';
+import ReportsManagement from './pages/admin/ReportsManagement';
+import VerificationQueue from './pages/admin/VerificationQueue';
+import AdminAnalytics from './pages/admin/AdminAnalytics';
+import PropertyVerificationPage from './pages/admin/PropertyVerificationPage';
+
+// Components
+import ProtectedRoute from './components/routing/ProtectedRoute';
+import AdminRoute from './components/routing/AdminRoute';
+import WhyRoomGi from './components/shared/WhyRoomGi';
 
 const HomeRoute = () => {
   const user = authService.getCurrentUser();

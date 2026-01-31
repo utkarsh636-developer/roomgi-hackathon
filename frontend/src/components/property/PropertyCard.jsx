@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Wifi, Wind, Coffee, BadgeCheck, Heart, Share2, Phone, Map } from 'lucide-react';
-import authService from '../services/authService';
+import authService from '../../services/authService';
 
 const PropertyCard = ({ property }) => {
   const {

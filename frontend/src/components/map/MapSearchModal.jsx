@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Circle, useMap, GeoJSON } from 'react-leaflet';
 import { Search, MapPin, X, Loader, Navigation } from 'lucide-react';
-import { searchAddress } from '../utils/geocoding';
+import { searchAddress } from '../../utils/geocoding';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -305,21 +305,23 @@ const MapSearchModal = ({ isOpen, onClose, onApplySearch, initialLocation = null
         </div>
 
         {/* Floating Search Bar with Dropdown - Top Center */}
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] w-full max-w-xl px-4">
+        <div className="absolute top-4 left-4 right-4 md:left-1/2 md:-translate-x-1/2 z-[1000] md:w-full md:max-w-xl md:px-4">
           <div className="bg-white rounded-xl shadow-lg">
             {/* Search Input with Type Selector */}
-            <div className="relative p-3 flex gap-2">
+            <div className="relative p-2 sm:p-3 flex flex-col sm:flex-row gap-2">
               {/* Search Type Dropdown */}
               <div className="relative">
                 <button
                   onClick={() => setShowTypeMenu(!showTypeMenu)}
-                  className="flex items-center gap-2 px-3 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-all border border-gray-200 text-sm font-medium text-gray-700"
+                  className="w-full sm:w-auto flex items-center justify-between sm:justify-start gap-2 px-3 py-2.5 sm:py-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-all border border-gray-200 text-xs sm:text-sm font-medium text-gray-700"
                 >
-                  <span>
-                    {searchType === 'address' && '📍'}
-                    {searchType === 'location' && '🌍'}
-                  </span>
-                  <span className="capitalize">{searchType}</span>
+                  <div className="flex items-center gap-2">
+                    <span>
+                      {searchType === 'address' && '📍'}
+                      {searchType === 'location' && '🌍'}
+                    </span>
+                    <span className="capitalize">{searchType}</span>
+                  </div>
                   <svg className={`w-4 h-4 transition-transform ${showTypeMenu ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
@@ -348,27 +350,54 @@ const MapSearchModal = ({ isOpen, onClose, onApplySearch, initialLocation = null
 
               {/* Search Input */}
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
                 <input
                   type="text"
                   placeholder={
                     searchType === 'address' 
-                      ? 'Search address or landmark...' 
+                      ? 'Search address...' 
                       : 'Search city or state...'
                   }
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 rounded-lg focus:ring-2 focus:ring-brand-primary/50 focus:outline-none text-sm border border-gray-200"
+                  className="w-full pl-9 sm:pl-10 pr-4 py-2.5 sm:py-3 rounded-lg focus:ring-2 focus:ring-brand-primary/50 focus:outline-none text-xs sm:text-sm border border-gray-200"
                 />
                 {isSearching && (
-                  <Loader className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-brand-primary animate-spin" />
+                  <Loader className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-brand-primary animate-spin" />
                 )}
               </div>
             </div>
 
+            {/* Radius Control for Mobile (Only for Address) */}
+            {searchType === 'address' && (
+              <div className="md:hidden border-t border-gray-100 p-3">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-xs font-bold text-gray-600 uppercase tracking-wide">
+                    Radius
+                  </label>
+                  <span className="text-xs font-bold text-brand-primary bg-brand-primary/10 px-2 py-0.5 rounded">
+                    {radius} km
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="1"
+                  max="50"
+                  step="1"
+                  value={radius}
+                  onChange={(e) => setRadius(Number(e.target.value))}
+                  className="w-full h-2 bg-gray-200 rounded-lg cursor-pointer accent-brand-primary"
+                />
+                <div className="flex justify-between text-xs text-gray-400 mt-1">
+                  <span>1km</span>
+                  <span>50km</span>
+                </div>
+              </div>
+            )}
+
             {/* Search Results Dropdown */}
             {searchResults.length > 0 && (
-              <div className="border-t border-gray-100 max-h-72 overflow-y-auto">
+              <div className="border-t border-gray-100 max-h-60 sm:max-h-72 overflow-y-auto">
                 {searchResults.map((result, idx) => {
                   const addr = result.address || {};
                   const city = addr.city || addr.town || addr.village || '';
@@ -379,15 +408,15 @@ const MapSearchModal = ({ isOpen, onClose, onApplySearch, initialLocation = null
                     <button
                       key={idx}
                       onClick={() => handleSelectResult(result)}
-                      className="w-full p-3 text-left hover:bg-brand-primary/5 transition-colors border-b border-gray-50 last:border-0"
+                      className="w-full p-2.5 sm:p-3 text-left hover:bg-brand-primary/5 transition-colors border-b border-gray-50 last:border-0"
                     >
-                      <div className="flex items-start gap-3">
-                        <MapPin className="w-4 h-4 text-brand-primary mt-1 flex-shrink-0" />
+                      <div className="flex items-start gap-2 sm:gap-3">
+                        <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-brand-primary mt-0.5 sm:mt-1 flex-shrink-0" />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm text-gray-900 font-medium truncate">
+                          <p className="text-xs sm:text-sm text-gray-900 font-medium truncate">
                             {result.displayName}
                           </p>
-                          <div className="flex gap-3 mt-1 text-xs text-gray-500">
+                          <div className="flex flex-wrap gap-2 sm:gap-3 mt-1 text-xs text-gray-500">
                             {city && <span className="flex items-center gap-1">🏙️ {city}</span>}
                             {state && <span className="flex items-center gap-1">🗺️ {state}</span>}
                             {pincode && <span className="flex items-center gap-1">📮 {pincode}</span>}
@@ -402,16 +431,16 @@ const MapSearchModal = ({ isOpen, onClose, onApplySearch, initialLocation = null
 
             {/* No Results Message */}
             {searchQuery.length >= 2 && !isSearching && searchResults.length === 0 && (
-              <div className="p-4 text-center text-sm text-gray-500 border-t border-gray-100">
+              <div className="p-3 sm:p-4 text-center text-xs sm:text-sm text-gray-500 border-t border-gray-100">
                 No results found for "{searchQuery}"
               </div>
             )}
           </div>
         </div>
 
-        {/* Floating Radius Control - Top Left (Only for Address) */}
+        {/* Floating Radius Control - Top Left (Only for Address, Desktop Only) */}
         {searchType === 'address' && (
-          <div className="absolute top-4 left-4 z-[1000] bg-white rounded-xl shadow-lg p-4 w-64">
+          <div className="hidden md:block absolute top-4 left-4 z-[1000] bg-white rounded-xl shadow-lg p-4 w-64">
             <div className="flex items-center justify-between mb-2">
               <label className="text-xs font-bold text-gray-600 uppercase tracking-wide">
                 Search Radius
@@ -436,8 +465,8 @@ const MapSearchModal = ({ isOpen, onClose, onApplySearch, initialLocation = null
           </div>
         )}
 
-        {/* Floating Tip - Bottom Left */}
-        <div className="absolute bottom-24 left-4 z-[1000] bg-white/95 backdrop-blur-sm px-3 py-2 rounded-lg shadow-md max-w-xs">
+        {/* Floating Tip - Bottom Left (Hidden on Mobile) */}
+        <div className="hidden md:block absolute bottom-20 left-4 z-[1000] bg-white/95 backdrop-blur-sm px-3 py-2 rounded-lg shadow-md max-w-xs">
           <p className="text-xs text-gray-600 flex items-center gap-2">
             <Navigation className="w-3.5 h-3.5 text-brand-primary flex-shrink-0" />
             <span>Drag the marker to adjust location</span>
@@ -445,24 +474,24 @@ const MapSearchModal = ({ isOpen, onClose, onApplySearch, initialLocation = null
         </div>
 
         {/* Floating Action Buttons - Bottom */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[1000] flex gap-3">
+        <div className="absolute bottom-4 left-4 right-4 md:left-1/2 md:-translate-x-1/2 z-[1000] flex gap-2 md:gap-3">
           <button
             onClick={handleClear}
-            className="px-5 py-2.5 bg-white hover:bg-gray-50 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl shadow-lg transition-all text-sm"
+            className="flex-1 md:flex-none px-3 md:px-5 py-2.5 bg-white hover:bg-gray-50 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl shadow-lg transition-all text-xs md:text-sm"
           >
             Clear
           </button>
           <button
             onClick={onClose}
-            className="px-5 py-2.5 bg-white hover:bg-gray-50 text-gray-700 font-semibold rounded-xl shadow-lg transition-all text-sm"
+            className="flex-1 md:flex-none px-3 md:px-5 py-2.5 bg-white hover:bg-gray-50 text-gray-700 font-semibold rounded-xl shadow-lg transition-all text-xs md:text-sm"
           >
             Cancel
           </button>
           <button
             onClick={handleApply}
-            className="px-8 py-2.5 bg-gradient-to-r from-brand-primary to-brand-secondary text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all text-sm"
+            className="flex-1 md:flex-none px-4 md:px-8 py-2.5 bg-gradient-to-r from-brand-primary to-brand-secondary text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all text-xs md:text-sm whitespace-nowrap"
           >
-            Apply Search
+            Apply
           </button>
         </div>
       </div>

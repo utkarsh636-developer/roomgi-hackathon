@@ -5,15 +5,15 @@ import {
     TrendingUp, Eye, Users, AlertCircle, CheckCircle,
     MoreVertical, MapPin, Edit, Trash2, X, Clock, ShieldCheck
 } from 'lucide-react';
-import Navbar from './Navbar';
-import Footer from './Footer';
-import authService from '../services/authService';
-import propertyService from '../services/propertyService';
-import enquiryService from '../services/enquiryService';
-import reviewService from '../services/reviewService';
-import EnquiryList from './owner/EnquiryList';
-import ReviewsList from './owner/ReviewsList';
-import OwnerPropertyList from './owner/OwnerPropertyList';
+import Navbar from '../../components/layout/Navbar';
+import Footer from '../../components/layout/Footer';
+import authService from '../../services/authService';
+import propertyService from '../../services/propertyService';
+import enquiryService from '../../services/enquiryService';
+import reviewService from '../../services/reviewService';
+import EnquiryList from '../../components/owner/EnquiryList';
+import ReviewsList from '../../components/owner/ReviewsList';
+import OwnerPropertyList from '../../components/owner/OwnerPropertyList';
 
 const OwnerDashboard = () => {
     const [properties, setProperties] = useState([]);
@@ -142,21 +142,21 @@ const OwnerDashboard = () => {
                     {/* Header */}
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-8">
                         <div>
-                            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-3">
-                                Owner Dashboard
+                            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex flex-wrap items-center gap-2 md:gap-3">
+                                <span>Owner Dashboard</span>
                                 {user?.verification?.status === 'approved' && (
-                                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold bg-green-100 text-green-700 border border-green-200">
+                                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs md:text-sm font-bold bg-green-100 text-green-700 border border-green-200">
                                         <CheckCircle size={16} /> Verified
                                     </span>
                                 )}
                             </h1>
-                            <p className="text-gray-500">Manage your listings and track performance.</p>
+                            <p className="text-sm md:text-base text-gray-500 mt-1">Manage your listings and track performance.</p>
                         </div>
                         <Link
                             to="/add-property"
-                            className="flex items-center gap-2 px-6 py-3 bg-brand-primary hover:bg-brand-secondary text-white font-bold rounded-xl shadow-lg shadow-brand-dark/20 transition-all"
+                            className="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-brand-primary hover:bg-brand-secondary text-white font-bold rounded-xl shadow-lg shadow-brand-dark/20 transition-all"
                         >
-                            <Plus size={20} /> Add New Property
+                            <Plus size={20} /> <span className="whitespace-nowrap">Add New Property</span>
                         </Link>
                     </div>
 
@@ -244,34 +244,36 @@ const OwnerDashboard = () => {
                     </div>
 
                     {/* Content Tabs */}
-                    <div className="flex gap-4 mb-6 border-b border-gray-200">
-                        <button
-                            onClick={() => setActiveTab('properties')}
-                            className={`pb-3 px-4 text-sm font-bold flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'properties'
-                                ? 'border-brand-primary text-brand-primary'
-                                : 'border-transparent text-gray-500 hover:text-gray-700'
-                                }`}
-                        >
-                            <Home size={18} /> My Properties <span className="px-2 py-0.5 rounded-full bg-gray-100 text-xs">{properties.length}</span>
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('enquiries')}
-                            className={`pb-3 px-4 text-sm font-bold flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'enquiries'
-                                ? 'border-brand-primary text-brand-primary'
-                                : 'border-transparent text-gray-500 hover:text-gray-700'
-                                }`}
-                        >
-                            <MessageSquare size={18} /> Enquiries <span className="px-2 py-0.5 rounded-full bg-gray-100 text-xs">{enquiries.length}</span>
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('reviews')}
-                            className={`pb-3 px-4 text-sm font-bold flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'reviews'
-                                ? 'border-brand-primary text-brand-primary'
-                                : 'border-transparent text-gray-500 hover:text-gray-700'
-                                }`}
-                        >
-                            <Star size={18} /> Reviews <span className="px-2 py-0.5 rounded-full bg-gray-100 text-xs">{reviews.length}</span>
-                        </button>
+                    <div className="border-b border-gray-200 mb-6 overflow-x-auto">
+                        <div className="flex gap-2 md:gap-4 min-w-max">
+                            <button
+                                onClick={() => setActiveTab('properties')}
+                                className={`pb-3 px-3 md:px-4 text-xs md:text-sm font-bold flex items-center gap-1.5 md:gap-2 border-b-2 transition-colors whitespace-nowrap ${activeTab === 'properties'
+                                    ? 'border-brand-primary text-brand-primary'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                                    }`}
+                            >
+                                <Home size={16} className="md:w-[18px] md:h-[18px]" /> <span className="hidden sm:inline">My </span>Properties <span className="px-1.5 md:px-2 py-0.5 rounded-full bg-gray-100 text-xs">{properties.length}</span>
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('enquiries')}
+                                className={`pb-3 px-3 md:px-4 text-xs md:text-sm font-bold flex items-center gap-1.5 md:gap-2 border-b-2 transition-colors whitespace-nowrap ${activeTab === 'enquiries'
+                                    ? 'border-brand-primary text-brand-primary'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                                    }`}
+                            >
+                                <MessageSquare size={16} className="md:w-[18px] md:h-[18px]" /> Enquiries <span className="px-1.5 md:px-2 py-0.5 rounded-full bg-gray-100 text-xs">{enquiries.length}</span>
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('reviews')}
+                                className={`pb-3 px-3 md:px-4 text-xs md:text-sm font-bold flex items-center gap-1.5 md:gap-2 border-b-2 transition-colors whitespace-nowrap ${activeTab === 'reviews'
+                                    ? 'border-brand-primary text-brand-primary'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                                    }`}
+                            >
+                                <Star size={16} className="md:w-[18px] md:h-[18px]" /> Reviews <span className="px-1.5 md:px-2 py-0.5 rounded-full bg-gray-100 text-xs">{reviews.length}</span>
+                            </button>
+                        </div>
                     </div>
 
                     {/* Tab Content */}

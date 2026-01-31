@@ -4,10 +4,10 @@ import {
     Users, Building2, AlertTriangle, CheckCircle,
     XCircle, Clock, TrendingUp, Eye, ArrowRight
 } from 'lucide-react';
-import AdminLayout from './AdminLayout';
-import StatCard from './admin/StatCard';
-import StatusBadge from './admin/StatusBadge';
-import adminService from '../services/adminService';
+import AdminLayout from '../../components/layout/AdminLayout';
+import StatCard from '../../components/admin/StatCard';
+import StatusBadge from '../../components/admin/StatusBadge';
+import adminService from '../../services/adminService';
 
 const NewAdminDashboard = () => {
     const [stats, setStats] = useState(null);

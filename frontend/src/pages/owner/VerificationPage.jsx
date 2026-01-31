@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from './Navbar';
-import Footer from './Footer';
-import authService from '../services/authService';
+import Navbar from '../../components/layout/Navbar';
+import Footer from '../../components/layout/Footer';
+import authService from '../../services/authService';
 import { Upload, X, ShieldCheck, Loader, FileText } from 'lucide-react';
 
 const DOCUMENT_TYPES = [

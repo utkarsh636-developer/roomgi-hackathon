@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Navbar from './Navbar';
-import Footer from './Footer';
-import propertyService from '../services/propertyService';
+import Navbar from '../../components/layout/Navbar';
+import Footer from '../../components/layout/Footer';
+import propertyService from '../../services/propertyService';
 import { Upload, X, ShieldCheck, Loader, FileText, Home } from 'lucide-react';
 
 const DOCUMENT_TYPES = [

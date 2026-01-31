@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import PropertyCard from './PropertyCard';
-import PropertyMapView from './PropertyMapView';
-import MapSearchModal from './MapSearchModal';
+import PropertyCard from '../../components/property/PropertyCard';
+import PropertyMapView from '../../components/property/PropertyMapView';
+import MapSearchModal from '../../components/map/MapSearchModal';
 import { Map, List, Filter, Search, Loader, MapPin, X } from 'lucide-react';
-import Navbar from './Navbar';
-import Footer from './Footer';
-import propertyService from '../services/propertyService';
+import Navbar from '../../components/layout/Navbar';
+import Footer from '../../components/layout/Footer';
+import propertyService from '../../services/propertyService';
 
 const FilterSection = ({ title, children }) => (
   <div className="py-5 border-b border-gray-100 last:border-0">

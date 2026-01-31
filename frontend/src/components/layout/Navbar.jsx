@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { UserCircle, LogIn, Menu, X, User } from 'lucide-react';
-import authService from '../services/authService';
+import authService from '../../services/authService';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -142,22 +142,41 @@ const Navbar = () => {
               <Link to="/about" onClick={() => setIsOpen(false)} className="text-left text-lg font-medium text-gray-800 py-2 border-b border-gray-50">
                 About
               </Link>
-              <div className="grid grid-cols-2 gap-4 mt-4">
+              <div className="grid grid-cols-2 gap-3 mt-4">
                 {user ? (
                   <>
-                    {/* Owner sees List Property in Mobile too */}
+                    {/* Profile Link - Always visible for logged-in users */}
+                    <Link 
+                      to="/profile" 
+                      onClick={() => setIsOpen(false)} 
+                      className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-brand-primary bg-brand-bg border-2 border-brand-primary/20 shadow-sm"
+                    >
+                      <User size={18} />
+                      Profile
+                    </Link>
+                    
+                    {/* Owner sees Dashboard */}
                     {user.role === 'owner' && (
-                      <Link to="/become-host" onClick={() => setIsOpen(false)} className="col-span-2 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-white bg-indigo-600 shadow-lg shadow-indigo-200">
+                      <Link 
+                        to="/owner-dashboard" 
+                        onClick={() => setIsOpen(false)} 
+                        className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-white bg-indigo-600 shadow-lg shadow-indigo-200"
+                      >
                         Dashboard
                       </Link>
                     )}
-                    <button onClick={() => { handleLogout(); setIsOpen(false); }} className="col-span-2 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-white bg-red-500 shadow-lg">
-                      Logout ({user.username})
+                    
+                    {/* Logout Button - Full width if tenant, half width if owner */}
+                    <button 
+                      onClick={() => { handleLogout(); setIsOpen(false); }} 
+                      className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-white bg-red-500 shadow-lg ${user.role === 'tenant' ? 'col-span-1' : 'col-span-2'}`}
+                    >
+                      Logout
                     </button>
                   </>
                 ) : (
                   <>
-                    {/* Guest sees Login and List Property (redirects to Login) */}
+                    {/* Guest sees Login and Dashboard (redirects to Login) */}
                     <Link to="/login" onClick={() => setIsOpen(false)} className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-gray-700 bg-gray-100">
                       Login
                     </Link>

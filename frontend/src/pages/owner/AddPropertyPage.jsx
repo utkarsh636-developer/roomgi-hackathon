@@ -1,11 +1,11 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Navbar from './Navbar';
-import Footer from './Footer';
-import propertyService from '../services/propertyService';
+import Navbar from '../../components/layout/Navbar';
+import Footer from '../../components/layout/Footer';
+import propertyService from '../../services/propertyService';
 import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
-import { searchAddress } from '../utils/geocoding';
+import { searchAddress } from '../../utils/geocoding';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Upload, X, Home, MapPin, IndianRupee, Loader, CheckSquare, Square, Search, Navigation } from 'lucide-react';

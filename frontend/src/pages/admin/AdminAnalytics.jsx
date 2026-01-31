@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { TrendingUp, Users, Building2, AlertTriangle, PieChart } from 'lucide-react';
-import AdminLayout from './AdminLayout';
-import StatCard from './admin/StatCard';
-import adminService from '../services/adminService';
+import AdminLayout from '../../components/layout/AdminLayout';
+import StatCard from '../../components/admin/StatCard';
+import adminService from '../../services/adminService';
 
 const AdminAnalytics = () => {
     const [userAnalytics, setUserAnalytics] = useState(null);

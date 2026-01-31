@@ -9,15 +9,15 @@ import {
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import Navbar from './Navbar';
-import Footer from './Footer';
+import Navbar from '../../components/layout/Navbar';
+import Footer from '../../components/layout/Footer';
 
-import propertyService from '../services/propertyService';
-import authService from '../services/authService';
-import enquiryService from '../services/enquiryService';
-import ReviewSection from './ReviewSection';
+import propertyService from '../../services/propertyService';
+import authService from '../../services/authService';
+import enquiryService from '../../services/enquiryService';
+import ReviewSection from '../../components/review/ReviewSection';
 import { Send, X, Edit, Trash2, AlertTriangle } from 'lucide-react'; // Add AlertTriangle
-import reportService from '../services/reportService';
+import reportService from '../../services/reportService';
 
 // Fix Leaflet default marker icon
 delete L.Icon.Default.prototype._getIconUrl;

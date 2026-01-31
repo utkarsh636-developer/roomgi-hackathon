@@ -1,15 +1,19 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import authService from '../services/authService';
+import authService from '../../services/authService';
 
-const ProtectedRoute = ({ children }) => {
+const AdminRoute = ({ children }) => {
     const user = authService.getCurrentUser();
 
     if (!user) {
         return <Navigate to="/login" replace />;
     }
 
+    if (user.role !== 'admin') {
+        return <Navigate to="/" replace />;
+    }
+
     return children;
 };
 
-export default ProtectedRoute;
+export default AdminRoute;
