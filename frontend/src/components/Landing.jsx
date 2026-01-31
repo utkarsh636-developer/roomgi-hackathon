@@ -25,8 +25,8 @@ const Landing = () => {
           </div>
 
           <h1 className="text-4xl sm:text-5xl lg:text-7xl font-extrabold font-montserrat text-brand-cream leading-[1.1] mb-6">
-            Find Your <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary via-brand-cream to-brand-primary animate-gradient bg-300%">Perfect Stay</span>
+            Rooms That <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary via-brand-cream to-brand-primary animate-gradient bg-300%">Feel Like Home</span>
           </h1>
 
           <p className="text-base sm:text-lg text-brand-cream/70 font-montserrat max-w-lg mb-10 leading-relaxed">

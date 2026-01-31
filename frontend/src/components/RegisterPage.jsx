@@ -60,7 +60,7 @@ const RegisterPage = () => {
       <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-gray-100">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-gray-900">Create Account</h2>
-          <p className="text-gray-500 mt-2">Join RoomGi to find your perfect stay</p>
+          <p className="text-gray-500 mt-2">Join RoomGi to find rooms that feel like home</p>
         </div>
 
         {error && (
