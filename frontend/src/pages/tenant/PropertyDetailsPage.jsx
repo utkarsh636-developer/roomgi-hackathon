@@ -806,7 +806,7 @@ const PropertyDetailsPage = () => {
                                             </span>
                                         </p>
                                     </div>
-                                    <div className="rounded-2xl overflow-hidden border border-gray-200 shadow-sm h-[400px]">
+                                    <div className="relative z-0 rounded-2xl overflow-hidden border border-gray-200 shadow-sm h-[400px]">
                                         <MapContainer
                                             center={[property.location.coordinates.coordinates[1], property.location.coordinates.coordinates[0]]}
                                             zoom={15}
