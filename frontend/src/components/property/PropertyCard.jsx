@@ -27,7 +27,16 @@ const PropertyCard = ({ property }) => {
   const displayLocation = location?.addressLine || location?.city || location || 'Unknown Location';
   // Check for nested capacity object or flat property
   // Check for nested capacity object or flat property
-  const displayCapacity = property.capacity?.total || property.capacity || '2+';
+  let displayCapacity = '2+';
+  if (property.capacity) {
+    if (typeof property.capacity === 'object') {
+      if (property.capacity.total !== undefined && property.capacity.total !== null) {
+        displayCapacity = property.capacity.total;
+      }
+    } else {
+      displayCapacity = property.capacity;
+    }
+  }
 
   const [isLiked, setIsLiked] = useState(false);
   const [user, setUser] = useState(null);
